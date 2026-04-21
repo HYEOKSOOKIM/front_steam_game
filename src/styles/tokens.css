@@ -1,0 +1,71 @@
+:root {
+  /* Color tokens */
+  --color-primary: #66c0f4;
+  --color-primary-hover: #8bd3ff;
+  --color-bg-1: #171a21;
+  --color-bg-2: #1b2838;
+  --color-bg-3: #10151d;
+  --color-surface: #223145;
+  --color-surface-strong: #243349;
+  --color-border: #2e4866;
+  --color-text-primary: #eaf4ff;
+  --color-text-secondary: #a7bed3;
+  --color-success: #6ccb5f;
+  --color-warning: #f2c14e;
+  --color-danger: #e05a5a;
+  --color-neutral: #8191a8;
+
+  /* Typography tokens */
+  --font-family-base: "Pretendard", "Noto Sans KR", sans-serif;
+  --font-size-12: 0.75rem;
+  --font-size-14: 0.875rem;
+  --font-size-16: 1rem;
+  --font-size-20: 1.25rem;
+  --font-size-24: 1.5rem;
+  --font-size-32: 2rem;
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
+  --line-height-body: 1.6;
+  --line-height-title: 1.35;
+
+  /* Spacing tokens */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+
+  /* Radius and shadow tokens */
+  --radius-6: 6px;
+  --radius-10: 10px;
+  --radius-14: 14px;
+  --shadow-elevation-1: 0 8px 24px rgba(0, 0, 0, 0.28);
+
+  /* Motion tokens */
+  --motion-duration-fast: 180ms;
+  --motion-ease-standard: ease-out;
+
+  /* Layout tokens */
+  --layout-max-width: 1200px;
+  --layout-content-gutter: 16px;
+
+  /* Semantic aliases used by current report UI */
+  --bg: var(--color-bg-1);
+  --bg-soft: var(--color-bg-2);
+  --card: var(--color-surface);
+  --card-strong: var(--color-surface-strong);
+  --line: rgba(255, 255, 255, 0.12);
+  --text: var(--color-text-primary);
+  --muted: var(--color-text-secondary);
+  --brand: var(--color-primary);
+  --buy-now: var(--color-success);
+  --buy-sale: var(--color-primary);
+  --buy-free: #4fd89d;
+  --buy-try: #8bc7ff;
+  --buy-wait: var(--color-warning);
+  --buy-avoid: var(--color-danger);
+  --neutral: var(--color-neutral);
+  --shadow: var(--shadow-elevation-1);
+}

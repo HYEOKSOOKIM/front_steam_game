@@ -1,0 +1,393 @@
+﻿:root {
+  --bg: #121821;
+  --bg-soft: #1b2431;
+  --card: #1f2a3a;
+  --card-strong: #243349;
+  --line: rgba(255, 255, 255, 0.12);
+  --text: #e8edf5;
+  --muted: #aeb8c7;
+  --brand: #66c0f4;
+  --buy-now: #59d08a;
+  --buy-sale: #66c0f4;
+  --buy-free: #4fd89d;
+  --buy-try: #8bc7ff;
+  --buy-wait: #f2b84b;
+  --buy-avoid: #ee6b77;
+  --neutral: #8191a8;
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(102, 192, 244, 0.15), transparent 36%),
+    radial-gradient(circle at bottom left, rgba(54, 88, 138, 0.18), transparent 30%),
+    linear-gradient(180deg, #0f151f 0%, #121821 55%, #10151d 100%);
+  color: var(--text);
+  font-family: "Segoe UI", "Noto Sans KR", sans-serif;
+}
+
+.report-shell {
+  width: min(1080px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 44px;
+  display: grid;
+  gap: 16px;
+}
+
+.report-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: rgba(24, 33, 47, 0.8);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  backdrop-filter: blur(6px);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand {
+  margin: 0;
+  color: var(--brand);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+select,
+button {
+  font: inherit;
+  border-radius: 10px;
+}
+
+select {
+  min-width: 250px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  padding: 10px 12px;
+}
+
+button {
+  border: none;
+  background: linear-gradient(135deg, #2f89c3 0%, #3278b5 100%);
+  color: #f3f8ff;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+
+.hero-card,
+.section-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.hero-card {
+  padding: 24px;
+  display: grid;
+  gap: 14px;
+}
+
+.hero-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.game-title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.buy-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.buy-badge.buy-now {
+  background: rgba(89, 208, 138, 0.22);
+  color: var(--buy-now);
+}
+
+.buy-badge.buy-sale {
+  background: rgba(102, 192, 244, 0.22);
+  color: var(--buy-sale);
+}
+
+.buy-badge.buy-free {
+  background: rgba(79, 216, 157, 0.2);
+  color: var(--buy-free);
+}
+
+.buy-badge.buy-try {
+  background: rgba(139, 199, 255, 0.2);
+  color: var(--buy-try);
+}
+
+.buy-badge.buy-wait {
+  background: rgba(242, 184, 75, 0.24);
+  color: var(--buy-wait);
+}
+
+.buy-badge.buy-avoid {
+  background: rgba(238, 107, 119, 0.22);
+  color: var(--buy-avoid);
+}
+
+.buy-badge.neutral {
+  background: rgba(129, 145, 168, 0.24);
+  color: var(--neutral);
+}
+
+.headline {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.6vw, 2.15rem);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.decision-grid,
+.fit-grid,
+.strength-risk-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.decision-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fit-grid,
+.strength-risk-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.section-card {
+  padding: 18px 18px 16px;
+}
+
+.section-card h2 {
+  margin: 0 0 10px;
+  font-size: 1.02rem;
+}
+
+.section-body {
+  margin: 0;
+  color: #dbe4f2;
+  line-height: 1.65;
+}
+
+.section-kicker {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.bullet-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #dbe4f2;
+  display: grid;
+  gap: 7px;
+}
+
+.stack-list {
+  display: grid;
+  gap: 10px;
+}
+
+.mini-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card-strong);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.mini-card h3 {
+  margin: 0 0 6px;
+  font-size: 0.98rem;
+}
+
+.mini-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.evidence-sections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.evidence-section {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(17, 26, 38, 0.45);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.evidence-section.is-empty {
+  border-style: dashed;
+}
+
+.evidence-section h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #d5e6f7;
+}
+
+.evidence-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #182334;
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.evidence-card h3 {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.4;
+}
+
+.evidence-why {
+  margin: 0;
+  line-height: 1.55;
+  font-size: 0.91rem;
+  color: #dbe4f2;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.evidence-snippets {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: #dbe4f2;
+}
+
+.evidence-snippets li {
+  white-space: pre-wrap;
+  line-height: 1.72;
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.placeholder {
+  margin: 0;
+  color: var(--muted);
+}
+
+.report-footer {
+  margin-top: 4px;
+  display: grid;
+  gap: 8px;
+}
+
+.report-footer p {
+  margin: 0;
+}
+
+#disclaimer {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+#status-line {
+  color: #c8d7ea;
+  font-size: 0.9rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media (max-width: 920px) {
+  .decision-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fit-grid,
+  .strength-risk-grid,
+  .evidence-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .report-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .picker {
+    width: 100%;
+  }
+
+  select {
+    min-width: 0;
+    flex: 1;
+  }
+
+}
+
