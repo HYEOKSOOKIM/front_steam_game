@@ -25,14 +25,14 @@ export default function FitGrid({ goodFor, notGoodFor }) {
     <section className="fit-grid">
       <article className="section-card">
         <div className="section-title-row">
-          <h2>잘 맞는 플레이어</h2>
+          <h2>이런 분께 추천해요</h2>
           <CountChip count={goodItems.length} tone="positive" />
         </div>
         <BulletList values={goodItems} />
       </article>
       <article className="section-card">
         <div className="section-title-row">
-          <h2>주의가 필요한 플레이어</h2>
+          <h2>이런 분께는 아쉬울 수 있어요</h2>
           <CountChip count={cautionItems.length} tone="warning" />
         </div>
         <BulletList values={cautionItems} />

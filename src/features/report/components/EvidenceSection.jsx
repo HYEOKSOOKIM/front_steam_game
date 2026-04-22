@@ -40,18 +40,18 @@ export default function EvidenceSection({ positiveBlocks, negativeBlocks }) {
   return (
     <section className="section-card evidence-summary-card">
       <div className="section-title-row">
-        <h2>리뷰 근거</h2>
+        <h2>리뷰에서 이렇게 말해요</h2>
         <span className="section-kicker">대표 리뷰 신호</span>
       </div>
       <div className="evidence-sections">
         <EvidenceColumn
-          title="긍정 근거"
+          title="좋았다는 리뷰"
           tone="positive"
           blocks={positiveBlocks}
           emptyMessage="표시할 긍정 근거 리뷰가 없습니다."
         />
         <EvidenceColumn
-          title="리스크 근거"
+          title="아쉽다는 리뷰"
           tone="negative"
           blocks={negativeBlocks}
           emptyMessage="표시할 리스크 근거 리뷰가 없습니다."

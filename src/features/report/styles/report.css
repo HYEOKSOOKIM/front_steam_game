@@ -75,6 +75,7 @@ select {
 .report-search-kicker,
 .report-search-title,
 .report-search-subtitle,
+.report-search-helper,
 .report-search-status {
   margin: 0;
 }
@@ -145,6 +146,12 @@ select {
   border-radius: var(--shape-corner-full);
 }
 
+.report-search-helper {
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+}
+
 .report-suggestions {
   position: absolute;
   top: calc(100% + var(--space-8));
@@ -191,6 +198,8 @@ select {
 }
 
 .report-search-status {
+  display: grid;
+  gap: var(--space-4);
   color: var(--sys-color-on-surface-variant);
   font-size: var(--type-body-medium-size);
   line-height: var(--type-body-medium-line);
@@ -262,6 +271,123 @@ select {
 
 .report-back-btn:hover:not(:disabled) {
   background: var(--sys-color-surface-container-high);
+}
+
+.game-intro-card {
+  display: grid;
+  grid-template-columns: minmax(260px, 460px) minmax(0, 1fr);
+  gap: var(--space-24);
+  align-items: stretch;
+  background: var(--comp-card-bg);
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-medium);
+  padding: var(--space-16);
+}
+
+.game-intro-media {
+  min-height: 215px;
+  overflow: hidden;
+  border-radius: var(--shape-corner-small);
+  background: var(--sys-color-surface-container);
+}
+
+.game-intro-image,
+.game-intro-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 215px;
+}
+
+.game-intro-image {
+  display: block;
+  object-fit: cover;
+}
+
+.game-intro-placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--sys-color-primary);
+  font-size: var(--type-title-medium-size);
+  line-height: var(--type-title-medium-line);
+  font-weight: var(--font-weight-bold);
+}
+
+.game-intro-body {
+  display: grid;
+  align-content: center;
+  gap: var(--space-12);
+}
+
+.game-intro-kicker,
+.game-intro-title,
+.game-intro-summary,
+.game-intro-meta {
+  margin: 0;
+}
+
+.game-intro-kicker {
+  color: var(--sys-color-primary);
+  font-size: var(--type-label-large-size);
+  line-height: var(--type-label-large-line);
+  font-weight: var(--type-label-large-weight);
+}
+
+.game-intro-title {
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-headline-large-size);
+  line-height: var(--type-headline-large-line);
+  font-weight: var(--type-headline-large-weight);
+}
+
+.game-intro-summary {
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-large-size);
+  line-height: var(--type-body-large-line);
+}
+
+.game-intro-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+.game-intro-tag {
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-full);
+  background: var(--sys-color-surface-container-highest);
+  color: var(--sys-color-on-surface);
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--type-label-medium-size);
+  line-height: var(--type-label-medium-line);
+  font-weight: var(--type-label-medium-weight);
+}
+
+.game-intro-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-8);
+}
+
+.game-intro-meta div {
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-small);
+  background: var(--sys-color-surface-container);
+  padding: var(--space-8);
+}
+
+.game-intro-meta dt {
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-label-small-size);
+  line-height: var(--type-label-small-line);
+  font-weight: var(--type-label-small-weight);
+}
+
+.game-intro-meta dd {
+  margin: var(--space-4) 0 0;
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-label-large-size);
+  line-height: var(--type-label-large-line);
+  font-weight: var(--type-label-large-weight);
 }
 
 .hero-card,
@@ -652,6 +778,14 @@ select {
 }
 
 @media (max-width: 920px) {
+  .game-intro-card {
+    grid-template-columns: 1fr;
+  }
+
+  .game-intro-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .decision-grid,
   .fit-grid,
   .strength-risk-grid,
@@ -664,14 +798,13 @@ select {
     align-items: flex-start;
   }
 
-  .topbar-actions,
   .picker {
     width: 100%;
   }
 
   .topbar-actions {
-    flex-direction: column;
-    align-items: stretch;
+    align-self: flex-end;
+    justify-content: flex-end;
   }
 
   .picker {
@@ -721,8 +854,13 @@ select {
   }
 
   .hero-card,
-  .section-card {
+  .section-card,
+  .game-intro-card {
     padding: var(--space-16);
+  }
+
+  .game-intro-meta {
+    grid-template-columns: 1fr;
   }
 
   .headline {
@@ -733,5 +871,9 @@ select {
   button,
   select {
     width: 100%;
+  }
+
+  .topbar-actions button {
+    width: auto;
   }
 }

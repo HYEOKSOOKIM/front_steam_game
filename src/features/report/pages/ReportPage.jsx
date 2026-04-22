@@ -4,6 +4,7 @@ import { fetchDemoGames, fetchReport } from "../api/reportApi";
 import DecisionGrid from "../components/DecisionGrid";
 import EvidenceSection from "../components/EvidenceSection";
 import FitGrid from "../components/FitGrid";
+import GameIntroSection from "../components/GameIntroSection";
 import StatusFooter from "../components/StatusFooter";
 import StrengthRiskSection from "../components/StrengthRiskSection";
 import Topbar from "../components/Topbar";
@@ -18,6 +19,8 @@ import {
 } from "../utils/reportMappers";
 
 const SUGGESTION_LIMIT = 8;
+const REPORT_NOT_FOUND_MESSAGE =
+  "리포트를 찾지 못했어요\n입력한 게임 이름을 다시 확인하거나, 다른 게임으로 검색해보세요.";
 
 function normalizeSearchText(value) {
   return String(value || "").trim().toLowerCase();
@@ -84,9 +87,9 @@ function SearchLanding({
   return (
     <section className="report-search-home">
       <p className="report-search-kicker">Steam Report</p>
-      <h1 className="report-search-title">게임 리포트 검색</h1>
+      <h1 className="report-search-title">어떤 게임이 궁금하세요?</h1>
       <p className="report-search-subtitle">
-        게임명을 입력하면 리뷰 기반 게임 리포트를 확인할 수 있습니다
+        한국 유저 리뷰를 바탕으로, 게임의 장단점을 한눈에 정리해드려요
       </p>
 
       <form className="report-search-form" onSubmit={onSubmit}>
@@ -102,14 +105,15 @@ function SearchLanding({
             onChange={(event) => onQueryChange(event.target.value)}
             onFocus={onFocus}
             onBlur={onBlur}
-            placeholder="게임을 입력해주세요"
+            placeholder="예: Elden Ring, GTA V"
             autoComplete="off"
             disabled={loading || games.length === 0}
           />
           <button className="report-search-submit" type="submit" disabled={loading || games.length === 0}>
-            {loading ? "불러오는 중..." : "검색"}
+            검색
           </button>
         </div>
+        <p className="report-search-helper">한국어 리뷰만을 기반으로 분석해요</p>
 
         {showSuggestions ? (
           <div className="report-suggestions" role="listbox" aria-label="검색 제안">
@@ -130,7 +134,15 @@ function SearchLanding({
         ) : null}
       </form>
 
-      {statusLine ? <p className="report-search-status">{statusLine}</p> : null}
+      {statusLine ? (
+        <p className="report-search-status">
+          {String(statusLine)
+            .split("\n")
+            .map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -150,19 +162,23 @@ export default function ReportPage() {
   const openReport = useCallback(async (appidValue) => {
     const numericAppid = Number(appidValue);
     if (!numericAppid) {
-      setStatusLine("리포트를 볼 게임을 검색해 주세요.");
+      setStatusLine("게임 이름을 먼저 입력해주세요");
       return;
     }
 
     setIsLoadingReport(true);
-    setStatusLine("구매 판단 리포트를 불러오는 중입니다...");
+    setStatusLine("유저 리뷰를 분석하고 있어요");
     try {
       const payload = await fetchReport(numericAppid);
       setReport(payload);
       setStatusLine("리포트를 불러왔습니다.");
     } catch (error) {
       setReport(null);
-      setStatusLine(error?.message || "리포트 로드에 실패했습니다.");
+      if (String(error?.message || "").includes("enabled for demo serving")) {
+        setStatusLine(REPORT_NOT_FOUND_MESSAGE);
+      } else {
+        setStatusLine(error?.message || REPORT_NOT_FOUND_MESSAGE);
+      }
     } finally {
       setIsLoadingReport(false);
     }
@@ -180,11 +196,7 @@ export default function ReportPage() {
         }
 
         setGames(loadedGames);
-        setStatusLine(
-          loadedGames.length === 0
-            ? "표시 가능한 리포트가 없습니다."
-            : ""
-        );
+        setStatusLine(loadedGames.length === 0 ? "표시 가능한 리포트가 없습니다." : "");
       } catch (error) {
         if (!isCancelled) {
           setStatusLine(error?.message || "초기화에 실패했습니다.");
@@ -214,7 +226,7 @@ export default function ReportPage() {
     event.preventDefault();
     const trimmed = searchQuery.trim();
     if (!trimmed) {
-      setStatusLine("게임명 또는 appid를 입력해 주세요.");
+      setStatusLine("게임 이름을 먼저 입력해주세요");
       return;
     }
 
@@ -226,7 +238,7 @@ export default function ReportPage() {
 
     const matchedGame = findGameByQuery(games, trimmed);
     if (!matchedGame) {
-      setStatusLine("준비된 리포트 목록에서 일치하는 게임을 찾지 못했습니다.");
+      setStatusLine(REPORT_NOT_FOUND_MESSAGE);
       return;
     }
 
@@ -270,11 +282,15 @@ export default function ReportPage() {
         />
       ) : (
         <>
+          <GameIntroSection
+            appid={report?.appid}
+            game={game}
+            sourceReviewCount={report?.source_review_count}
+          />
+
           <section className="hero-card">
             <div className="hero-meta">
-              <p className="game-title">
-                {game.name || (report?.appid ? `appid ${report.appid}` : "게임을 선택하면 리포트가 표시됩니다.")}
-              </p>
+              <p className="game-title">한눈에 보는 결론</p>
               <span className={badgeClass}>{recommendationLabel(recommendation)}</span>
             </div>
             <h1 className="headline">

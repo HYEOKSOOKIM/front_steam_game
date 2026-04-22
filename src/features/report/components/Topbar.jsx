@@ -3,7 +3,7 @@ export default function Topbar({ onBackHome, onResetSearch, showResetSearch }) {
     <header className="report-topbar">
       <div className="brand-block">
         <p className="brand">Steam Report</p>
-        <p className="brand-subtitle">리뷰 기반 게임 리포트</p>
+        <p className="brand-subtitle">한국 유저 리뷰로 보는 게임 리포트</p>
       </div>
       <div className="topbar-actions">
         {showResetSearch ? (

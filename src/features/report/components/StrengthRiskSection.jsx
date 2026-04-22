@@ -28,7 +28,7 @@ export default function StrengthRiskSection({ strengths, risks }) {
     <section className="strength-risk-grid">
       <article className="section-card">
         <div className="section-title-row">
-          <h2>구매 이유</h2>
+          <h2>이런 점이 좋아요</h2>
           <CountChip count={strengthItems.length} tone="positive" />
         </div>
         <div className="stack-list">
@@ -37,7 +37,7 @@ export default function StrengthRiskSection({ strengths, risks }) {
       </article>
       <article className="section-card">
         <div className="section-title-row">
-          <h2>구매 전 확인할 리스크</h2>
+          <h2>이건 알고 가세요</h2>
           <CountChip count={riskItems.length} tone="negative" />
         </div>
         <div className="stack-list">
