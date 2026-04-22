@@ -7,11 +7,14 @@ export default function Topbar({
 }) {
   return (
     <header className="report-topbar">
-      <p className="brand">Steam 구매 판단 리포트</p>
+      <div className="brand-block">
+        <p className="brand">Steam 구매 판단 리포트</p>
+        <p className="brand-subtitle">리뷰 신호 기반 MVP</p>
+      </div>
       <div className="topbar-actions">
         <form id="report-form" className="picker" onSubmit={onSubmit}>
-          <label htmlFor="game-select" className="sr-only">
-            게임 선택
+          <label htmlFor="game-select" className="picker-label">
+            게임
           </label>
           <select
             id="game-select"
