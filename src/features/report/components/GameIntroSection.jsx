@@ -31,16 +31,52 @@ function releaseLabel(game) {
   return labels[String(game?.release_stage || "unknown")] || "출시 정보 없음";
 }
 
+function steamReviewScoreLabel(value) {
+  const labels = {
+    "Overwhelmingly Positive": "압도적으로 긍정적",
+    "Very Positive": "매우 긍정적",
+    "Mostly Positive": "대체로 긍정적",
+    "Mixed": "복합적",
+    "Mostly Negative": "대체로 부정적",
+    "Very Negative": "매우 부정적",
+    "Overwhelmingly Negative": "압도적으로 부정적",
+    "매우 긍정적": "매우 긍정적",
+    "대체로 긍정적": "대체로 긍정적",
+    "복합적": "복합적",
+    "대체로 부정적": "대체로 부정적",
+    "매우 부정적": "매우 부정적",
+    "압도적으로 긍정적": "압도적으로 긍정적",
+    "압도적으로 부정적": "압도적으로 부정적",
+  };
+  return labels[String(value || "").trim()] || String(value || "").trim();
+}
+
+function buildSteamReviewSummary(game) {
+  const totalReviews = Number(game?.steam_total_reviews);
+  const totalPositive = Number(game?.steam_total_positive);
+
+  if (!Number.isFinite(totalReviews) || totalReviews <= 0 || !Number.isFinite(totalPositive)) {
+    return null;
+  }
+
+  const positivePercent = Math.round((totalPositive / totalReviews) * 100);
+  const scoreLabel = steamReviewScoreLabel(game?.steam_review_score_desc);
+  const prefix = scoreLabel ? `${scoreLabel} · ` : "";
+
+  return `${prefix}한국어 리뷰 ${formatNumber(totalReviews)}개 중 ${positivePercent}% 긍정적`;
+}
+
 function buildSummary(game) {
+  const steamReviewSummary = buildSteamReviewSummary(game);
+  if (steamReviewSummary) {
+    return steamReviewSummary;
+  }
+
   if (game?.short_description) {
     return game.short_description;
   }
 
-  const genres = Array.isArray(game?.genres) ? game.genres.filter(Boolean).slice(0, 2) : [];
-  if (genres.length > 0) {
-    return `${genres.join(", ")} 장르의 리뷰 기반 게임 리포트입니다.`;
-  }
-  return "Steam 리뷰를 바탕으로 게임의 구매 판단 맥락을 정리한 리포트입니다.";
+  return "한국어 리뷰에서 자주 언급된 장점과 아쉬운 점을 정리했어요.";
 }
 
 export default function GameIntroSection({
