@@ -1,13 +1,13 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchPreferenceRecommendations, fetchRecommendations } from "./api/recommendApi";
+import {
+  fetchPreferenceRecommendations,
+  fetchRecommendations,
+  fetchRecommendSuggestions,
+} from "./api/recommendApi";
 import "./styles/recommend.css";
 
-function normalizeTopK(value) {
-  const n = Number.parseInt(String(value), 10);
-  if (Number.isNaN(n)) return 5;
-  return Math.max(1, Math.min(10, n));
-}
+const FIXED_TOP_K = 5;
 
 function toPercent(value) {
   const n = Number(value);
@@ -56,11 +56,12 @@ function getItemKey(item, idx = 0) {
   return `${item?.app_id ?? "game"}-${idx}`;
 }
 
-function parseChipInput(value) {
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+function getSuggestLabel(item) {
+  return item?.name_ko || item?.name_en || item?.name || String(item?.app_id || "");
+}
+
+function includesAppId(items, appId) {
+  return items.some((item) => item.appId === appId);
 }
 
 export default function RecommendPage() {
@@ -71,7 +72,12 @@ export default function RecommendPage() {
   const [dislikedGames, setDislikedGames] = useState([]);
   const [likedInput, setLikedInput] = useState("");
   const [dislikedInput, setDislikedInput] = useState("");
-  const [topK, setTopK] = useState(5);
+  const [likedSuggestions, setLikedSuggestions] = useState([]);
+  const [dislikedSuggestions, setDislikedSuggestions] = useState([]);
+  const [likedSuggestLoading, setLikedSuggestLoading] = useState(false);
+  const [dislikedSuggestLoading, setDislikedSuggestLoading] = useState(false);
+  const [likedSuggestOpen, setLikedSuggestOpen] = useState(false);
+  const [dislikedSuggestOpen, setDislikedSuggestOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [statusLine, setStatusLine] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -81,7 +87,6 @@ export default function RecommendPage() {
 
   const rows = result?.results || [];
   const tabs = result?.category_tabs || [];
-  const resolvedMeta = result?.meta?.resolved || null;
 
   const filteredRows = useMemo(() => {
     return rows.filter(
@@ -99,6 +104,27 @@ export default function RecommendPage() {
       })
       .map((x) => x.row);
   }, [filteredRows]);
+
+  const commonGenres = useMemo(() => {
+    if (sortedRows.length === 0) return [];
+
+    const counts = new Map();
+    sortedRows.forEach((row) => {
+      const genres = row?.genres_ko || row?.genres || [];
+      genres.forEach((genre) => {
+        const key = String(genre || "").trim();
+        if (!key) return;
+        counts.set(key, (counts.get(key) || 0) + 1);
+      });
+    });
+
+    const minCount = sortedRows.length === 1 ? 1 : 2;
+    return [...counts.entries()]
+      .filter(([, count]) => count >= minCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([genre]) => genre);
+  }, [sortedRows]);
 
   const selectedItem = useMemo(() => {
     if (sortedRows.length === 0) return null;
@@ -118,6 +144,88 @@ export default function RecommendPage() {
     }
   }, [sortedRows, selectedKey]);
 
+  useEffect(() => {
+    if (mode !== "preference") return;
+    const keyword = likedInput.trim();
+    if (keyword.length < 1) {
+      setLikedSuggestions([]);
+      setLikedSuggestLoading(false);
+      return;
+    }
+
+    let canceled = false;
+    const timer = setTimeout(async () => {
+      try {
+        setLikedSuggestLoading(true);
+        const payload = await fetchRecommendSuggestions(keyword, 10);
+        if (canceled) return;
+        const items = Array.isArray(payload?.items) ? payload.items : [];
+        const filtered = items.filter((item) => {
+          const appId = String(item?.app_id || "");
+          if (!appId) return false;
+          if (includesAppId(likedGames, appId)) return false;
+          if (includesAppId(dislikedGames, appId)) return false;
+          return true;
+        });
+        setLikedSuggestions(filtered.slice(0, 10));
+      } catch {
+        if (!canceled) {
+          setLikedSuggestions([]);
+        }
+      } finally {
+        if (!canceled) {
+          setLikedSuggestLoading(false);
+        }
+      }
+    }, 280);
+
+    return () => {
+      canceled = true;
+      clearTimeout(timer);
+    };
+  }, [likedInput, mode, likedGames, dislikedGames]);
+
+  useEffect(() => {
+    if (mode !== "preference") return;
+    const keyword = dislikedInput.trim();
+    if (keyword.length < 1) {
+      setDislikedSuggestions([]);
+      setDislikedSuggestLoading(false);
+      return;
+    }
+
+    let canceled = false;
+    const timer = setTimeout(async () => {
+      try {
+        setDislikedSuggestLoading(true);
+        const payload = await fetchRecommendSuggestions(keyword, 10);
+        if (canceled) return;
+        const items = Array.isArray(payload?.items) ? payload.items : [];
+        const filtered = items.filter((item) => {
+          const appId = String(item?.app_id || "");
+          if (!appId) return false;
+          if (includesAppId(dislikedGames, appId)) return false;
+          if (includesAppId(likedGames, appId)) return false;
+          return true;
+        });
+        setDislikedSuggestions(filtered.slice(0, 10));
+      } catch {
+        if (!canceled) {
+          setDislikedSuggestions([]);
+        }
+      } finally {
+        if (!canceled) {
+          setDislikedSuggestLoading(false);
+        }
+      }
+    }, 280);
+
+    return () => {
+      canceled = true;
+      clearTimeout(timer);
+    };
+  }, [dislikedInput, mode, likedGames, dislikedGames]);
+
   function resetResultStates() {
     setErrorMsg("");
     setResult(null);
@@ -126,38 +234,50 @@ export default function RecommendPage() {
     setSelectedKey("");
   }
 
-  function addChip(value, target) {
-    if (!value.trim()) return;
-    const parsed = parseChipInput(value);
-    if (parsed.length === 0) return;
+  function addGameChip(target, item) {
+    const appId = String(item?.app_id ?? item?.appId ?? "");
+    const label = item?.label || getSuggestLabel(item);
+    if (!appId || !label) return;
 
-    if (target === "liked") {
-      setLikedGames((prev) => Array.from(new Set([...prev, ...parsed])));
-      setLikedInput("");
-    } else {
-      setDislikedGames((prev) => Array.from(new Set([...prev, ...parsed])));
-      setDislikedInput("");
+    if (includesAppId(likedGames, appId) || includesAppId(dislikedGames, appId)) {
+      setErrorMsg("이미 추가된 게임입니다. 좋아요/비선호 중 한쪽에만 등록할 수 있어요.");
+      return;
     }
+
+    setErrorMsg("");
+    if (target === "liked") {
+      setLikedGames((prev) => [...prev, { appId, label }]);
+      setLikedInput("");
+      setLikedSuggestions([]);
+      setLikedSuggestOpen(false);
+    } else {
+      setDislikedGames((prev) => [...prev, { appId, label }]);
+      setDislikedInput("");
+      setDislikedSuggestions([]);
+      setDislikedSuggestOpen(false);
+    }
+  }
+
+  function removeChip(target, appId) {
+    if (target === "liked") {
+      setLikedGames((prev) => prev.filter((item) => item.appId !== appId));
+      return;
+    }
+    setDislikedGames((prev) => prev.filter((item) => item.appId !== appId));
   }
 
   function onChipInputKeyDown(e, target) {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addChip(e.currentTarget.value, target);
-    }
-  }
+    if (e.key !== "Enter") return;
 
-  function removeChip(target, value) {
-    if (target === "liked") {
-      setLikedGames((prev) => prev.filter((item) => item !== value));
-    } else {
-      setDislikedGames((prev) => prev.filter((item) => item !== value));
+    const source = target === "liked" ? likedSuggestions : dislikedSuggestions;
+    if (source.length > 0) {
+      e.preventDefault();
+      addGameChip(target, source[0]);
     }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const normalizedTopK = normalizeTopK(topK);
 
     setLoading(true);
     setErrorMsg("");
@@ -175,28 +295,24 @@ export default function RecommendPage() {
         }
 
         setStatusLine("자연어 추천 결과를 불러오는 중입니다...");
-        const data = await fetchRecommendations(trimmed, normalizedTopK);
+        const data = await fetchRecommendations(trimmed, FIXED_TOP_K);
         setResult(data);
         setStatusLine("자연어 추천 완료");
         return;
       }
 
-      const likedMerged = Array.from(new Set([...likedGames, ...parseChipInput(likedInput)]));
-      const dislikedMerged = Array.from(new Set([...dislikedGames, ...parseChipInput(dislikedInput)]));
-
-      setLikedGames(likedMerged);
-      setDislikedGames(dislikedMerged);
-      setLikedInput("");
-      setDislikedInput("");
-
-      if (likedMerged.length === 0) {
-        setErrorMsg("좋아하는 게임을 최소 1개 이상 입력해 주세요.");
+      if (likedGames.length === 0) {
+        setErrorMsg("좋아하는 게임을 최소 1개 이상 선택해 주세요.");
         setStatusLine("");
         return;
       }
 
       setStatusLine("취향 기반 추천 결과를 불러오는 중입니다...");
-      const data = await fetchPreferenceRecommendations(likedMerged, dislikedMerged, normalizedTopK);
+      const data = await fetchPreferenceRecommendations(
+        likedGames.map((item) => item.appId),
+        dislikedGames.map((item) => item.appId),
+        FIXED_TOP_K
+      );
       setResult(data);
       setStatusLine("취향 기반 추천 완료");
     } catch (err) {
@@ -209,6 +325,8 @@ export default function RecommendPage() {
 
   function switchMode(nextMode) {
     setMode(nextMode);
+    setLikedSuggestOpen(false);
+    setDislikedSuggestOpen(false);
     resetResultStates();
   }
 
@@ -246,7 +364,7 @@ export default function RecommendPage() {
         </div>
       </section>
 
-      <form className="recommend-form" onSubmit={handleSubmit}>
+      <form className={`recommend-form ${mode === "query" ? "is-query" : "is-preference"}`} onSubmit={handleSubmit}>
         {mode === "query" ? (
           <>
             <input
@@ -257,16 +375,6 @@ export default function RecommendPage() {
               placeholder="예: 힐링되는 싱글 RPG 추천해줘. 공포는 제외"
               disabled={loading}
             />
-            <input
-              className="recommend-input recommend-topk"
-              type="number"
-              min={1}
-              max={10}
-              value={topK}
-              onChange={(e) => setTopK(e.target.value)}
-              disabled={loading}
-              aria-label="top-k"
-            />
             <button className="recommend-btn" type="submit" disabled={loading || !query.trim()}>
               {loading ? "검색 중..." : "추천 받기"}
             </button>
@@ -274,13 +382,21 @@ export default function RecommendPage() {
         ) : (
           <>
             <div className="recommend-pref-grid">
-              <div className="recommend-chip-field">
+              <div
+                className="recommend-chip-field"
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget)) {
+                    setLikedSuggestOpen(false);
+                  }
+                }}
+              >
+                <p className="recommend-chip-help">한국어 검색이 안 되면 영어 제목으로 입력해 주세요.</p>
                 <label className="recommend-chip-label">좋아하는 게임</label>
                 <div className="recommend-chip-box">
-                  {likedGames.map((name) => (
-                    <span key={`liked-${name}`} className="recommend-chip">
-                      {name}
-                      <button type="button" onClick={() => removeChip("liked", name)} aria-label={`${name} 제거`}>×</button>
+                  {likedGames.map((item) => (
+                    <span key={`liked-${item.appId}`} className="recommend-chip">
+                      {item.label}
+                      <button type="button" onClick={() => removeChip("liked", item.appId)} aria-label={`${item.label} 제거`}>×</button>
                     </span>
                   ))}
                   <input
@@ -289,20 +405,51 @@ export default function RecommendPage() {
                     value={likedInput}
                     onChange={(e) => setLikedInput(e.target.value)}
                     onKeyDown={(e) => onChipInputKeyDown(e, "liked")}
-                    onBlur={(e) => addChip(e.target.value, "liked")}
-                    placeholder="게임명 입력 후 Enter 또는 쉼표"
+                    onFocus={() => setLikedSuggestOpen(true)}
+                    placeholder="게임명 입력 후 선택"
                     disabled={loading}
                   />
                 </div>
+                {likedSuggestOpen && (
+                  <div className="recommend-suggest-dropdown">
+                    {likedSuggestLoading && <p className="recommend-suggest-status">불러오는 중...</p>}
+                    {!likedSuggestLoading && likedInput.trim().length >= 1 && likedSuggestions.length === 0 && (
+                      <p className="recommend-suggest-status">일치하는 게임 없음</p>
+                    )}
+                    {!likedSuggestLoading && likedSuggestions.length > 0 && (
+                      <ul className="recommend-suggest-list">
+                        {likedSuggestions.map((item) => (
+                          <li key={`liked-suggest-${item.app_id}`}>
+                            <button
+                              type="button"
+                              className="recommend-suggest-item"
+                              onClick={() => addGameChip("liked", item)}
+                            >
+                              <span>{getSuggestLabel(item)}</span>
+                              <small>#{item.app_id}</small>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <div className="recommend-chip-field">
+              <div
+                className="recommend-chip-field"
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget)) {
+                    setDislikedSuggestOpen(false);
+                  }
+                }}
+              >
                 <label className="recommend-chip-label">비선호 게임(선택)</label>
                 <div className="recommend-chip-box">
-                  {dislikedGames.map((name) => (
-                    <span key={`disliked-${name}`} className="recommend-chip is-disliked">
-                      {name}
-                      <button type="button" onClick={() => removeChip("disliked", name)} aria-label={`${name} 제거`}>×</button>
+                  {dislikedGames.map((item) => (
+                    <span key={`disliked-${item.appId}`} className="recommend-chip is-disliked">
+                      {item.label}
+                      <button type="button" onClick={() => removeChip("disliked", item.appId)} aria-label={`${item.label} 제거`}>×</button>
                     </span>
                   ))}
                   <input
@@ -311,24 +458,37 @@ export default function RecommendPage() {
                     value={dislikedInput}
                     onChange={(e) => setDislikedInput(e.target.value)}
                     onKeyDown={(e) => onChipInputKeyDown(e, "disliked")}
-                    onBlur={(e) => addChip(e.target.value, "disliked")}
-                    placeholder="선택 입력 (Enter 또는 쉼표)"
+                    onFocus={() => setDislikedSuggestOpen(true)}
+                    placeholder="게임명 입력 후 선택"
                     disabled={loading}
                   />
                 </div>
+                {dislikedSuggestOpen && (
+                  <div className="recommend-suggest-dropdown">
+                    {dislikedSuggestLoading && <p className="recommend-suggest-status">불러오는 중...</p>}
+                    {!dislikedSuggestLoading && dislikedInput.trim().length >= 1 && dislikedSuggestions.length === 0 && (
+                      <p className="recommend-suggest-status">일치하는 게임 없음</p>
+                    )}
+                    {!dislikedSuggestLoading && dislikedSuggestions.length > 0 && (
+                      <ul className="recommend-suggest-list">
+                        {dislikedSuggestions.map((item) => (
+                          <li key={`disliked-suggest-${item.app_id}`}>
+                            <button
+                              type="button"
+                              className="recommend-suggest-item"
+                              onClick={() => addGameChip("disliked", item)}
+                            >
+                              <span>{getSuggestLabel(item)}</span>
+                              <small>#{item.app_id}</small>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
-
-            <input
-              className="recommend-input recommend-topk"
-              type="number"
-              min={1}
-              max={10}
-              value={topK}
-              onChange={(e) => setTopK(e.target.value)}
-              disabled={loading}
-              aria-label="top-k"
-            />
             <button className="recommend-btn" type="submit" disabled={loading}>
               {loading ? "검색 중..." : "취향으로 추천 받기"}
             </button>
@@ -343,38 +503,14 @@ export default function RecommendPage() {
         </section>
       )}
 
-      {resolvedMeta && (Array.isArray(resolvedMeta.liked) || Array.isArray(resolvedMeta.disliked)) && (
+      {result && commonGenres.length > 0 && (
         <section className="recommend-card">
-          <h2 className="recommend-card-name">입력 취향 매칭 결과</h2>
-          <div className="recommend-match-grid">
-            <div>
-              <p className="recommend-meta-line">매칭된 좋아요</p>
-              <div className="recommend-card-tags">
-                {(resolvedMeta.liked || []).length > 0
-                  ? (resolvedMeta.liked || []).map((name) => <span key={`resolved-like-${name}`} className="recommend-tag">{name}</span>)
-                  : <span className="recommend-meta-line">없음</span>}
-              </div>
-            </div>
-            <div>
-              <p className="recommend-meta-line">매칭된 비선호</p>
-              <div className="recommend-card-tags">
-                {(resolvedMeta.disliked || []).length > 0
-                  ? (resolvedMeta.disliked || []).map((name) => <span key={`resolved-dislike-${name}`} className="recommend-tag">{name}</span>)
-                  : <span className="recommend-meta-line">없음</span>}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {result?.llm_errors?.length > 0 && (
-        <section className="recommend-card">
-          <h2 className="recommend-card-name">LLM 로그</h2>
-          <ol className="recommend-evidence-list">
-            {result.llm_errors.map((err, idx) => (
-              <li key={`llm-${idx}`}>{err}</li>
+          <h2 className="recommend-card-name">공통 장르</h2>
+          <div className="recommend-card-tags">
+            {commonGenres.map((genre) => (
+              <span key={`common-genre-${genre}`} className="recommend-tag">{genre}</span>
             ))}
-          </ol>
+          </div>
         </section>
       )}
 

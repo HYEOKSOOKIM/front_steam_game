@@ -32,3 +32,16 @@ export async function fetchPreferenceRecommendations(likedGames, dislikedGames, 
     "취향 기반 추천 결과를 불러오지 못했습니다."
   );
 }
+
+export async function fetchRecommendSuggestions(query, limit = 10) {
+  const params = new URLSearchParams({
+    q: query,
+    limit: String(limit),
+  });
+  const response = await fetch(`${BASE}/api/recommend/suggest?${params.toString()}`);
+  if (!response.ok) {
+    const errorPayload = await response.json().catch(() => ({}));
+    throw new Error(errorPayload.detail || "게임 자동완성 결과를 불러오지 못했습니다.");
+  }
+  return response.json();
+}

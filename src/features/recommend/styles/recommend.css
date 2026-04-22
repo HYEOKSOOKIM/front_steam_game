@@ -36,6 +36,11 @@
   box-shadow: var(--shadow);
 }
 
+.recommend-form.is-query,
+.recommend-form.is-preference {
+  grid-template-columns: 1fr auto;
+}
+
 .recommend-input {
   width: 100%;
   border: 1px solid var(--line);
@@ -380,10 +385,17 @@
 .recommend-chip-field {
   display: grid;
   gap: 6px;
+  position: relative;
 }
 
 .recommend-chip-label {
   font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.recommend-chip-help {
+  margin: 0;
+  font-size: 0.78rem;
   color: var(--muted);
 }
 
@@ -434,6 +446,57 @@
   background: transparent;
   color: var(--text);
   font: inherit;
+}
+
+.recommend-suggest-dropdown {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(16, 24, 38, 0.98);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.recommend-suggest-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.recommend-suggest-item {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 9px 10px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.recommend-suggest-item:hover {
+  background: rgba(102, 192, 244, 0.14);
+}
+
+.recommend-suggest-item small {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.recommend-suggest-status {
+  margin: 0;
+  padding: 10px;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .recommend-match-grid {
