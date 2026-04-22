@@ -12,7 +12,7 @@ export default function DecisionGrid({
         <p className="section-body">{buyTimingSummary || "-"}</p>
       </article>
       <article className="section-card">
-        <h2>현재 상태</h2>
+        <h2>최근 리뷰 흐름</h2>
         <p className="section-body">{recentStateSummary || "-"}</p>
         <p className="section-kicker">{recentStateStatus || "-"}</p>
       </article>

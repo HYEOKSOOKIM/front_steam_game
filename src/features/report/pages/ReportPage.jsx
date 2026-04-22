@@ -20,12 +20,12 @@ export default function ReportPage() {
   const [selectedAppid, setSelectedAppid] = useState("");
   const [report, setReport] = useState(null);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
-  const [statusLine, setStatusLine] = useState("게임 목록 준비 중...");
+  const [statusLine, setStatusLine] = useState("게임 목록을 준비하는 중입니다...");
 
   const openReport = useCallback(async (appidValue) => {
     const numericAppid = Number(appidValue);
     if (!numericAppid) {
-      setStatusLine("리포트 대상 게임을 선택해 주세요.");
+      setStatusLine("리포트를 볼 게임을 선택해 주세요.");
       return;
     }
 
@@ -34,7 +34,7 @@ export default function ReportPage() {
     try {
       const payload = await fetchReport(numericAppid);
       setReport(payload);
-      setStatusLine("불러오기 완료");
+      setStatusLine("리포트를 불러왔습니다.");
     } catch (error) {
       setStatusLine(error?.message || "리포트 로드에 실패했습니다.");
     } finally {
@@ -46,7 +46,7 @@ export default function ReportPage() {
     let isCancelled = false;
 
     async function bootstrap() {
-      setStatusLine("게임 목록 준비 중...");
+      setStatusLine("게임 목록을 준비하는 중입니다...");
       try {
         const loadedGames = await fetchDemoGames();
         if (isCancelled) {
@@ -56,7 +56,7 @@ export default function ReportPage() {
         setGames(loadedGames);
         if (loadedGames.length === 0) {
           setSelectedAppid("");
-          setStatusLine("표시 가능한 게임이 없습니다.");
+          setStatusLine("표시 가능한 리포트가 없습니다.");
           return;
         }
 
@@ -106,12 +106,12 @@ export default function ReportPage() {
       <section className="hero-card">
         <div className="hero-meta">
           <p className="game-title">
-            {game.name || (report?.appid ? `appid ${report.appid}` : "게임을 선택하면 리포트가 표시됩니다")}
+            {game.name || (report?.appid ? `appid ${report.appid}` : "게임을 선택하면 리포트가 표시됩니다.")}
           </p>
           <span className={badgeClass}>{recommendationLabel(recommendation)}</span>
         </div>
         <h1 className="headline">
-          {display.headline || "많은 리뷰의 합의 신호를 바탕으로 구매 결정을 빠르게 정리합니다."}
+          {display.headline || "많은 리뷰의 반복 신호를 바탕으로 구매 결정을 빠르게 정리합니다."}
         </h1>
       </section>
 

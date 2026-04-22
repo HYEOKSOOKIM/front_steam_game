@@ -29,7 +29,7 @@ export default function Topbar({
             ))}
           </select>
           <button id="load-button" type="submit" disabled={isLoadingReport}>
-            리포트 보기
+            {isLoadingReport ? "불러오는 중..." : "리포트 보기"}
           </button>
         </form>
       </div>

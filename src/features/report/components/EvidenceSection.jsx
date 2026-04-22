@@ -33,17 +33,17 @@ function EvidenceColumn({ title, blocks, emptyMessage }) {
 export default function EvidenceSection({ positiveBlocks, negativeBlocks }) {
   return (
     <section className="section-card">
-      <h2>구매 근거</h2>
+      <h2>리뷰 근거</h2>
       <div className="evidence-sections">
         <EvidenceColumn
-          title="강점 근거"
+          title="긍정 근거"
           blocks={positiveBlocks}
           emptyMessage="표시할 긍정 근거 리뷰가 없습니다."
         />
         <EvidenceColumn
           title="리스크 근거"
           blocks={negativeBlocks}
-          emptyMessage="표시할 부정 근거 리뷰가 없습니다."
+          emptyMessage="표시할 리스크 근거 리뷰가 없습니다."
         />
       </div>
     </section>

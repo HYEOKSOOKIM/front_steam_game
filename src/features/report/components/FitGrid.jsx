@@ -3,7 +3,7 @@ function BulletList({ values }) {
   if (items.length === 0) {
     return (
       <ul className="bullet-list">
-        <li>데이터가 충분하지 않습니다.</li>
+        <li>판단에 필요한 데이터가 충분하지 않습니다.</li>
       </ul>
     );
   }
