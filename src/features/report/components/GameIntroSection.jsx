@@ -66,7 +66,14 @@ function buildSteamReviewSummary(game) {
   return `${prefix}한국어 리뷰 ${formatNumber(totalReviews)}개 중 ${positivePercent}% 긍정적`;
 }
 
-function buildSummary(game) {
+function buildSummary(game, sourceReviewCount, minReviewCount) {
+  const sourceCount = Number(sourceReviewCount || 0);
+  const minimumCount = Number(minReviewCount || 100);
+
+  if (sourceCount < minimumCount) {
+    return "아직 한국어 리뷰 데이터가 충분하지 않아요.";
+  }
+
   const steamReviewSummary = buildSteamReviewSummary(game);
   if (steamReviewSummary) {
     return steamReviewSummary;
@@ -83,6 +90,7 @@ export default function GameIntroSection({
   appid,
   game,
   sourceReviewCount,
+  minReviewCount,
 }) {
   const [imageFailed, setImageFailed] = useState(false);
   const genres = Array.isArray(game?.genres) ? game.genres.filter(Boolean).slice(0, 4) : [];
@@ -110,7 +118,7 @@ export default function GameIntroSection({
       <div className="game-intro-body">
         <p className="game-intro-kicker">선택한 게임</p>
         <h2 className="game-intro-title">{game?.name || `appid ${appid}`}</h2>
-        <p className="game-intro-summary">{buildSummary(game)}</p>
+        <p className="game-intro-summary">{buildSummary(game, sourceReviewCount, minReviewCount)}</p>
 
         {genres.length > 0 ? (
           <div className="game-intro-tags" aria-label="장르">

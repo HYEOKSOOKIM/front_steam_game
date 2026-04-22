@@ -519,11 +519,20 @@ select {
   padding: var(--space-16);
 }
 
+.insufficient-review-card {
+  display: grid;
+  gap: var(--space-8);
+}
+
 .section-card h2 {
   margin: 0 0 var(--space-8);
   font-size: var(--type-title-medium-size);
   line-height: var(--type-title-medium-line);
   font-weight: var(--type-title-medium-weight);
+}
+
+.section-card.insufficient-review-card h2 {
+  margin-bottom: 0;
 }
 
 .section-title-row {

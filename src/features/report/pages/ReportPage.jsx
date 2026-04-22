@@ -5,6 +5,7 @@ import DecisionGrid from "../components/DecisionGrid";
 import EvidenceSection from "../components/EvidenceSection";
 import FitGrid from "../components/FitGrid";
 import GameIntroSection from "../components/GameIntroSection";
+import InsufficientReviewState from "../components/InsufficientReviewState";
 import StatusFooter from "../components/StatusFooter";
 import StrengthRiskSection from "../components/StrengthRiskSection";
 import Topbar from "../components/Topbar";
@@ -19,6 +20,7 @@ import {
 } from "../utils/reportMappers";
 
 const SUGGESTION_LIMIT = 8;
+const DEFAULT_MIN_REPORT_REVIEW_COUNT = 100;
 const REPORT_NOT_FOUND_MESSAGE =
   "리포트를 찾지 못했어요\n입력한 게임 이름을 다시 확인하거나, 다른 게임으로 검색해보세요.";
 
@@ -221,6 +223,12 @@ export default function ReportPage() {
   const notGoodFor = toList(display.not_good_for);
   const topStrengths = toList(display.top_strengths);
   const topRisks = toList(display.top_risks);
+  const minReportReviewCount =
+    Number(report?.min_report_review_count) || DEFAULT_MIN_REPORT_REVIEW_COUNT;
+  const sourceReviewCount = Number(report?.source_review_count || 0);
+  const isInsufficientReviewReport =
+    report?.report_state === "insufficient_reviews" ||
+    sourceReviewCount < minReportReviewCount;
 
   async function handleSearchSubmit(event) {
     event.preventDefault();
@@ -286,34 +294,41 @@ export default function ReportPage() {
             appid={report?.appid}
             game={game}
             sourceReviewCount={report?.source_review_count}
+            minReviewCount={minReportReviewCount}
           />
 
-          <section className="hero-card">
-            <div className="hero-meta">
-              <p className="game-title">한눈에 보는 결론</p>
-              <span className={badgeClass}>{recommendationLabel(recommendation)}</span>
-            </div>
-            <h1 className="headline">
-              {display.headline || "많은 리뷰의 반복 신호를 바탕으로 구매 결정을 빠르게 정리합니다."}
-            </h1>
-          </section>
+          {isInsufficientReviewReport ? (
+            <InsufficientReviewState minReviewCount={minReportReviewCount} />
+          ) : (
+            <>
+              <section className="hero-card">
+                <div className="hero-meta">
+                  <p className="game-title">한눈에 보는 결론</p>
+                  <span className={badgeClass}>{recommendationLabel(recommendation)}</span>
+                </div>
+                <h1 className="headline">
+                  {display.headline || "많은 리뷰의 반복 신호를 바탕으로 구매 결정을 빠르게 정리합니다."}
+                </h1>
+              </section>
 
-          <DecisionGrid
-            buyTimingSummary={display.buy_timing_summary}
-            recentStateSummary={recentState.summary}
-            recentStateLabel={recentStateLabel(recentState.status)}
-            recentStateTone={recentStateTone(recentState.status)}
-            generatedAt={formatGeneratedAt(report?.generated_at)}
-          />
+              <DecisionGrid
+                buyTimingSummary={display.buy_timing_summary}
+                recentStateSummary={recentState.summary}
+                recentStateLabel={recentStateLabel(recentState.status)}
+                recentStateTone={recentStateTone(recentState.status)}
+                generatedAt={formatGeneratedAt(report?.generated_at)}
+              />
 
-          <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />
+              <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />
 
-          <StrengthRiskSection strengths={topStrengths} risks={topRisks} />
+              <StrengthRiskSection strengths={topStrengths} risks={topRisks} />
 
-          <EvidenceSection
-            positiveBlocks={evidenceSections.loved}
-            negativeBlocks={evidenceSections.complained}
-          />
+              <EvidenceSection
+                positiveBlocks={evidenceSections.loved}
+                negativeBlocks={evidenceSections.complained}
+              />
+            </>
+          )}
 
           <StatusFooter disclaimer={report?.disclaimer} statusLine={statusLine} />
         </>
