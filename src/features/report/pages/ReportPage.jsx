@@ -12,6 +12,7 @@ import {
   normalizeEvidenceSections,
   recommendationLabel,
   recentStateLabel,
+  recentStateTone,
   toList,
 } from "../utils/reportMappers";
 
@@ -118,8 +119,8 @@ export default function ReportPage() {
       <DecisionGrid
         buyTimingSummary={display.buy_timing_summary}
         recentStateSummary={recentState.summary}
-        recentStateStatus={`상태: ${recentStateLabel(recentState.status)}`}
-        buyRecommendation={recommendationLabel(recommendation)}
+        recentStateLabel={recentStateLabel(recentState.status)}
+        recentStateTone={recentStateTone(recentState.status)}
         generatedAt={formatGeneratedAt(report?.generated_at)}
       />
 

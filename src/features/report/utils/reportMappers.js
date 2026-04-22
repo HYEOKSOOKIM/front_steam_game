@@ -26,6 +26,17 @@ export function recentStateLabel(value) {
   return labels[value] || "-";
 }
 
+export function recentStateTone(value) {
+  const tones = {
+    improving: "success",
+    stable: "success",
+    declining: "error",
+    mixed: "warning",
+    insufficient_data: "neutral",
+  };
+  return tones[value] || "neutral";
+}
+
 export function buyBadgeClass(value) {
   const map = {
     buy_now: "buy-now",
