@@ -186,26 +186,43 @@ select:hover:not(:disabled) {
   overflow: hidden;
   border: 1px solid var(--comp-card-border);
   border-radius: var(--shape-corner-md);
-  background: var(--comp-card-bg);
+  background: var(--comp-card-bg-strong);
+  box-shadow: var(--shadow-elevation-1);
   text-align: left;
 }
 
 .report-suggestion {
   width: 100%;
-  min-height: 44px;
+  min-height: 52px;
   border-radius: 0;
   background: transparent;
   color: var(--sys-color-on-surface);
-  padding: var(--space-8) var(--space-16);
+  padding: var(--space-12) var(--space-16);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-12);
   text-align: left;
   font-weight: var(--font-weight-regular);
+  border-top: 1px solid var(--comp-card-border);
 }
 
-.report-suggestion:hover {
+.report-suggestion:first-child {
+  border-top: 0;
+}
+
+.report-suggestion:hover,
+.report-suggestion.is-active {
+  background: var(--comp-card-hover-overlay);
+}
+
+.report-suggestion.is-active {
+  border-left: 2px solid var(--sys-color-primary);
+  padding-left: calc(var(--space-16) - 2px);
+}
+
+.report-suggestion:focus-visible {
+  outline: none;
   background: var(--comp-card-hover-overlay);
 }
 
@@ -214,9 +231,16 @@ select:hover:not(:disabled) {
   overflow-wrap: anywhere;
 }
 
+.report-suggestion-name {
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-body-md-size);
+  line-height: var(--type-body-md-line);
+  font-weight: var(--font-weight-medium);
+}
+
 .report-suggestion strong {
   flex: 0 0 auto;
-  color: var(--sys-color-on-surface-variant);
+  color: var(--sys-color-on-surface-muted);
   font-size: var(--type-label-md-size);
   line-height: var(--type-label-md-line);
   font-weight: var(--type-label-md-weight);
@@ -800,16 +824,16 @@ select:hover:not(:disabled) {
   align-items: baseline;
   gap: var(--space-8);
   margin: 0;
-  color: var(--sys-color-on-surface);
-  font-size: var(--type-body-lg-size);
-  line-height: var(--type-body-lg-line);
-  font-weight: var(--font-weight-bold);
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-md-size);
+  line-height: var(--type-body-md-line);
+  font-weight: var(--font-weight-medium);
 }
 
 .review-trend-summary strong {
   color: var(--sys-color-on-surface);
-  font-size: var(--type-heading-sm-size);
-  line-height: var(--type-heading-sm-line);
+  font-size: var(--type-heading-md-size);
+  line-height: var(--type-heading-md-line);
 }
 
 .review-trend-summary span {
@@ -830,6 +854,7 @@ select:hover:not(:disabled) {
   color: var(--sys-color-on-surface-variant);
   font-size: var(--type-label-md-size);
   line-height: var(--type-label-md-line);
+  font-weight: var(--font-weight-medium);
 }
 
 .review-trend-toggle {
@@ -870,54 +895,52 @@ select:hover:not(:disabled) {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--space-8);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-12);
   color: var(--sys-color-on-surface-variant);
   font-size: var(--type-label-md-size);
   line-height: var(--type-label-md-line);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
 }
 
-.review-trend-chart svg {
+.review-trend-chart-frame {
   width: 100%;
-  min-height: 16rem;
-  display: block;
+  min-height: 300px;
 }
 
-.review-trend-grid {
-  stroke: var(--comp-card-border);
-  stroke-width: 1;
+.review-trend-chart-frame .recharts-surface {
+  overflow: visible;
 }
 
-.review-trend-line {
-  fill: none;
-  stroke: var(--sys-color-primary);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 3;
+.review-trend-tooltip {
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-sm);
+  background: var(--comp-card-bg-strong);
+  padding: var(--space-12);
+  display: grid;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-elevation-1);
+  min-width: 180px;
 }
 
-.review-trend-dot {
-  fill: var(--sys-color-primary);
-  stroke: var(--comp-card-bg);
-  stroke-width: 2;
-}
-
-.review-trend-axis {
-  fill: var(--sys-color-on-surface-variant);
+.review-trend-tooltip-label {
+  margin: 0;
+  color: var(--sys-color-on-surface-muted);
   font-size: var(--type-label-sm-size);
+  line-height: var(--type-label-sm-line);
+  font-weight: var(--type-label-sm-weight);
+}
+
+.review-trend-tooltip strong {
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-label-lg-size);
+  line-height: var(--type-label-lg-line);
   font-weight: var(--font-weight-bold);
 }
 
-.review-trend-point-label {
-  fill: var(--sys-color-on-surface);
-  font-size: var(--type-label-sm-size);
-  font-weight: var(--font-weight-bold);
-}
-
-.review-trend-month-label {
-  fill: var(--sys-color-on-surface-variant);
-  font-size: var(--type-label-sm-size);
-  font-weight: var(--font-weight-bold);
+.review-trend-tooltip span {
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
 }
 
 .review-trend-labels {

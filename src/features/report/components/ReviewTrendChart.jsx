@@ -1,4 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const CHART_LIMIT = 6;
 
@@ -13,33 +22,8 @@ function normalizePoints(points) {
     .slice(-CHART_LIMIT);
 }
 
-function pointPosition(point, index, points, width, height, padding) {
-  const xSpan = Math.max(points.length - 1, 1);
-  return {
-    x: padding.left + ((width - padding.left - padding.right) * index) / xSpan,
-    y: padding.top + (height - padding.top - padding.bottom) * (1 - point.positiveRatio),
-  };
-}
-
-function toChartPath(points, width, height, padding) {
-  return points
-    .map((point, index) => {
-      const { x, y } = pointPosition(point, index, points, width, height, padding);
-      return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
-    })
-    .join(" ");
-}
-
 function formatPercent(value) {
-  return `${Math.round(value * 100)}%`;
-}
-
-function formatDelta(value) {
-  const percentagePoint = Math.round(Math.abs(value) * 100);
-  if (percentagePoint === 0) {
-    return "전월과 비슷해요";
-  }
-  return `전월 대비 ${percentagePoint}%p ${value > 0 ? "상승" : "하락"}`;
+  return `${Math.round(Number(value || 0) * 100)}%`;
 }
 
 function formatCount(value) {
@@ -65,38 +49,106 @@ function averagePositiveRatio(points) {
   return sum / points.length;
 }
 
+function calculateDomain(points) {
+  if (points.length === 0) {
+    return [0, 100];
+  }
+
+  const values = points.map((point) => Math.round(point.positiveRatio * 100));
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  const padding = 5;
+
+  let lower = Math.max(0, Math.floor((minValue - padding) / 5) * 5);
+  let upper = Math.min(100, Math.ceil((maxValue + padding) / 5) * 5);
+
+  if (upper - lower < 20) {
+    const mid = (upper + lower) / 2;
+    lower = Math.max(0, Math.floor((mid - 10) / 5) * 5);
+    upper = Math.min(100, Math.ceil((mid + 10) / 5) * 5);
+  }
+
+  return [lower, upper];
+}
+
+function buildTicks([lower, upper]) {
+  const tickCount = 5;
+  if (upper <= lower) {
+    return [lower];
+  }
+
+  const step = (upper - lower) / (tickCount - 1);
+  return Array.from({ length: tickCount }, (_, index) => Math.round(lower + step * index));
+}
+
+function formatDeltaLabel(value) {
+  const percentagePoint = Math.round(Math.abs(value || 0) * 100);
+  if (percentagePoint === 0) {
+    return "전월과 비슷해요";
+  }
+  return `전월 대비 ${percentagePoint}%p ${value > 0 ? "올랐어요" : "내렸어요"}`;
+}
+
+function TrendTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) {
+    return null;
+  }
+
+  const point = payload[0]?.payload;
+  if (!point) {
+    return null;
+  }
+
+  return (
+    <div className="review-trend-tooltip">
+      <p className="review-trend-tooltip-label">{formatMonthLabel(label)}</p>
+      <strong>긍정 비율 {formatPercent(point.positiveRatio)}</strong>
+      <span>리뷰 수 {formatCount(point.reviewCount)}개</span>
+      <span>{formatDeltaLabel(point.deltaFromPrevious)}</span>
+    </div>
+  );
+}
+
 export default function ReviewTrendChart({ trend }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const points = normalizePoints(trend?.points);
-  const width = 560;
-  const height = 230;
-  const padding = { top: 44, right: 28, bottom: 52, left: 46 };
-  const path = toChartPath(points, width, height, padding);
+  const chartData = useMemo(
+    () =>
+      points.map((point, index) => {
+        const previous = points[index - 1];
+        return {
+          ...point,
+          compactLabel: formatMonthLabel(point.label, { compact: true }),
+          percentValue: Math.round(point.positiveRatio * 100),
+          deltaFromPrevious: previous ? point.positiveRatio - previous.positiveRatio : 0,
+        };
+      }),
+    [points],
+  );
   const latest = points.at(-1);
   const previous = points.at(-2);
   const recentAverage = averagePositiveRatio(points);
   const delta = latest && previous ? latest.positiveRatio - previous.positiveRatio : 0;
   const detailRows = [...points].reverse().slice(0, 3);
+  const yDomain = calculateDomain(points);
+  const yTicks = buildTicks(yDomain);
 
   if (points.length < 2) {
-    return (
-      <div className="review-trend-empty">
-        월별 흐름을 그릴 리뷰가 아직 충분하지 않아요.
-      </div>
-    );
+    return <div className="review-trend-empty">월별 흐름을 그릴 만큼 리뷰가 아직 충분하지 않아요.</div>;
   }
 
   return (
     <div className="review-trend-chart" aria-label="월별 한국어 리뷰 긍정 비율 그래프">
       <div className="summary-panel review-trend-summary-panel">
         <div className="review-trend-summary-content">
-          <span className="review-trend-eyebrow">최근 월</span>
+          <span className="review-trend-eyebrow">최근 흐름 요약</span>
           <p className="review-trend-summary">
             <strong>{formatMonthLabel(latest.label)}</strong>
-            <span>{formatCount(latest.reviewCount)}개 중 {formatPercent(latest.positiveRatio)} 긍정</span>
+            <span>긍정 비율 {formatPercent(latest.positiveRatio)}</span>
           </p>
           <div className="review-trend-summary-meta" aria-label="월별 리뷰 흐름 요약">
-            <span>{formatDelta(delta)}</span>
+            <span>리뷰 {formatCount(latest.reviewCount)}개</span>
+            <span>{formatDeltaLabel(delta)}</span>
             <span>최근 {points.length}개월 평균 {formatPercent(recentAverage)}</span>
           </div>
         </div>
@@ -106,7 +158,7 @@ export default function ReviewTrendChart({ trend }) {
           aria-expanded={isExpanded}
           onClick={() => setIsExpanded((value) => !value)}
         >
-          {isExpanded ? "접기" : "자세히 보기"}
+          {isExpanded ? "닫기" : "자세히 보기"}
         </button>
       </div>
 
@@ -114,34 +166,59 @@ export default function ReviewTrendChart({ trend }) {
         <div className="review-trend-expanded">
           <div className="review-trend-plot">
             <div className="review-trend-plot-head">
-              <span>Y축: 긍정 비율</span>
-              <span>X축: 월별 한국어 리뷰</span>
+              <span>최근 {points.length}개월 한국어 리뷰 기준</span>
+              <span>Y축은 긍정 비율, X축은 월별 흐름이에요</span>
             </div>
-            <svg viewBox={`0 0 ${width} ${height}`} role="img">
-              <title>최근 {points.length}개월 한국어 리뷰 긍정 비율</title>
-              <desc>월별 리뷰 중 긍정 리뷰가 차지하는 비율을 선 그래프로 표시합니다.</desc>
-              <line className="review-trend-grid" x1={padding.left} y1={padding.top} x2={width - padding.right} y2={padding.top} />
-              <line className="review-trend-grid" x1={padding.left} y1={(height - padding.bottom + padding.top) / 2} x2={width - padding.right} y2={(height - padding.bottom + padding.top) / 2} />
-              <line className="review-trend-grid" x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} />
-              <text className="review-trend-axis" x="6" y={padding.top + 4}>100%</text>
-              <text className="review-trend-axis" x="14" y={(height - padding.bottom + padding.top) / 2 + 4}>50%</text>
-              <text className="review-trend-axis" x="22" y={height - padding.bottom + 4}>0%</text>
-              <path className="review-trend-line" d={path} />
-              {points.map((point, index) => {
-                const { x, y } = pointPosition(point, index, points, width, height, padding);
-                return (
-                  <g key={point.label}>
-                    <text className="review-trend-point-label" x={x} y={Math.max(14, y - 12)} textAnchor="middle">
-                      {formatPercent(point.positiveRatio)}
-                    </text>
-                    <circle className="review-trend-dot" cx={x} cy={y} r="4" />
-                    <text className="review-trend-month-label" x={x} y={height - 18} textAnchor="middle">
-                      {formatMonthLabel(point.label, { compact: true })}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
+            <div className="review-trend-chart-frame">
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData} margin={{ top: 16, right: 16, left: 0, bottom: 8 }}>
+                  <CartesianGrid
+                    vertical={false}
+                    stroke="var(--comp-card-border)"
+                    strokeDasharray="3 3"
+                  />
+                  <XAxis
+                    dataKey="compactLabel"
+                    tick={{ fill: "var(--sys-color-on-surface-variant)", fontSize: 11 }}
+                    tickMargin={10}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    domain={yDomain}
+                    ticks={yTicks}
+                    tickFormatter={(value) => `${value}%`}
+                    tick={{ fill: "var(--sys-color-on-surface-variant)", fontSize: 11 }}
+                    tickMargin={10}
+                    tickLine={false}
+                    axisLine={false}
+                    width={48}
+                  />
+                  <Tooltip
+                    cursor={{ stroke: "var(--sys-color-outline)", strokeDasharray: "4 4" }}
+                    content={<TrendTooltip />}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="percentValue"
+                    stroke="var(--sys-color-primary)"
+                    strokeWidth={3}
+                    dot={{
+                      r: 4,
+                      fill: "var(--sys-color-primary)",
+                      stroke: "var(--comp-card-bg)",
+                      strokeWidth: 2,
+                    }}
+                    activeDot={{
+                      r: 6,
+                      fill: "var(--sys-color-primary)",
+                      stroke: "var(--comp-card-bg-strong)",
+                      strokeWidth: 2,
+                    }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
           <div className="review-trend-detail">
