@@ -6,12 +6,12 @@ import EvidenceSection from "../components/EvidenceSection";
 import FitGrid from "../components/FitGrid";
 import GameIntroSection from "../components/GameIntroSection";
 import InsufficientReviewState from "../components/InsufficientReviewState";
+import ReviewTrendChart from "../components/ReviewTrendChart";
 import StatusFooter from "../components/StatusFooter";
 import StrengthRiskSection from "../components/StrengthRiskSection";
 import Topbar from "../components/Topbar";
 import {
   buyBadgeClass,
-  formatGeneratedAt,
   normalizeEvidenceSections,
   recommendationLabel,
   recentStateLabel,
@@ -311,12 +311,16 @@ export default function ReportPage() {
                 </h1>
               </section>
 
+              <section className="section-card review-trend-card">
+                <h2>월별 한국어 리뷰 긍정 비율</h2>
+                <ReviewTrendChart trend={report?.review_trend} />
+              </section>
+
               <DecisionGrid
                 buyTimingSummary={display.buy_timing_summary}
                 recentStateSummary={recentState.summary}
                 recentStateLabel={recentStateLabel(recentState.status)}
                 recentStateTone={recentStateTone(recentState.status)}
-                generatedAt={formatGeneratedAt(report?.generated_at)}
               />
 
               <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />

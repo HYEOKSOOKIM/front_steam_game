@@ -507,7 +507,7 @@ select {
 }
 
 .decision-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .fit-grid,
@@ -535,6 +535,15 @@ select {
   margin-bottom: 0;
 }
 
+.review-trend-card {
+  display: grid;
+  gap: var(--space-12);
+}
+
+.review-trend-card h2 {
+  margin-bottom: 0;
+}
+
 .section-title-row {
   display: flex;
   align-items: flex-start;
@@ -559,6 +568,151 @@ select {
   color: var(--sys-color-on-surface-variant);
   font-size: var(--type-label-large-size);
   line-height: var(--type-label-large-line);
+}
+
+.review-trend-chart {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.review-trend-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.review-trend-summary {
+  margin: 0;
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-body-medium-size);
+  line-height: var(--type-body-medium-line);
+  font-weight: var(--font-weight-bold);
+}
+
+.review-trend-note {
+  margin: var(--space-4) 0 0;
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+}
+
+.review-trend-toggle {
+  min-height: 32px;
+  border: 1px solid var(--comp-button-outlined-border);
+  border-radius: var(--shape-corner-full);
+  background: var(--comp-button-outlined-bg);
+  color: var(--comp-button-outlined-label);
+  padding: var(--space-4) var(--space-12);
+  font-size: var(--type-label-medium-size);
+  line-height: var(--type-label-medium-line);
+  white-space: nowrap;
+}
+
+.review-trend-toggle:hover:not(:disabled) {
+  background: var(--sys-color-surface-container-high);
+}
+
+.review-trend-expanded {
+  display: grid;
+  gap: var(--space-12);
+}
+
+.review-trend-chart svg {
+  width: 100%;
+  min-height: 260px;
+  display: block;
+}
+
+.review-trend-grid {
+  stroke: var(--comp-card-border);
+  stroke-width: 1;
+}
+
+.review-trend-line {
+  fill: none;
+  stroke: var(--sys-color-primary);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.review-trend-dot {
+  fill: var(--sys-color-primary);
+  stroke: var(--comp-card-bg);
+  stroke-width: 2;
+}
+
+.review-trend-axis {
+  fill: var(--sys-color-on-surface-variant);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+}
+
+.review-trend-point-label {
+  fill: var(--sys-color-on-surface);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.review-trend-month-label {
+  fill: var(--sys-color-on-surface-variant);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+}
+
+.review-trend-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-8);
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-label-small-size);
+  line-height: var(--type-label-small-line);
+}
+
+.review-trend-labels strong {
+  color: var(--sys-color-on-surface);
+  font-weight: var(--font-weight-bold);
+}
+
+.review-trend-empty {
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-medium-size);
+  line-height: var(--type-body-medium-line);
+}
+
+.review-trend-detail {
+  display: grid;
+  gap: var(--space-8);
+  border-top: 1px solid var(--comp-card-border);
+  padding-top: var(--space-12);
+}
+
+.review-trend-detail-title {
+  margin: 0;
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-label-large-size);
+  line-height: var(--type-label-large-line);
+  font-weight: var(--font-weight-bold);
+}
+
+.review-trend-detail-list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.review-trend-detail-row {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr);
+  gap: var(--space-8);
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-small-size);
+  line-height: var(--type-body-small-line);
+}
+
+.review-trend-detail-row strong {
+  color: var(--sys-color-on-surface);
+  font-weight: var(--font-weight-bold);
 }
 
 .bullet-list {
@@ -845,6 +999,7 @@ select {
   }
 
   .hero-meta,
+  .review-trend-head,
   .picker,
   .evidence-section-head,
   .footer-note {
@@ -869,6 +1024,10 @@ select {
   .headline {
     font-size: var(--type-headline-large-size);
     line-height: var(--type-headline-large-line);
+  }
+
+  .review-trend-detail-row {
+    grid-template-columns: 1fr;
   }
 
   button,
