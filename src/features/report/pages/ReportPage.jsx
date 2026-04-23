@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchDemoGames, fetchReport } from "../api/reportApi";
 import DecisionGrid from "../components/DecisionGrid";
@@ -6,7 +6,6 @@ import EvidenceSection from "../components/EvidenceSection";
 import FitGrid from "../components/FitGrid";
 import GameIntroSection from "../components/GameIntroSection";
 import InsufficientReviewState from "../components/InsufficientReviewState";
-import ReviewTrendChart from "../components/ReviewTrendChart";
 import StatusFooter from "../components/StatusFooter";
 import StrengthRiskSection from "../components/StrengthRiskSection";
 import Topbar from "../components/Topbar";
@@ -18,6 +17,8 @@ import {
   recentStateTone,
   toList,
 } from "../utils/reportMappers";
+
+const ReviewTrendChart = lazy(() => import("../components/ReviewTrendChart"));
 
 const SUGGESTION_LIMIT = 8;
 const DEFAULT_MIN_REPORT_REVIEW_COUNT = 100;
@@ -407,7 +408,9 @@ export default function ReportPage() {
 
                 <section className="section-card review-trend-card">
                   <h2>월별 한국어 리뷰 흐름</h2>
-                  <ReviewTrendChart trend={report?.review_trend} />
+                  <Suspense fallback={<div className="review-trend-loading">차트를 불러오는 중이에요...</div>}>
+                    <ReviewTrendChart trend={report?.review_trend} />
+                  </Suspense>
                 </section>
               </div>
 

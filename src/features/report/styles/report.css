@@ -963,6 +963,18 @@ select:hover:not(:disabled) {
   line-height: var(--type-body-md-line);
 }
 
+.review-trend-loading {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-sm);
+  background: var(--sys-color-surface-container);
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-md-size);
+  line-height: var(--type-body-md-line);
+}
+
 .review-trend-detail {
   display: grid;
   gap: var(--space-8);
