@@ -330,7 +330,7 @@ export default function ReportPage() {
             </>
           )}
 
-          <StatusFooter disclaimer={report?.disclaimer} statusLine={statusLine} />
+          <StatusFooter />
         </>
       )}
     </main>
