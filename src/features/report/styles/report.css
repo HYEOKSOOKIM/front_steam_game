@@ -339,6 +339,40 @@ select {
   font-weight: var(--type-headline-large-weight);
 }
 
+.game-intro-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+
+.game-intro-store-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-height: 40px;
+  border: 1px solid var(--comp-button-outlined-border);
+  border-radius: var(--shape-corner-small);
+  background: var(--comp-button-outlined-bg);
+  color: var(--comp-button-outlined-label);
+  padding: var(--space-8) var(--space-16);
+  font-size: var(--type-label-medium-size);
+  line-height: var(--type-label-medium-line);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.game-intro-store-link:hover {
+  background: var(--sys-color-surface-container-high);
+}
+
+.game-intro-store-link:focus-visible {
+  outline: 2px solid var(--sys-color-primary);
+  outline-offset: 2px;
+}
+
 .game-intro-summary {
   color: var(--sys-color-on-surface-variant);
   font-size: var(--type-body-large-size);
@@ -565,7 +599,7 @@ select {
 
 .review-trend-card {
   display: grid;
-  gap: var(--space-12);
+  gap: var(--space-16);
 }
 
 .review-trend-card h2 {
@@ -607,40 +641,79 @@ select {
 
 .review-trend-chart {
   display: grid;
-  gap: var(--space-8);
+  gap: var(--space-12);
 }
 
 .review-trend-summary-panel {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-12);
+  gap: var(--space-16);
+  background: var(--comp-card-bg-strong);
+  padding: var(--space-16);
 }
 
-.review-trend-summary {
-  margin: 0;
-  color: var(--sys-color-on-surface);
-  font-size: var(--type-body-medium-size);
-  line-height: var(--type-body-medium-line);
+.review-trend-summary-content {
+  display: grid;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.review-trend-eyebrow {
+  color: var(--sys-color-primary);
+  font-size: var(--type-label-small-size);
+  line-height: var(--type-label-small-line);
   font-weight: var(--font-weight-bold);
 }
 
-.review-trend-note {
-  margin: var(--space-4) 0 0;
+.review-trend-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-8);
+  margin: 0;
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-body-large-size);
+  line-height: var(--type-body-large-line);
+  font-weight: var(--font-weight-bold);
+}
+
+.review-trend-summary strong {
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-title-medium-size);
+  line-height: var(--type-title-medium-line);
+}
+
+.review-trend-summary span {
   color: var(--sys-color-on-surface-variant);
-  font-size: var(--type-body-small-size);
-  line-height: var(--type-body-small-line);
+}
+
+.review-trend-summary-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+.review-trend-summary-meta span {
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-full);
+  background: var(--sys-color-surface-container);
+  padding: var(--space-4) var(--space-8);
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-label-medium-size);
+  line-height: var(--type-label-medium-line);
 }
 
 .review-trend-toggle {
-  min-height: 32px;
+  min-height: 40px;
   border: 1px solid var(--comp-button-outlined-border);
-  border-radius: var(--shape-corner-full);
+  border-radius: var(--shape-corner-small);
   background: var(--comp-button-outlined-bg);
   color: var(--comp-button-outlined-label);
-  padding: var(--space-4) var(--space-12);
+  padding: var(--space-8) var(--space-16);
   font-size: var(--type-label-medium-size);
   line-height: var(--type-label-medium-line);
+  font-weight: var(--font-weight-bold);
   white-space: nowrap;
 }
 
@@ -653,9 +726,28 @@ select {
   gap: var(--space-12);
 }
 
+.review-trend-plot {
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-small);
+  background: var(--sys-color-surface-container);
+  padding: var(--space-12);
+}
+
+.review-trend-plot-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-8);
+  margin-bottom: var(--space-8);
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-label-medium-size);
+  line-height: var(--type-label-medium-line);
+  font-weight: var(--font-weight-bold);
+}
+
 .review-trend-chart svg {
   width: 100%;
-  min-height: 260px;
+  min-height: 16rem;
   display: block;
 }
 
@@ -719,8 +811,10 @@ select {
 .review-trend-detail {
   display: grid;
   gap: var(--space-8);
-  border-top: 1px solid var(--comp-card-border);
-  padding-top: var(--space-12);
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-small);
+  background: var(--sys-color-surface-container);
+  padding: var(--space-12);
 }
 
 .review-trend-detail-title {
@@ -733,16 +827,23 @@ select {
 
 .review-trend-detail-list {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-8);
 }
 
 .review-trend-detail-row {
   display: grid;
   grid-template-columns: minmax(80px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr);
   gap: var(--space-8);
+  border-top: 1px solid var(--comp-card-border);
+  padding-top: var(--space-8);
   color: var(--sys-color-on-surface-variant);
   font-size: var(--type-body-small-size);
   line-height: var(--type-body-small-line);
+}
+
+.review-trend-detail-row:first-child {
+  border-top: 0;
+  padding-top: 0;
 }
 
 .review-trend-detail-row strong {
@@ -1036,6 +1137,7 @@ select {
   }
 
   .hero-meta,
+  .game-intro-title-row,
   .review-trend-summary-panel,
   .picker,
   .evidence-section-head,

@@ -96,6 +96,7 @@ export default function GameIntroSection({
   const genres = Array.isArray(game?.genres) ? game.genres.filter(Boolean).slice(0, 4) : [];
   const imageUrl = game?.header_image || (appid ? `https://cdn.akamai.steamstatic.com/steam/apps/${appid}/header.jpg` : "");
   const sourceCount = formatNumber(sourceReviewCount);
+  const steamStoreUrl = game?.steam_store_url || (appid ? `https://store.steampowered.com/app/${appid}` : "");
 
   return (
     <section className="game-intro-card">
@@ -117,7 +118,19 @@ export default function GameIntroSection({
 
       <div className="game-intro-body">
         <p className="game-intro-kicker">선택한 게임</p>
-        <h2 className="game-intro-title">{game?.name || `appid ${appid}`}</h2>
+        <div className="game-intro-title-row">
+          <h2 className="game-intro-title">{game?.name || `appid ${appid}`}</h2>
+          {steamStoreUrl ? (
+            <a
+              className="game-intro-store-link"
+              href={steamStoreUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Steam에서 보기
+            </a>
+          ) : null}
+        </div>
         <p className="game-intro-summary">{buildSummary(game, sourceReviewCount, minReviewCount)}</p>
 
         {genres.length > 0 ? (

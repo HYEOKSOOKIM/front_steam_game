@@ -89,13 +89,16 @@ export default function ReviewTrendChart({ trend }) {
   return (
     <div className="review-trend-chart" aria-label="월별 한국어 리뷰 긍정 비율 그래프">
       <div className="summary-panel review-trend-summary-panel">
-        <div>
+        <div className="review-trend-summary-content">
+          <span className="review-trend-eyebrow">최근 월</span>
           <p className="review-trend-summary">
-            {formatMonthLabel(latest.label)} · {formatCount(latest.reviewCount)}개 중 {formatPercent(latest.positiveRatio)} 긍정
+            <strong>{formatMonthLabel(latest.label)}</strong>
+            <span>{formatCount(latest.reviewCount)}개 중 {formatPercent(latest.positiveRatio)} 긍정</span>
           </p>
-          <p className="review-trend-note">
-            {formatDelta(delta)} · 최근 {points.length}개월 평균 {formatPercent(recentAverage)}
-          </p>
+          <div className="review-trend-summary-meta" aria-label="월별 리뷰 흐름 요약">
+            <span>{formatDelta(delta)}</span>
+            <span>최근 {points.length}개월 평균 {formatPercent(recentAverage)}</span>
+          </div>
         </div>
         <button
           className="review-trend-toggle"
@@ -109,29 +112,37 @@ export default function ReviewTrendChart({ trend }) {
 
       {isExpanded ? (
         <div className="review-trend-expanded">
-          <svg viewBox={`0 0 ${width} ${height}`} role="img">
-            <line className="review-trend-grid" x1={padding.left} y1={padding.top} x2={width - padding.right} y2={padding.top} />
-            <line className="review-trend-grid" x1={padding.left} y1={(height - padding.bottom + padding.top) / 2} x2={width - padding.right} y2={(height - padding.bottom + padding.top) / 2} />
-            <line className="review-trend-grid" x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} />
-            <text className="review-trend-axis" x="6" y={padding.top + 4}>100%</text>
-            <text className="review-trend-axis" x="14" y={(height - padding.bottom + padding.top) / 2 + 4}>50%</text>
-            <text className="review-trend-axis" x="22" y={height - padding.bottom + 4}>0%</text>
-            <path className="review-trend-line" d={path} />
-            {points.map((point, index) => {
-              const { x, y } = pointPosition(point, index, points, width, height, padding);
-              return (
-                <g key={point.label}>
-                  <text className="review-trend-point-label" x={x} y={Math.max(14, y - 12)} textAnchor="middle">
-                    {formatPercent(point.positiveRatio)}
-                  </text>
-                  <circle className="review-trend-dot" cx={x} cy={y} r="4" />
-                  <text className="review-trend-month-label" x={x} y={height - 18} textAnchor="middle">
-                    {formatMonthLabel(point.label, { compact: true })}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
+          <div className="review-trend-plot">
+            <div className="review-trend-plot-head">
+              <span>Y축: 긍정 비율</span>
+              <span>X축: 월별 한국어 리뷰</span>
+            </div>
+            <svg viewBox={`0 0 ${width} ${height}`} role="img">
+              <title>최근 {points.length}개월 한국어 리뷰 긍정 비율</title>
+              <desc>월별 리뷰 중 긍정 리뷰가 차지하는 비율을 선 그래프로 표시합니다.</desc>
+              <line className="review-trend-grid" x1={padding.left} y1={padding.top} x2={width - padding.right} y2={padding.top} />
+              <line className="review-trend-grid" x1={padding.left} y1={(height - padding.bottom + padding.top) / 2} x2={width - padding.right} y2={(height - padding.bottom + padding.top) / 2} />
+              <line className="review-trend-grid" x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} />
+              <text className="review-trend-axis" x="6" y={padding.top + 4}>100%</text>
+              <text className="review-trend-axis" x="14" y={(height - padding.bottom + padding.top) / 2 + 4}>50%</text>
+              <text className="review-trend-axis" x="22" y={height - padding.bottom + 4}>0%</text>
+              <path className="review-trend-line" d={path} />
+              {points.map((point, index) => {
+                const { x, y } = pointPosition(point, index, points, width, height, padding);
+                return (
+                  <g key={point.label}>
+                    <text className="review-trend-point-label" x={x} y={Math.max(14, y - 12)} textAnchor="middle">
+                      {formatPercent(point.positiveRatio)}
+                    </text>
+                    <circle className="review-trend-dot" cx={x} cy={y} r="4" />
+                    <text className="review-trend-month-label" x={x} y={height - 18} textAnchor="middle">
+                      {formatMonthLabel(point.label, { compact: true })}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
 
           <div className="review-trend-detail">
             <p className="review-trend-detail-title">최근 월별 상세</p>
