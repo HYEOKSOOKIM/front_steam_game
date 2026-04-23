@@ -23,13 +23,17 @@ export default function FitGrid({ goodFor, notGoodFor }) {
         <div className="section-title-row">
           <h2>이런 분께 추천해요</h2>
         </div>
-        <BulletList values={goodItems} />
+        <div className="fit-card-body">
+          <BulletList values={goodItems} />
+        </div>
       </article>
       <article className="section-card">
         <div className="section-title-row">
           <h2>이런 분께는 아쉬울 수 있어요</h2>
         </div>
-        <BulletList values={cautionItems} />
+        <div className="fit-card-body">
+          <BulletList values={cautionItems} />
+        </div>
       </article>
     </section>
   );

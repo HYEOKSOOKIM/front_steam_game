@@ -300,39 +300,43 @@ export default function ReportPage() {
           {isInsufficientReviewReport ? (
             <InsufficientReviewState minReviewCount={minReportReviewCount} />
           ) : (
-            <>
-              <section className="hero-card">
-                <div className="hero-meta">
-                  <p className="game-title">한눈에 보는 결론</p>
-                </div>
-                <h1 className="headline">
-                  {display.headline || "많은 리뷰의 반복 신호를 바탕으로 구매 결정을 빠르게 정리합니다."}
-                </h1>
-              </section>
+            <div className="report-content-flow">
+              <div className="report-core-stack">
+                <section className="hero-card">
+                  <div className="hero-meta">
+                    <p className="game-title">한눈에 보는 결론</p>
+                  </div>
+                  <h1 className="headline">
+                    {display.headline || "많은 리뷰의 반복 신호를 바탕으로 구매 결정을 빠르게 정리합니다."}
+                  </h1>
+                </section>
 
-              <section className="section-card review-trend-card">
-                <h2>월별 한국어 리뷰 긍정 비율</h2>
-                <ReviewTrendChart trend={report?.review_trend} />
-              </section>
+                <section className="section-card review-trend-card">
+                  <h2>월별 한국어 리뷰 긍정 비율</h2>
+                  <ReviewTrendChart trend={report?.review_trend} />
+                </section>
+              </div>
 
-              <DecisionGrid
-                buyTimingSummary={display.buy_timing_summary}
-                recommendationBadgeClass={badgeClass}
-                recommendationLabel={recommendationLabel(recommendation)}
-                recentStateSummary={recentState.summary}
-                recentStateLabel={recentStateLabel(recentState.status)}
-                recentStateTone={recentStateTone(recentState.status)}
-              />
+              <div className="report-support-stack">
+                <DecisionGrid
+                  buyTimingSummary={display.buy_timing_summary}
+                  recommendationBadgeClass={badgeClass}
+                  recommendationLabel={recommendationLabel(recommendation)}
+                  recentStateSummary={recentState.summary}
+                  recentStateLabel={recentStateLabel(recentState.status)}
+                  recentStateTone={recentStateTone(recentState.status)}
+                />
 
-              <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />
+                <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />
 
-              <StrengthRiskSection strengths={topStrengths} risks={topRisks} />
+                <StrengthRiskSection strengths={topStrengths} risks={topRisks} />
 
-              <EvidenceSection
-                positiveBlocks={evidenceSections.loved}
-                negativeBlocks={evidenceSections.complained}
-              />
-            </>
+                <EvidenceSection
+                  positiveBlocks={evidenceSections.loved}
+                  negativeBlocks={evidenceSections.complained}
+                />
+              </div>
+            </div>
           )}
 
           <StatusFooter />
