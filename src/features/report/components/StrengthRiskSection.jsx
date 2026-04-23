@@ -1,7 +1,11 @@
+function CountChip({ count, tone }) {
+  return <span className={`count-chip tone-${tone}`}>{count}개</span>;
+}
+
 function CardList({ values }) {
   const items = Array.isArray(values) ? values : [];
   if (items.length === 0) {
-    return <p className="placeholder">합의 신호가 부족합니다.</p>;
+    return <p className="placeholder">판단에 필요한 신호가 충분하지 않습니다.</p>;
   }
 
   return (
@@ -17,18 +21,27 @@ function CardList({ values }) {
 }
 
 export default function StrengthRiskSection({ strengths, risks }) {
+  const strengthItems = Array.isArray(strengths) ? strengths : [];
+  const riskItems = Array.isArray(risks) ? risks : [];
+
   return (
     <section className="strength-risk-grid">
       <article className="section-card">
-        <h2>구매 이유</h2>
+        <div className="section-title-row">
+          <h2>이런 점이 좋아요</h2>
+          <CountChip count={strengthItems.length} tone="positive" />
+        </div>
         <div className="stack-list">
-          <CardList values={strengths} />
+          <CardList values={strengthItems} />
         </div>
       </article>
       <article className="section-card">
-        <h2>구매 리스크</h2>
+        <div className="section-title-row">
+          <h2>이건 알고 가세요</h2>
+          <CountChip count={riskItems.length} tone="negative" />
+        </div>
         <div className="stack-list">
-          <CardList values={risks} />
+          <CardList values={riskItems} />
         </div>
       </article>
     </section>

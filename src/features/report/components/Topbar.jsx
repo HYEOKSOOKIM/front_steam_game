@@ -1,37 +1,19 @@
-export default function Topbar({
-  games,
-  selectedAppid,
-  onSelectChange,
-  onSubmit,
-  isLoadingReport,
-}) {
+export default function Topbar({ onBackHome, onResetSearch, showResetSearch }) {
   return (
     <header className="report-topbar">
-      <p className="brand">Steam 구매 판단 리포트</p>
+      <div className="brand-block">
+        <p className="brand">Steam Report</p>
+        <p className="brand-subtitle">한국 유저 리뷰로 보는 게임 리포트</p>
+      </div>
       <div className="topbar-actions">
-        <form id="report-form" className="picker" onSubmit={onSubmit}>
-          <label htmlFor="game-select" className="sr-only">
-            게임 선택
-          </label>
-          <select
-            id="game-select"
-            required
-            value={selectedAppid}
-            onChange={(event) => onSelectChange(event.target.value)}
-          >
-            {games.length === 0 ? (
-              <option value="">준비된 리포트가 없습니다.</option>
-            ) : null}
-            {games.map((game) => (
-              <option key={game.appid} value={String(game.appid)}>
-                {game.name} ({game.appid})
-              </option>
-            ))}
-          </select>
-          <button id="load-button" type="submit" disabled={isLoadingReport}>
-            리포트 보기
+        {showResetSearch ? (
+          <button className="report-back-btn" type="button" onClick={onResetSearch}>
+            다른 게임 검색
           </button>
-        </form>
+        ) : null}
+        <button className="report-back-btn" type="button" onClick={onBackHome}>
+          메인으로
+        </button>
       </div>
     </header>
   );
