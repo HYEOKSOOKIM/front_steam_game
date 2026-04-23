@@ -88,7 +88,7 @@ export default function ReviewTrendChart({ trend }) {
 
   return (
     <div className="review-trend-chart" aria-label="월별 한국어 리뷰 긍정 비율 그래프">
-      <div className="review-trend-head">
+      <div className="summary-panel review-trend-summary-panel">
         <div>
           <p className="review-trend-summary">
             {formatMonthLabel(latest.label)} · {formatCount(latest.reviewCount)}개 중 {formatPercent(latest.positiveRatio)} 긍정

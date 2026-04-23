@@ -413,9 +413,23 @@ select {
 
 .game-title {
   margin: 0;
-  color: var(--sys-color-on-surface-variant);
-  font-size: var(--type-label-large-size);
-  line-height: var(--type-label-large-line);
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-title-large-size);
+  line-height: var(--type-title-large-line);
+  font-weight: var(--font-weight-bold);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.game-title::before {
+  content: "";
+  display: inline-block;
+  flex: 0 0 auto;
+  width: var(--space-4);
+  height: var(--space-16);
+  border-radius: var(--shape-corner-full);
+  background: var(--sys-color-primary);
 }
 
 .buy-badge {
@@ -525,10 +539,24 @@ select {
 }
 
 .section-card h2 {
-  margin: 0 0 var(--space-8);
-  font-size: var(--type-title-medium-size);
-  line-height: var(--type-title-medium-line);
-  font-weight: var(--type-title-medium-weight);
+  margin: 0 0 var(--space-12);
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-title-large-size);
+  line-height: var(--type-title-large-line);
+  font-weight: var(--font-weight-bold);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.section-card h2::before {
+  content: "";
+  display: inline-block;
+  flex: 0 0 auto;
+  width: var(--space-4);
+  height: var(--space-16);
+  border-radius: var(--shape-corner-full);
+  background: var(--sys-color-primary);
 }
 
 .section-card.insufficient-review-card h2 {
@@ -549,7 +577,7 @@ select {
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-12);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-12);
 }
 
 .section-title-row h2 {
@@ -558,9 +586,16 @@ select {
 
 .section-body {
   margin: 0;
-  color: var(--sys-color-on-surface);
-  font-size: var(--type-body-large-size);
-  line-height: var(--type-body-large-line);
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-medium-size);
+  line-height: var(--type-body-medium-line);
+}
+
+.summary-panel {
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-small);
+  background: var(--sys-color-surface-container);
+  padding: var(--space-12);
 }
 
 .section-kicker {
@@ -575,11 +610,11 @@ select {
   gap: var(--space-8);
 }
 
-.review-trend-head {
+.review-trend-summary-panel {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-8);
+  gap: var(--space-12);
 }
 
 .review-trend-summary {
@@ -645,19 +680,19 @@ select {
 
 .review-trend-axis {
   fill: var(--sys-color-on-surface-variant);
-  font-size: 10px;
+  font-size: var(--type-label-small-size);
   font-weight: var(--font-weight-bold);
 }
 
 .review-trend-point-label {
   fill: var(--sys-color-on-surface);
-  font-size: 12px;
+  font-size: var(--type-label-small-size);
   font-weight: var(--font-weight-bold);
 }
 
 .review-trend-month-label {
   fill: var(--sys-color-on-surface-variant);
-  font-size: 11px;
+  font-size: var(--type-label-small-size);
   font-weight: var(--font-weight-bold);
 }
 
@@ -718,7 +753,7 @@ select {
 .bullet-list {
   margin: 0;
   padding-left: var(--space-24);
-  color: var(--sys-color-on-surface);
+  color: var(--sys-color-on-surface-variant);
   display: grid;
   gap: var(--space-8);
   font-size: var(--type-body-medium-size);
@@ -739,9 +774,10 @@ select {
 
 .mini-card h3 {
   margin: 0 0 var(--space-4);
-  font-size: var(--type-title-small-size);
-  line-height: var(--type-title-small-line);
-  font-weight: var(--type-title-small-weight);
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-title-medium-size);
+  line-height: var(--type-title-medium-line);
+  font-weight: var(--font-weight-bold);
 }
 
 .mini-card p {
@@ -779,8 +815,8 @@ select {
 .evidence-section h3 {
   margin: 0;
   color: var(--sys-color-on-surface);
-  font-size: var(--type-title-small-size);
-  line-height: var(--type-title-small-line);
+  font-size: var(--type-title-medium-size);
+  line-height: var(--type-title-medium-line);
   font-weight: var(--font-weight-bold);
 }
 
@@ -839,9 +875,10 @@ select {
 
 .evidence-card h3 {
   margin: 0;
+  color: var(--sys-color-on-surface);
   font-size: var(--type-title-small-size);
   line-height: var(--type-title-small-line);
-  font-weight: var(--type-title-small-weight);
+  font-weight: var(--font-weight-bold);
 }
 
 .evidence-index {
@@ -999,7 +1036,7 @@ select {
   }
 
   .hero-meta,
-  .review-trend-head,
+  .review-trend-summary-panel,
   .picker,
   .evidence-section-head,
   .footer-note {

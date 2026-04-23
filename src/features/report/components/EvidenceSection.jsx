@@ -13,7 +13,6 @@ function EvidenceColumn({ title, tone, blocks, emptyMessage }) {
     <article className={classes}>
       <div className="evidence-section-head">
         <h3>{title}</h3>
-        <span className={`evidence-tone tone-${tone}`}>{blocks.length}개</span>
       </div>
       <div className="evidence-grid">
         {blocks.length === 0 ? <p className="placeholder">{emptyMessage}</p> : null}
@@ -41,7 +40,6 @@ export default function EvidenceSection({ positiveBlocks, negativeBlocks }) {
     <section className="section-card evidence-summary-card">
       <div className="section-title-row">
         <h2>리뷰에서 이렇게 말해요</h2>
-        <span className="section-kicker">대표 리뷰 신호</span>
       </div>
       <div className="evidence-sections">
         <EvidenceColumn

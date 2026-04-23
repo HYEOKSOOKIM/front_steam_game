@@ -1,7 +1,3 @@
-function CountChip({ count, tone }) {
-  return <span className={`count-chip tone-${tone}`}>{count}개</span>;
-}
-
 function CardList({ values }) {
   const items = Array.isArray(values) ? values : [];
   if (items.length === 0) {
@@ -29,7 +25,6 @@ export default function StrengthRiskSection({ strengths, risks }) {
       <article className="section-card">
         <div className="section-title-row">
           <h2>이런 점이 좋아요</h2>
-          <CountChip count={strengthItems.length} tone="positive" />
         </div>
         <div className="stack-list">
           <CardList values={strengthItems} />
@@ -38,7 +33,6 @@ export default function StrengthRiskSection({ strengths, risks }) {
       <article className="section-card">
         <div className="section-title-row">
           <h2>이건 알고 가세요</h2>
-          <CountChip count={riskItems.length} tone="negative" />
         </div>
         <div className="stack-list">
           <CardList values={riskItems} />

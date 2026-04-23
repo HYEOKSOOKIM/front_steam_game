@@ -304,7 +304,6 @@ export default function ReportPage() {
               <section className="hero-card">
                 <div className="hero-meta">
                   <p className="game-title">한눈에 보는 결론</p>
-                  <span className={badgeClass}>{recommendationLabel(recommendation)}</span>
                 </div>
                 <h1 className="headline">
                   {display.headline || "많은 리뷰의 반복 신호를 바탕으로 구매 결정을 빠르게 정리합니다."}
@@ -318,6 +317,8 @@ export default function ReportPage() {
 
               <DecisionGrid
                 buyTimingSummary={display.buy_timing_summary}
+                recommendationBadgeClass={badgeClass}
+                recommendationLabel={recommendationLabel(recommendation)}
                 recentStateSummary={recentState.summary}
                 recentStateLabel={recentStateLabel(recentState.status)}
                 recentStateTone={recentStateTone(recentState.status)}
