@@ -422,7 +422,8 @@ select:hover:not(:disabled) {
   font-size: var(--type-heading-lg-size);
   line-height: var(--type-heading-lg-line);
   font-weight: var(--type-heading-lg-weight);
-  max-width: 18ch;
+  max-width: 32ch;
+  word-break: keep-all;
 }
 
 .game-intro-title-row {
@@ -680,7 +681,7 @@ select:hover:not(:disabled) {
   font-size: var(--type-display-lg-size);
   line-height: var(--type-display-lg-line);
   font-weight: var(--type-display-lg-weight);
-  max-width: 24ch;
+  word-break: keep-all;
 }
 
 .decision-grid,
@@ -1138,7 +1139,7 @@ select:hover:not(:disabled) {
   font-size: var(--type-label-lg-size);
   line-height: var(--type-label-lg-line);
   font-weight: var(--font-weight-bold);
-  max-width: 28ch;
+  word-break: keep-all;
 }
 
 .mini-card-body {
@@ -1280,6 +1281,7 @@ select:hover:not(:disabled) {
   font-size: var(--type-label-lg-size);
   line-height: var(--type-label-lg-line);
   font-weight: var(--font-weight-bold);
+  word-break: keep-all;
 }
 
 .evidence-card-kicker {
