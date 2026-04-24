@@ -1,7 +1,7 @@
 function BulletList({ values }) {
   const items = Array.isArray(values) ? values : [];
   if (items.length === 0) {
-    return <p className="placeholder">판단에 필요한 데이터가 충분하지 않습니다.</p>;
+    return <p className="placeholder">판단에 필요한 데이터가 아직 충분하지 않아요.</p>;
   }
 
   return (

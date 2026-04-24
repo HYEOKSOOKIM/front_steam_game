@@ -200,6 +200,15 @@
   --comp-chip-border: var(--sys-color-outline-variant);
   --comp-chip-label: var(--sys-color-on-surface);
   --comp-chip-hover-overlay: rgba(255, 255, 255, 0.04);
+  --comp-chip-radius: var(--shape-corner-full);
+  --comp-chip-height-sm: 28px;
+  --comp-chip-height-md: 32px;
+  --comp-chip-padding-x-sm: 10px;
+  --comp-chip-padding-x-md: 14px;
+  --comp-chip-font-size-sm: var(--type-label-sm-size);
+  --comp-chip-line-sm: var(--type-label-sm-line);
+  --comp-chip-font-size-md: var(--type-label-md-size);
+  --comp-chip-line-md: var(--type-label-md-line);
 
   --comp-chip-success-bg: rgba(108, 203, 95, 0.12);
   --comp-chip-success-border: rgba(108, 203, 95, 0.45);

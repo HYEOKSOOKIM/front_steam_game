@@ -146,10 +146,19 @@ export default function ReviewTrendChart({ trend }) {
             <strong>{formatMonthLabel(latest.label)}</strong>
             <span>긍정 비율 {formatPercent(latest.positiveRatio)}</span>
           </p>
-          <div className="review-trend-summary-meta" aria-label="월별 리뷰 흐름 요약">
-            <span>리뷰 {formatCount(latest.reviewCount)}개</span>
-            <span>{formatDeltaLabel(delta)}</span>
-            <span>최근 {points.length}개월 평균 {formatPercent(recentAverage)}</span>
+          <div className="review-trend-summary-stats" aria-label="월별 리뷰 흐름 요약">
+            <div className="review-trend-stat">
+              <span className="review-trend-stat-label">리뷰 수</span>
+              <strong>{formatCount(latest.reviewCount)}개</strong>
+            </div>
+            <div className="review-trend-stat">
+              <span className="review-trend-stat-label">전월 대비</span>
+              <strong>{formatDeltaLabel(delta)}</strong>
+            </div>
+            <div className="review-trend-stat">
+              <span className="review-trend-stat-label">최근 평균</span>
+              <strong>{formatPercent(recentAverage)}</strong>
+            </div>
           </div>
         </div>
         <button
@@ -166,7 +175,7 @@ export default function ReviewTrendChart({ trend }) {
         <div className="review-trend-expanded">
           <div className="review-trend-plot">
             <div className="review-trend-plot-head">
-              <span>최근 {points.length}개월 한국어 리뷰 기준</span>
+              <strong>최근 {points.length}개월 한국어 리뷰 기준</strong>
               <span>Y축은 긍정 비율, X축은 월별 흐름이에요</span>
             </div>
             <div className="review-trend-chart-frame">
