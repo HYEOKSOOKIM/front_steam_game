@@ -1,11 +1,7 @@
-function CountChip({ count, tone }) {
-  return <span className={`count-chip tone-${tone}`}>{count}개</span>;
-}
-
 function BulletList({ values }) {
   const items = Array.isArray(values) ? values : [];
   if (items.length === 0) {
-    return <p className="placeholder">판단에 필요한 데이터가 충분하지 않습니다.</p>;
+    return <p className="placeholder">판단에 필요한 데이터가 아직 충분하지 않아요.</p>;
   }
 
   return (
@@ -26,16 +22,18 @@ export default function FitGrid({ goodFor, notGoodFor }) {
       <article className="section-card">
         <div className="section-title-row">
           <h2>이런 분께 추천해요</h2>
-          <CountChip count={goodItems.length} tone="positive" />
         </div>
-        <BulletList values={goodItems} />
+        <div className="fit-card-body">
+          <BulletList values={goodItems} />
+        </div>
       </article>
       <article className="section-card">
         <div className="section-title-row">
           <h2>이런 분께는 아쉬울 수 있어요</h2>
-          <CountChip count={cautionItems.length} tone="warning" />
         </div>
-        <BulletList values={cautionItems} />
+        <div className="fit-card-body">
+          <BulletList values={cautionItems} />
+        </div>
       </article>
     </section>
   );

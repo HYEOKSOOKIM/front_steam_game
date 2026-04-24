@@ -36,16 +36,16 @@ function steamReviewScoreLabel(value) {
     "Overwhelmingly Positive": "압도적으로 긍정적",
     "Very Positive": "매우 긍정적",
     "Mostly Positive": "대체로 긍정적",
-    "Mixed": "복합적",
+    Mixed: "복합적",
     "Mostly Negative": "대체로 부정적",
     "Very Negative": "매우 부정적",
     "Overwhelmingly Negative": "압도적으로 부정적",
+    "압도적으로 긍정적": "압도적으로 긍정적",
     "매우 긍정적": "매우 긍정적",
     "대체로 긍정적": "대체로 긍정적",
     "복합적": "복합적",
     "대체로 부정적": "대체로 부정적",
     "매우 부정적": "매우 부정적",
-    "압도적으로 긍정적": "압도적으로 긍정적",
     "압도적으로 부정적": "압도적으로 부정적",
   };
   return labels[String(value || "").trim()] || String(value || "").trim();
@@ -63,7 +63,7 @@ function buildSteamReviewSummary(game) {
   const scoreLabel = steamReviewScoreLabel(game?.steam_review_score_desc);
   const prefix = scoreLabel ? `${scoreLabel} · ` : "";
 
-  return `${prefix}한국어 리뷰 ${formatNumber(totalReviews)}개 중 ${positivePercent}% 긍정적`;
+  return `${prefix}사용자 평가 ${formatNumber(totalReviews)}개 중 ${positivePercent}%가 긍정적이에요`;
 }
 
 function buildSummary(game, sourceReviewCount, minReviewCount) {
@@ -94,8 +94,10 @@ export default function GameIntroSection({
 }) {
   const [imageFailed, setImageFailed] = useState(false);
   const genres = Array.isArray(game?.genres) ? game.genres.filter(Boolean).slice(0, 4) : [];
-  const imageUrl = game?.header_image || (appid ? `https://cdn.akamai.steamstatic.com/steam/apps/${appid}/header.jpg` : "");
+  const imageUrl =
+    game?.header_image || (appid ? `https://cdn.akamai.steamstatic.com/steam/apps/${appid}/header.jpg` : "");
   const sourceCount = formatNumber(sourceReviewCount);
+  const steamStoreUrl = game?.steam_store_url || (appid ? `https://store.steampowered.com/app/${appid}` : "");
 
   return (
     <section className="game-intro-card">
@@ -117,18 +119,36 @@ export default function GameIntroSection({
 
       <div className="game-intro-body">
         <p className="game-intro-kicker">선택한 게임</p>
-        <h2 className="game-intro-title">{game?.name || `appid ${appid}`}</h2>
-        <p className="game-intro-summary">{buildSummary(game, sourceReviewCount, minReviewCount)}</p>
+        <div className="game-intro-title-row">
+          <h2 className="game-intro-title">{game?.name || `appid ${appid}`}</h2>
+          {steamStoreUrl ? (
+            <a
+              className="game-intro-store-link"
+              href={steamStoreUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Steam에서 보기
+            </a>
+          ) : null}
+        </div>
 
-        {genres.length > 0 ? (
-          <div className="game-intro-tags" aria-label="장르">
-            {genres.map((genre) => (
-              <span className="game-intro-tag" key={genre}>
-                {genre}
-              </span>
-            ))}
-          </div>
-        ) : null}
+        <div className="game-intro-overview">
+          <p className="game-intro-summary">{buildSummary(game, sourceReviewCount, minReviewCount)}</p>
+
+          {genres.length > 0 ? (
+            <div className="game-intro-tags-block">
+              <p className="game-intro-tags-label">대표 장르</p>
+              <div className="game-intro-tags" aria-label="장르">
+                {genres.map((genre) => (
+                  <span className="game-intro-tag" key={genre}>
+                    {genre}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
 
         <dl className="game-intro-meta">
           <div>
