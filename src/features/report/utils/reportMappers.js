@@ -18,12 +18,23 @@ export function recommendationLabel(value) {
 export function recentStateLabel(value) {
   const labels = {
     improving: "개선 중",
-    stable: "안정",
+    stable: "안정적",
     declining: "악화 중",
     mixed: "혼재",
     insufficient_data: "판단 보류",
   };
   return labels[value] || "-";
+}
+
+export function recentStateTone(value) {
+  const tones = {
+    improving: "success",
+    stable: "success",
+    declining: "error",
+    mixed: "warning",
+    insufficient_data: "neutral",
+  };
+  return tones[value] || "neutral";
 }
 
 export function buyBadgeClass(value) {

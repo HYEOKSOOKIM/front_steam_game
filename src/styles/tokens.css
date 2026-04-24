@@ -1,127 +1,120 @@
 :root {
-  /* Steam-inspired reference palette (raw values) */
-  --ref-steam-blue-80: #8bd3ff;
-  --ref-steam-blue-70: #66c0f4;
-  --ref-steam-blue-40: #2e4866;
+  /* =========================================
+   * 1) Ref palette (raw values only)
+   * =======================================*/
   --ref-steam-navy-10: #10151d;
   --ref-steam-navy-20: #171a21;
   --ref-steam-navy-30: #1b2838;
   --ref-steam-navy-40: #223145;
   --ref-steam-navy-50: #243349;
+  --ref-steam-blue-40: #2e4866;
+  --ref-steam-blue-60: #4b88b6;
+  --ref-steam-blue-70: #66c0f4;
+  --ref-steam-blue-80: #8bd3ff;
   --ref-steam-text-100: #eaf4ff;
   --ref-steam-text-70: #a7bed3;
+  --ref-steam-text-50: #7f93a8;
   --ref-steam-success: #6ccb5f;
   --ref-steam-warning: #f2c14e;
-  --ref-steam-danger: #e05a5a;
+  --ref-steam-error: #e05a5a;
   --ref-steam-neutral: #8191a8;
   --ref-steam-mint: #4fd89d;
+  --ref-black: rgba(0, 0, 0, 1);
+  --ref-white: rgba(255, 255, 255, 1);
 
-  /* MD3-style system color roles (mapped to Steam palette) */
-  --sys-color-primary: var(--ref-steam-blue-70);
-  --sys-color-on-primary: #0d2a3f;
-  --sys-color-primary-container: #244159;
-  --sys-color-on-primary-container: #d5eeff;
-  --sys-color-secondary: #9ab5ce;
-  --sys-color-on-secondary: #13293b;
-  --sys-color-secondary-container: #2a3d52;
-  --sys-color-on-secondary-container: #dbe8f5;
-  --sys-color-tertiary: #8fd8ff;
-  --sys-color-on-tertiary: #0d2a3f;
-  --sys-color-tertiary-container: #2d4f69;
-  --sys-color-on-tertiary-container: #def1ff;
-  --sys-color-error: var(--ref-steam-danger);
-  --sys-color-on-error: #2b0e0e;
-  --sys-color-error-container: #5d2628;
-  --sys-color-on-error-container: #ffd9d9;
+  /* =========================================
+   * 2) System roles
+   * =======================================*/
   --sys-color-background: var(--ref-steam-navy-20);
-  --sys-color-on-background: var(--ref-steam-text-100);
-  --sys-color-surface-dim: var(--ref-steam-navy-10);
+  --sys-color-background-elevated: var(--ref-steam-navy-10);
+
   --sys-color-surface: var(--ref-steam-navy-30);
-  --sys-color-surface-bright: var(--ref-steam-navy-50);
-  --sys-color-surface-container-lowest: var(--ref-steam-navy-10);
   --sys-color-surface-container-low: var(--ref-steam-navy-20);
   --sys-color-surface-container: var(--ref-steam-navy-30);
   --sys-color-surface-container-high: var(--ref-steam-navy-40);
   --sys-color-surface-container-highest: var(--ref-steam-navy-50);
+
   --sys-color-on-surface: var(--ref-steam-text-100);
   --sys-color-on-surface-variant: var(--ref-steam-text-70);
+  --sys-color-on-surface-muted: var(--ref-steam-text-50);
+
   --sys-color-outline: #4f6783;
   --sys-color-outline-variant: var(--ref-steam-blue-40);
-  --sys-color-inverse-surface: var(--ref-steam-text-100);
-  --sys-color-inverse-on-surface: var(--ref-steam-navy-20);
-  --sys-color-inverse-primary: #2e6e9a;
+
+  --sys-color-primary: var(--ref-steam-blue-70);
+  --sys-color-primary-hover: var(--ref-steam-blue-80);
+  --sys-color-primary-container: #244159;
+  --sys-color-on-primary: #0d2a3f;
+  --sys-color-on-primary-container: #d5eeff;
+
+  --sys-color-accent: var(--ref-steam-mint);
+  --sys-color-link: var(--ref-steam-blue-80);
+
   --sys-color-success: var(--ref-steam-success);
   --sys-color-warning: var(--ref-steam-warning);
+  --sys-color-error: var(--ref-steam-error);
   --sys-color-neutral: var(--ref-steam-neutral);
 
-  /* Backward-compatible color tokens */
-  --color-primary: var(--sys-color-primary);
-  --color-primary-hover: var(--ref-steam-blue-80);
-  --color-bg-1: var(--sys-color-background);
-  --color-bg-2: var(--sys-color-surface);
-  --color-bg-3: var(--sys-color-surface-dim);
-  --color-surface: var(--sys-color-surface-container-high);
-  --color-surface-strong: var(--sys-color-surface-container-highest);
-  --color-border: var(--sys-color-outline-variant);
-  --color-text-primary: var(--sys-color-on-surface);
-  --color-text-secondary: var(--sys-color-on-surface-variant);
-  --color-success: var(--sys-color-success);
-  --color-warning: var(--sys-color-warning);
-  --color-danger: var(--sys-color-error);
-  --color-neutral: var(--sys-color-neutral);
+  --sys-color-focus-ring: #ffffff;
 
-  /* Typography tokens */
+  /* =========================================
+   * 3) Typography
+   * =======================================*/
   --font-family-base: "Pretendard", "Noto Sans KR", sans-serif;
+
   --font-weight-regular: 400;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Legacy numeric type scale */
-  --font-size-12: 0.75rem;
-  --font-size-14: 0.875rem;
-  --font-size-16: 1rem;
-  --font-size-20: 1.25rem;
-  --font-size-24: 1.5rem;
-  --font-size-32: 2rem;
-  --line-height-body: 1.6;
-  --line-height-title: 1.35;
+  --type-display-lg-size: 2rem;
+  --type-display-lg-line: 2.5rem;
+  --type-display-lg-weight: var(--font-weight-bold);
 
-  /* MD3-style semantic type scale */
-  --type-display-large-size: 2rem;
-  --type-display-large-line: 2.5rem;
-  --type-display-large-weight: var(--font-weight-bold);
-  --type-headline-large-size: 1.5rem;
-  --type-headline-large-line: 2rem;
-  --type-headline-large-weight: var(--font-weight-bold);
-  --type-title-large-size: 1.25rem;
-  --type-title-large-line: 1.75rem;
-  --type-title-large-weight: var(--font-weight-medium);
-  --type-title-medium-size: 1rem;
-  --type-title-medium-line: 1.5rem;
-  --type-title-medium-weight: var(--font-weight-medium);
-  --type-title-small-size: 0.875rem;
-  --type-title-small-line: 1.25rem;
-  --type-title-small-weight: var(--font-weight-medium);
-  --type-body-large-size: 1rem;
-  --type-body-large-line: 1.6rem;
-  --type-body-large-weight: var(--font-weight-regular);
-  --type-body-medium-size: 0.875rem;
-  --type-body-medium-line: 1.4rem;
-  --type-body-medium-weight: var(--font-weight-regular);
-  --type-body-small-size: 0.75rem;
-  --type-body-small-line: 1.2rem;
-  --type-body-small-weight: var(--font-weight-regular);
-  --type-label-large-size: 0.875rem;
-  --type-label-large-line: 1.25rem;
-  --type-label-large-weight: var(--font-weight-medium);
-  --type-label-medium-size: 0.75rem;
-  --type-label-medium-line: 1rem;
-  --type-label-medium-weight: var(--font-weight-medium);
-  --type-label-small-size: 0.6875rem;
-  --type-label-small-line: 1rem;
-  --type-label-small-weight: var(--font-weight-medium);
+  --type-display-md-size: 1.75rem;
+  --type-display-md-line: 2.25rem;
+  --type-display-md-weight: var(--font-weight-bold);
 
-  /* Spacing tokens */
+  --type-heading-lg-size: 1.5rem;
+  --type-heading-lg-line: 2rem;
+  --type-heading-lg-weight: var(--font-weight-bold);
+
+  --type-heading-md-size: 1.25rem;
+  --type-heading-md-line: 1.75rem;
+  --type-heading-md-weight: var(--font-weight-semibold);
+
+  --type-heading-sm-size: 1rem;
+  --type-heading-sm-line: 1.5rem;
+  --type-heading-sm-weight: var(--font-weight-semibold);
+
+  --type-body-lg-size: 1rem;
+  --type-body-lg-line: 1.6rem;
+  --type-body-lg-weight: var(--font-weight-regular);
+
+  --type-body-md-size: 0.875rem;
+  --type-body-md-line: 1.5rem;
+  --type-body-md-weight: var(--font-weight-regular);
+
+  --type-body-sm-size: 0.75rem;
+  --type-body-sm-line: 1.25rem;
+  --type-body-sm-weight: var(--font-weight-regular);
+
+  --type-label-lg-size: 0.875rem;
+  --type-label-lg-line: 1.25rem;
+  --type-label-lg-weight: var(--font-weight-medium);
+
+  --type-label-md-size: 0.75rem;
+  --type-label-md-line: 1rem;
+  --type-label-md-weight: var(--font-weight-medium);
+
+  --type-label-sm-size: 0.6875rem;
+  --type-label-sm-line: 1rem;
+  --type-label-sm-weight: var(--font-weight-medium);
+
+  /* =========================================
+   * 4) Spacing / layout
+   * =======================================*/
+  --space-2: 2px;
   --space-4: 4px;
   --space-8: 8px;
   --space-12: 12px;
@@ -129,69 +122,127 @@
   --space-24: 24px;
   --space-32: 32px;
   --space-48: 48px;
+  --space-64: 64px;
 
-  /* Shape and shadow tokens */
-  --shape-corner-none: 0px;
-  --shape-corner-extra-small: 4px;
-  --shape-corner-small: 8px;
-  --shape-corner-medium: 12px;
-  --shape-corner-large: 16px;
-  --shape-corner-extra-large: 24px;
+  --layout-max-width: 1200px;
+  --layout-content-gutter: 16px;
+  --layout-grid-columns-desktop: 12;
+  --layout-grid-columns-tablet: 8;
+  --layout-grid-columns-mobile: 4;
+
+  /* =========================================
+   * 5) Shape / elevation
+   * =======================================*/
+  --shape-corner-xs: 4px;
+  --shape-corner-sm: 8px;
+  --shape-corner-md: 12px;
+  --shape-corner-lg: 16px;
+  --shape-corner-xl: 24px;
   --shape-corner-full: 9999px;
-  --radius-6: 6px;
-  --radius-10: 10px;
-  --radius-14: 14px;
+
   --shadow-elevation-1: 0 8px 24px rgba(0, 0, 0, 0.28);
   --shadow-elevation-2: 0 12px 32px rgba(0, 0, 0, 0.34);
 
-  /* Motion and state tokens */
-  --motion-duration-short: 120ms;
-  --motion-duration-fast: 180ms;
-  --motion-duration-medium: 240ms;
-  --motion-duration-slow: 320ms;
+  /* =========================================
+   * 6) Motion / state
+   * =======================================*/
+  --motion-duration-fast: 120ms;
+  --motion-duration-medium: 180ms;
+  --motion-duration-slow: 240ms;
   --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --motion-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
-  --motion-ease-decelerate: cubic-bezier(0, 0, 0, 1);
-  --motion-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
-  --motion-ease-legacy: ease-out;
+
   --state-hover-opacity: 0.08;
   --state-focus-opacity: 0.12;
-  --state-pressed-opacity: 0.12;
-  --state-dragged-opacity: 0.16;
+  --state-pressed-opacity: 0.14;
+  --state-selected-opacity: 0.12;
+  --state-disabled-opacity: 0.45;
 
-  /* Layout tokens */
-  --layout-max-width: 1200px;
-  --layout-content-gutter: 16px;
-
-  /* Component tokens */
+  /* =========================================
+   * 7) Component roles
+   * =======================================*/
   --comp-card-bg: var(--sys-color-surface-container-high);
   --comp-card-bg-strong: var(--sys-color-surface-container-highest);
   --comp-card-border: var(--sys-color-outline-variant);
+  --comp-card-shadow: none;
+  --comp-card-shadow-elevated: var(--shadow-elevation-1);
+  --comp-card-hover-overlay: rgba(255, 255, 255, 0.04);
+  --comp-card-pressed-overlay: rgba(255, 255, 255, 0.06);
+
+  --comp-panel-bg: var(--sys-color-surface-container);
+  --comp-panel-border: var(--sys-color-outline-variant);
+
   --comp-input-bg: var(--sys-color-surface-container);
   --comp-input-border: var(--sys-color-outline-variant);
+  --comp-input-border-hover: var(--sys-color-outline);
   --comp-input-border-focus: var(--sys-color-primary);
+  --comp-input-text: var(--sys-color-on-surface);
+  --comp-input-placeholder: var(--sys-color-on-surface-muted);
+  --comp-input-error: var(--sys-color-error);
+
   --comp-button-filled-bg: var(--sys-color-primary);
-  --comp-button-filled-bg-hover: var(--color-primary-hover);
+  --comp-button-filled-bg-hover: var(--sys-color-primary-hover);
   --comp-button-filled-label: var(--sys-color-on-primary);
+
   --comp-button-outlined-bg: transparent;
   --comp-button-outlined-border: var(--sys-color-outline);
+  --comp-button-outlined-border-hover: var(--sys-color-primary);
   --comp-button-outlined-label: var(--sys-color-on-surface);
 
-  /* Semantic aliases used by current report UI */
-  --bg: var(--color-bg-1);
-  --bg-soft: var(--color-bg-2);
-  --card: var(--color-surface);
-  --card-strong: var(--color-surface-strong);
-  --line: var(--sys-color-outline-variant);
-  --text: var(--color-text-primary);
-  --muted: var(--color-text-secondary);
-  --brand: var(--color-primary);
-  --buy-now: var(--color-success);
-  --buy-sale: var(--color-primary);
-  --buy-free: var(--ref-steam-mint);
-  --buy-try: var(--ref-steam-blue-80);
-  --buy-wait: var(--color-warning);
-  --buy-avoid: var(--color-danger);
-  --neutral: var(--color-neutral);
-  --shadow: var(--shadow-elevation-1);
+  --comp-button-ghost-bg: transparent;
+  --comp-button-ghost-bg-hover: rgba(255, 255, 255, 0.04);
+  --comp-button-ghost-label: var(--sys-color-primary);
+
+  --comp-focus-ring-color: var(--sys-color-focus-ring);
+  --comp-focus-ring-width: 2px;
+  --comp-focus-ring-offset: 2px;
+
+  --comp-chip-bg: transparent;
+  --comp-chip-border: var(--sys-color-outline-variant);
+  --comp-chip-label: var(--sys-color-on-surface);
+  --comp-chip-hover-overlay: rgba(255, 255, 255, 0.04);
+  --comp-chip-radius: var(--shape-corner-full);
+  --comp-chip-height-sm: 28px;
+  --comp-chip-height-md: 32px;
+  --comp-chip-padding-x-sm: 10px;
+  --comp-chip-padding-x-md: 14px;
+  --comp-chip-font-size-sm: var(--type-label-sm-size);
+  --comp-chip-line-sm: var(--type-label-sm-line);
+  --comp-chip-font-size-md: var(--type-label-md-size);
+  --comp-chip-line-md: var(--type-label-md-line);
+
+  --comp-chip-success-bg: rgba(108, 203, 95, 0.12);
+  --comp-chip-success-border: rgba(108, 203, 95, 0.45);
+  --comp-chip-success-label: var(--sys-color-success);
+
+  --comp-chip-warning-bg: rgba(242, 193, 78, 0.12);
+  --comp-chip-warning-border: rgba(242, 193, 78, 0.45);
+  --comp-chip-warning-label: var(--sys-color-warning);
+
+  --comp-chip-error-bg: rgba(224, 90, 90, 0.12);
+  --comp-chip-error-border: rgba(224, 90, 90, 0.45);
+  --comp-chip-error-label: var(--sys-color-error);
+
+  --comp-chip-neutral-bg: rgba(129, 145, 168, 0.12);
+  --comp-chip-neutral-border: rgba(129, 145, 168, 0.45);
+  --comp-chip-neutral-label: var(--sys-color-neutral);
+
+  --comp-link-color: var(--sys-color-link);
+  --comp-link-color-hover: var(--sys-color-primary-hover);
+
+  --comp-evidence-card-bg: var(--sys-color-surface-container);
+  --comp-evidence-card-border: var(--sys-color-outline-variant);
+  --comp-evidence-card-border-hover: var(--sys-color-outline);
+  --comp-evidence-card-quote-line: var(--sys-color-outline-variant);
+  --comp-evidence-card-meta: var(--sys-color-on-surface-muted);
+
+  /* =========================================
+   * 8) Domain semantic aliases
+   * =======================================*/
+  --semantic-buy-now: var(--sys-color-success);
+  --semantic-buy-sale: var(--sys-color-primary);
+  --semantic-buy-free: var(--sys-color-accent);
+  --semantic-buy-try: var(--sys-color-primary-hover);
+  --semantic-buy-wait: var(--sys-color-warning);
+  --semantic-buy-avoid: var(--sys-color-error);
+  --semantic-buy-neutral: var(--sys-color-neutral);
 }

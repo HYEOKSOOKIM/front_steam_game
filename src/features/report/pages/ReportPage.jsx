@@ -1,42 +1,226 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchDemoGames, fetchReport } from "../api/reportApi";
 import DecisionGrid from "../components/DecisionGrid";
 import EvidenceSection from "../components/EvidenceSection";
 import FitGrid from "../components/FitGrid";
+import GameIntroSection from "../components/GameIntroSection";
+import InsufficientReviewState from "../components/InsufficientReviewState";
 import StatusFooter from "../components/StatusFooter";
 import StrengthRiskSection from "../components/StrengthRiskSection";
 import Topbar from "../components/Topbar";
 import {
   buyBadgeClass,
-  formatGeneratedAt,
   normalizeEvidenceSections,
   recommendationLabel,
   recentStateLabel,
+  recentStateTone,
   toList,
 } from "../utils/reportMappers";
 
+const ReviewTrendChart = lazy(() => import("../components/ReviewTrendChart"));
+
+const SUGGESTION_LIMIT = 8;
+const DEFAULT_MIN_REPORT_REVIEW_COUNT = 100;
+const REPORT_NOT_FOUND_MESSAGE =
+  "리포트를 찾지 못했어요\n입력한 게임 이름을 다시 확인하거나, 다른 게임으로 검색해보세요.";
+
+function normalizeSearchText(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function gameLabel(game) {
+  if (!game) {
+    return "";
+  }
+  return `${game.name} (${game.appid})`;
+}
+
+function findGameByQuery(games, query) {
+  const normalized = normalizeSearchText(query);
+  if (!normalized) {
+    return null;
+  }
+
+  const exactAppid = games.find((game) => String(game.appid) === normalized);
+  if (exactAppid) {
+    return exactAppid;
+  }
+
+  const exactName = games.find((game) => normalizeSearchText(game.name) === normalized);
+  if (exactName) {
+    return exactName;
+  }
+
+  return (
+    games.find((game) => {
+      const name = normalizeSearchText(game.name);
+      const appid = String(game.appid);
+      return name.includes(normalized) || appid.includes(normalized);
+    }) || null
+  );
+}
+
+function filterGames(games, query) {
+  const normalized = normalizeSearchText(query);
+  if (!normalized) {
+    return [];
+  }
+
+  return games
+    .filter((game) => {
+      const name = normalizeSearchText(game.name);
+      const appid = String(game.appid);
+      return name.includes(normalized) || appid.includes(normalized);
+    })
+    .slice(0, SUGGESTION_LIMIT);
+}
+
+function SearchLanding({
+  games,
+  query,
+  onQueryChange,
+  onSubmit,
+  onInputKeyDown,
+  onSelectGame,
+  suggestions,
+  activeSuggestionIndex,
+  showSuggestions,
+  onFocus,
+  onBlur,
+  loading,
+  statusLine,
+}) {
+  const activeSuggestion = activeSuggestionIndex >= 0 ? suggestions[activeSuggestionIndex] : null;
+
+  return (
+    <section className="report-search-home">
+      <p className="report-search-kicker">Steam Report</p>
+      <h1 className="report-search-title">어떤 게임이 궁금하세요?</h1>
+      <p className="report-search-subtitle">
+        한국 유저 리뷰를 바탕으로, 게임의 장단점을 한눈에 정리해드려요
+      </p>
+
+      <form className="report-search-form" onSubmit={onSubmit}>
+        <label className="sr-only" htmlFor="report-search-input">
+          게임명 또는 appid
+        </label>
+        <div className="report-search-box">
+          <input
+            id="report-search-input"
+            className="report-search-input"
+            type="search"
+            value={query}
+            onChange={(event) => onQueryChange(event.target.value)}
+            onKeyDown={onInputKeyDown}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            placeholder="예: Elden Ring, GTA V"
+            autoComplete="off"
+            disabled={loading || games.length === 0}
+            role="combobox"
+            aria-expanded={showSuggestions}
+            aria-controls="report-search-suggestions"
+            aria-activedescendant={
+              showSuggestions && activeSuggestion ? `report-suggestion-${activeSuggestion.appid}` : undefined
+            }
+          />
+          <button className="report-search-submit" type="submit" disabled={loading || games.length === 0}>
+            검색
+          </button>
+        </div>
+        <p className="report-search-helper">한국어 리뷰만을 기반으로 분석해요</p>
+
+        {showSuggestions ? (
+          <div
+            id="report-search-suggestions"
+            className="report-suggestions"
+            role="listbox"
+            aria-label="검색 제안"
+          >
+            {suggestions.map((game, index) => (
+              <button
+                key={game.appid}
+                id={`report-suggestion-${game.appid}`}
+                className={`report-suggestion ${index === activeSuggestionIndex ? "is-active" : ""}`}
+                type="button"
+                role="option"
+                aria-selected={index === activeSuggestionIndex}
+                onMouseDown={(event) => event.preventDefault()}
+                onMouseEnter={() => onQueryChange(query, index)}
+                onClick={() => onSelectGame(game)}
+              >
+                <span className="report-suggestion-name">{game.name}</span>
+                <strong>{game.appid}</strong>
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </form>
+
+      {statusLine ? (
+        <p className="report-search-status">
+          {String(statusLine)
+            .split("\n")
+            .map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
 export default function ReportPage() {
+  const navigate = useNavigate();
   const [games, setGames] = useState([]);
-  const [selectedAppid, setSelectedAppid] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [report, setReport] = useState(null);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
-  const [statusLine, setStatusLine] = useState("게임 목록 준비 중...");
+  const [statusLine, setStatusLine] = useState("게임 목록을 준비하는 중입니다...");
+
+  const suggestions = useMemo(() => filterGames(games, searchQuery), [games, searchQuery]);
+  const showSuggestions = isSearchFocused && suggestions.length > 0 && !report;
+
+  useEffect(() => {
+    if (!showSuggestions) {
+      setActiveSuggestionIndex(-1);
+      return;
+    }
+
+    setActiveSuggestionIndex((currentIndex) => {
+      if (suggestions.length === 0) {
+        return -1;
+      }
+      if (currentIndex < 0 || currentIndex >= suggestions.length) {
+        return 0;
+      }
+      return currentIndex;
+    });
+  }, [showSuggestions, suggestions]);
 
   const openReport = useCallback(async (appidValue) => {
     const numericAppid = Number(appidValue);
     if (!numericAppid) {
-      setStatusLine("리포트 대상 게임을 선택해 주세요.");
+      setStatusLine("게임 이름을 먼저 입력해주세요");
       return;
     }
 
     setIsLoadingReport(true);
-    setStatusLine("구매 판단 리포트를 불러오는 중입니다...");
+    setStatusLine("유저 리뷰를 분석하고 있어요");
     try {
       const payload = await fetchReport(numericAppid);
       setReport(payload);
-      setStatusLine("불러오기 완료");
+      setStatusLine("");
     } catch (error) {
-      setStatusLine(error?.message || "리포트 로드에 실패했습니다.");
+      setReport(null);
+      if (String(error?.message || "").includes("enabled for demo serving")) {
+        setStatusLine(REPORT_NOT_FOUND_MESSAGE);
+      } else {
+        setStatusLine(error?.message || REPORT_NOT_FOUND_MESSAGE);
+      }
     } finally {
       setIsLoadingReport(false);
     }
@@ -46,7 +230,7 @@ export default function ReportPage() {
     let isCancelled = false;
 
     async function bootstrap() {
-      setStatusLine("게임 목록 준비 중...");
+      setStatusLine("게임 목록을 준비하는 중입니다...");
       try {
         const loadedGames = await fetchDemoGames();
         if (isCancelled) {
@@ -54,18 +238,10 @@ export default function ReportPage() {
         }
 
         setGames(loadedGames);
-        if (loadedGames.length === 0) {
-          setSelectedAppid("");
-          setStatusLine("표시 가능한 게임이 없습니다.");
-          return;
-        }
-
-        const firstAppid = String(loadedGames[0].appid);
-        setSelectedAppid(firstAppid);
-        await openReport(firstAppid);
+        setStatusLine(loadedGames.length === 0 ? "표시 가능한 리포트가 없어요." : "");
       } catch (error) {
         if (!isCancelled) {
-          setStatusLine(error?.message || "초기화에 실패했습니다.");
+          setStatusLine(error?.message || "초기화에 실패했어요.");
         }
       }
     }
@@ -74,7 +250,7 @@ export default function ReportPage() {
     return () => {
       isCancelled = true;
     };
-  }, [openReport]);
+  }, []);
 
   const display = report?.report_display ?? {};
   const game = report?.game ?? {};
@@ -87,52 +263,182 @@ export default function ReportPage() {
   const notGoodFor = toList(display.not_good_for);
   const topStrengths = toList(display.top_strengths);
   const topRisks = toList(display.top_risks);
+  const minReportReviewCount =
+    Number(report?.min_report_review_count) || DEFAULT_MIN_REPORT_REVIEW_COUNT;
+  const sourceReviewCount = Number(report?.source_review_count || 0);
+  const isInsufficientReviewReport =
+    report?.report_state === "insufficient_reviews" ||
+    sourceReviewCount < minReportReviewCount;
 
-  async function handleSubmit(event) {
+  async function handleSearchSubmit(event) {
     event.preventDefault();
-    await openReport(selectedAppid);
+
+    const selectedSuggestion =
+      showSuggestions && activeSuggestionIndex >= 0 ? suggestions[activeSuggestionIndex] : null;
+    if (selectedSuggestion) {
+      await handleSelectGame(selectedSuggestion);
+      return;
+    }
+
+    const trimmed = searchQuery.trim();
+    if (!trimmed) {
+      setStatusLine("게임 이름을 먼저 입력해주세요");
+      return;
+    }
+
+    const numericAppid = Number(trimmed);
+    if (Number.isFinite(numericAppid) && numericAppid > 0) {
+      await openReport(numericAppid);
+      return;
+    }
+
+    const matchedGame = findGameByQuery(games, trimmed);
+    if (!matchedGame) {
+      setStatusLine(REPORT_NOT_FOUND_MESSAGE);
+      return;
+    }
+
+    setSearchQuery(gameLabel(matchedGame));
+    await openReport(matchedGame.appid);
+  }
+
+  async function handleSelectGame(game) {
+    setSearchQuery(gameLabel(game));
+    setIsSearchFocused(false);
+    setActiveSuggestionIndex(-1);
+    await openReport(game.appid);
+  }
+
+  function handleQueryChange(value, nextActiveIndex = -1) {
+    setSearchQuery(value);
+    setActiveSuggestionIndex(nextActiveIndex);
+  }
+
+  async function handleInputKeyDown(event) {
+    if (!showSuggestions || suggestions.length === 0) {
+      if (event.key === "Escape") {
+        setIsSearchFocused(false);
+      }
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveSuggestionIndex((currentIndex) => (currentIndex + 1) % suggestions.length);
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveSuggestionIndex((currentIndex) =>
+        currentIndex <= 0 ? suggestions.length - 1 : currentIndex - 1,
+      );
+      return;
+    }
+
+    if (event.key === "Enter" && activeSuggestionIndex >= 0) {
+      event.preventDefault();
+      await handleSelectGame(suggestions[activeSuggestionIndex]);
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setIsSearchFocused(false);
+      setActiveSuggestionIndex(-1);
+    }
+  }
+
+  function handleResetSearch() {
+    setReport(null);
+    setSearchQuery("");
+    setActiveSuggestionIndex(-1);
+    setStatusLine("");
   }
 
   return (
-    <main className="report-shell">
+    <main className={report ? "report-shell" : "report-shell report-shell-search"}>
       <Topbar
-        games={games}
-        selectedAppid={selectedAppid}
-        onSelectChange={setSelectedAppid}
-        onSubmit={handleSubmit}
-        isLoadingReport={isLoadingReport}
+        onBackHome={() => navigate("/")}
+        onResetSearch={handleResetSearch}
+        showResetSearch={Boolean(report)}
       />
 
-      <section className="hero-card">
-        <div className="hero-meta">
-          <p className="game-title">
-            {game.name || (report?.appid ? `appid ${report.appid}` : "게임을 선택하면 리포트가 표시됩니다")}
-          </p>
-          <span className={badgeClass}>{recommendationLabel(recommendation)}</span>
-        </div>
-        <h1 className="headline">
-          {display.headline || "많은 리뷰의 합의 신호를 바탕으로 구매 결정을 빠르게 정리합니다."}
-        </h1>
-      </section>
+      {!report ? (
+        <SearchLanding
+          games={games}
+          query={searchQuery}
+          onQueryChange={handleQueryChange}
+          onSubmit={handleSearchSubmit}
+          onInputKeyDown={handleInputKeyDown}
+          onSelectGame={handleSelectGame}
+          suggestions={suggestions}
+          activeSuggestionIndex={activeSuggestionIndex}
+          showSuggestions={showSuggestions}
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => {
+            setIsSearchFocused(false);
+            setActiveSuggestionIndex(-1);
+          }}
+          loading={isLoadingReport}
+          statusLine={statusLine}
+        />
+      ) : (
+        <>
+          <GameIntroSection
+            appid={report?.appid}
+            game={game}
+            sourceReviewCount={report?.source_review_count}
+            minReviewCount={minReportReviewCount}
+          />
 
-      <DecisionGrid
-        buyTimingSummary={display.buy_timing_summary}
-        recentStateSummary={recentState.summary}
-        recentStateStatus={`상태: ${recentStateLabel(recentState.status)}`}
-        buyRecommendation={recommendationLabel(recommendation)}
-        generatedAt={formatGeneratedAt(report?.generated_at)}
-      />
+          {isInsufficientReviewReport ? (
+            <InsufficientReviewState minReviewCount={minReportReviewCount} />
+          ) : (
+            <div className="report-content-flow">
+              <div className="report-core-stack">
+                <section className="hero-card">
+                  <div className="hero-meta">
+                    <p className="game-title">한눈에 보는 결론</p>
+                  </div>
+                  <h1 className="headline">
+                    {display.headline || "많은 리뷰의 공통된 흐름을 바탕으로 구매 판단만 빠르게 정리했어요."}
+                  </h1>
+                </section>
 
-      <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />
+                <section className="section-card review-trend-card">
+                  <h2>월별 한국어 리뷰 흐름</h2>
+                  <Suspense fallback={<div className="review-trend-loading">차트를 불러오는 중이에요...</div>}>
+                    <ReviewTrendChart trend={report?.review_trend} />
+                  </Suspense>
+                </section>
+              </div>
 
-      <StrengthRiskSection strengths={topStrengths} risks={topRisks} />
+              <div className="report-support-stack">
+                <DecisionGrid
+                  buyTimingSummary={display.buy_timing_summary}
+                  recommendationBadgeClass={badgeClass}
+                  recommendationLabel={recommendationLabel(recommendation)}
+                  recentStateSummary={recentState.summary}
+                  recentStateLabel={recentStateLabel(recentState.status)}
+                  recentStateTone={recentStateTone(recentState.status)}
+                />
 
-      <EvidenceSection
-        positiveBlocks={evidenceSections.loved}
-        negativeBlocks={evidenceSections.complained}
-      />
+                <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />
 
-      <StatusFooter disclaimer={report?.disclaimer} statusLine={statusLine} />
+                <StrengthRiskSection strengths={topStrengths} risks={topRisks} />
+
+                <EvidenceSection
+                  positiveBlocks={evidenceSections.loved}
+                  negativeBlocks={evidenceSections.complained}
+                />
+              </div>
+            </div>
+          )}
+
+          <StatusFooter />
+        </>
+      )}
     </main>
   );
 }
