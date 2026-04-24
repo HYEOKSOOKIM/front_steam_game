@@ -1233,19 +1233,23 @@ select:hover:not(:disabled) {
 }
 
 .evidence-card {
+  border: 1px solid var(--comp-evidence-card-border);
+  border-radius: var(--shape-corner-sm);
+  background: var(--comp-evidence-card-bg);
+  overflow: hidden;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
 .evidence-card + .evidence-card {
-  padding-top: var(--space-4);
+  padding-top: 0;
 }
 
 .evidence-card-trigger {
   min-height: 0;
-  border: 1px solid var(--comp-evidence-card-border);
-  border-radius: var(--shape-corner-sm);
-  background: var(--comp-evidence-card-bg);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: inherit;
   padding: var(--space-14, 14px);
   display: grid;
@@ -1259,8 +1263,7 @@ select:hover:not(:disabled) {
 }
 
 .evidence-card-trigger:hover {
-  border-color: var(--comp-evidence-card-border-hover);
-  background: var(--comp-card-hover-overlay);
+  background: color-mix(in srgb, var(--comp-card-hover-overlay) 72%, transparent);
 }
 
 .evidence-card-head {
@@ -1375,16 +1378,18 @@ select:hover:not(:disabled) {
 }
 
 .evidence-popover {
-  margin-top: var(--space-8);
-  border: 1px solid var(--comp-card-border);
-  border-radius: var(--shape-corner-sm);
-  background: color-mix(in srgb, var(--sys-color-surface-container) 88%, var(--sys-color-surface-container-high) 12%);
-  padding: var(--space-10) var(--space-12);
+  margin: 0 var(--space-14, 14px) var(--space-14, 14px);
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--comp-card-border) 82%, transparent);
+  border-radius: 0;
+  background: transparent;
+  padding: var(--space-10) 0 0;
   display: grid;
   gap: var(--space-8);
 }
 
 .evidence-popover-kicker {
+  display: none;
   margin: 0;
   color: var(--sys-color-on-surface-muted);
   font-size: var(--type-label-sm-size);
@@ -1406,7 +1411,7 @@ select:hover:not(:disabled) {
   margin: 0;
   padding-left: var(--space-24);
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-6, 6px);
   color: var(--sys-color-on-surface);
 }
 
@@ -1424,6 +1429,10 @@ select:hover:not(:disabled) {
 }
 
 .evidence-card.is-open .evidence-card-trigger {
+  border-color: var(--comp-evidence-card-border-hover);
+}
+
+.evidence-card.is-open {
   border-color: var(--comp-evidence-card-border-hover);
 }
 
