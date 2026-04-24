@@ -5,6 +5,7 @@ import {
   fetchRecommendations,
   fetchRecommendSuggestions,
 } from "./api/recommendApi";
+import PlayedGamesAutocomplete from "./components/PlayedGamesAutocomplete";
 import "./styles/recommend.css";
 
 const FIXED_TOP_K = 5;
@@ -82,20 +83,13 @@ export default function RecommendPage() {
   const [statusLine, setStatusLine] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [result, setResult] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [playedGames, setPlayedGames] = useState([]);
   const [selectedKey, setSelectedKey] = useState("");
 
   const rows = result?.results || [];
-  const tabs = result?.category_tabs || [];
-
-  const filteredRows = useMemo(() => {
-    return rows.filter(
-      (row) => activeCategory === "all" || (row.categories || []).includes(activeCategory)
-    );
-  }, [rows, activeCategory]);
 
   const sortedRows = useMemo(() => {
-    return filteredRows
+    return rows
       .map((row, idx) => ({ row, idx }))
       .sort((a, b) => {
         const byConfidence = confidenceRank(b.row) - confidenceRank(a.row);
@@ -103,7 +97,7 @@ export default function RecommendPage() {
         return a.idx - b.idx;
       })
       .map((x) => x.row);
-  }, [filteredRows]);
+  }, [rows]);
 
   const commonGenres = useMemo(() => {
     if (sortedRows.length === 0) return [];
@@ -132,6 +126,17 @@ export default function RecommendPage() {
     return found || sortedRows[0];
   }, [sortedRows, selectedKey]);
 
+  const queryDebugMeta = useMemo(() => {
+    if (mode !== "query") return null;
+    const meta = result?.meta;
+    if (!meta || typeof meta !== "object") return null;
+    return {
+      excluded_app_ids: Array.isArray(meta.excluded_app_ids) ? meta.excluded_app_ids : [],
+      played_resolved: Array.isArray(meta.played_resolved) ? meta.played_resolved : [],
+      played_unresolved: Array.isArray(meta.played_unresolved) ? meta.played_unresolved : [],
+    };
+  }, [mode, result]);
+
   useEffect(() => {
     if (sortedRows.length === 0) {
       if (selectedKey) setSelectedKey("");
@@ -143,6 +148,11 @@ export default function RecommendPage() {
       setSelectedKey(getItemKey(sortedRows[0], 0));
     }
   }, [sortedRows, selectedKey]);
+
+  useEffect(() => {
+    if (!queryDebugMeta) return;
+    console.debug("[recommend.meta]", queryDebugMeta);
+  }, [queryDebugMeta]);
 
   useEffect(() => {
     if (mode !== "preference") return;
@@ -230,7 +240,6 @@ export default function RecommendPage() {
     setErrorMsg("");
     setResult(null);
     setStatusLine("");
-    setActiveCategory("all");
     setSelectedKey("");
   }
 
@@ -282,7 +291,6 @@ export default function RecommendPage() {
     setLoading(true);
     setErrorMsg("");
     setResult(null);
-    setActiveCategory("all");
     setSelectedKey("");
 
     try {
@@ -294,8 +302,18 @@ export default function RecommendPage() {
           return;
         }
 
+        const playedGameNames = playedGames
+          .map((item) => String(item?.label || "").trim())
+          .filter(Boolean);
+        const playedAppIds = playedGames
+          .map((item) => Number(item?.appId))
+          .filter((value) => Number.isFinite(value) && value > 0);
+
         setStatusLine("자연어 추천 결과를 불러오는 중입니다...");
-        const data = await fetchRecommendations(trimmed, FIXED_TOP_K);
+        const data = await fetchRecommendations(trimmed, FIXED_TOP_K, {
+          playedGames: playedGameNames,
+          playedAppIds,
+        });
         setResult(data);
         setStatusLine("자연어 추천 완료");
         return;
@@ -363,6 +381,12 @@ export default function RecommendPage() {
           </button>
         </div>
       </section>
+
+      {mode === "query" && (
+        <section className="recommend-card recommend-played-card">
+          <PlayedGamesAutocomplete items={playedGames} onChange={setPlayedGames} />
+        </section>
+      )}
 
       <form className={`recommend-form ${mode === "query" ? "is-query" : "is-preference"}`} onSubmit={handleSubmit}>
         {mode === "query" ? (
@@ -503,37 +527,19 @@ export default function RecommendPage() {
         </section>
       )}
 
+      {import.meta.env.DEV && queryDebugMeta && (
+        <details className="recommend-dev-meta">
+          <summary>개발자 디버그 정보</summary>
+          <pre>{JSON.stringify(queryDebugMeta, null, 2)}</pre>
+        </details>
+      )}
+
       {result && commonGenres.length > 0 && (
         <section className="recommend-card">
           <h2 className="recommend-card-name">공통 장르</h2>
           <div className="recommend-card-tags">
             {commonGenres.map((genre) => (
               <span key={`common-genre-${genre}`} className="recommend-tag">{genre}</span>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {result && (
-        <section className="recommend-card">
-          <h2 className="recommend-card-name">장르 필터</h2>
-          <div className="recommend-filters">
-            <button
-              type="button"
-              className={`recommend-filter ${activeCategory === "all" ? "is-active" : ""}`}
-              onClick={() => setActiveCategory("all")}
-            >
-              전체
-            </button>
-            {tabs.map((tab) => (
-              <button
-                type="button"
-                key={tab.id}
-                className={`recommend-filter ${activeCategory === tab.id ? "is-active" : ""}`}
-                onClick={() => setActiveCategory(tab.id)}
-              >
-                {tab.label}
-              </button>
             ))}
           </div>
         </section>

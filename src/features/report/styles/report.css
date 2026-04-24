@@ -86,12 +86,22 @@ select {
 }
 
 button {
-  border: none;
+  border: 1px solid #3a8dc3;
   background: linear-gradient(135deg, #2f89c3 0%, #3278b5 100%);
   color: #f3f8ff;
   padding: 10px 14px;
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  transition: filter 160ms ease, transform 160ms ease;
+}
+
+button:hover {
+  filter: brightness(1.08);
+}
+
+button:active {
+  transform: translateY(1px);
 }
 
 button:disabled {

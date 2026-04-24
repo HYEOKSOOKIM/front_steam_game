@@ -13,10 +13,19 @@ async function postJson(url, body, fallbackMessage) {
   return response.json();
 }
 
-export async function fetchRecommendations(query, topK = 5) {
+export async function fetchRecommendations(query, topK = 5, options = {}) {
+  const playedGames = Array.isArray(options.playedGames) ? options.playedGames.filter(Boolean) : [];
+  const playedAppIds = Array.isArray(options.playedAppIds)
+    ? options.playedAppIds.filter((value) => Number.isFinite(Number(value)))
+    : [];
+
+  const payload = { query, top_k: topK };
+  if (playedGames.length > 0) payload.played_games = playedGames;
+  if (playedAppIds.length > 0) payload.played_app_ids = playedAppIds.map((value) => Number(value));
+
   return postJson(
     "/api/recommend",
-    { query, top_k: topK },
+    payload,
     "추천 결과를 불러오지 못했습니다."
   );
 }
@@ -33,12 +42,14 @@ export async function fetchPreferenceRecommendations(likedGames, dislikedGames, 
   );
 }
 
-export async function fetchRecommendSuggestions(query, limit = 10) {
+export async function fetchRecommendSuggestions(query, limit = 10, options = {}) {
   const params = new URLSearchParams({
     q: query,
     limit: String(limit),
   });
-  const response = await fetch(`${BASE}/api/recommend/suggest?${params.toString()}`);
+  const response = await fetch(`${BASE}/api/recommend/suggest?${params.toString()}`, {
+    signal: options.signal,
+  });
   if (!response.ok) {
     const errorPayload = await response.json().catch(() => ({}));
     throw new Error(errorPayload.detail || "게임 자동완성 결과를 불러오지 못했습니다.");
