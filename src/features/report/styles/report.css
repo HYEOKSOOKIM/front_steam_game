@@ -1289,6 +1289,8 @@ select:hover:not(:disabled) {
   font-size: var(--type-label-sm-size);
   line-height: var(--type-label-sm-line);
   font-weight: var(--type-label-sm-weight);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .evidence-index {
@@ -1318,14 +1320,26 @@ select:hover:not(:disabled) {
 }
 
 .evidence-preview-quote {
-  border-left: 2px solid var(--comp-evidence-quote-border);
-  padding: var(--space-8) 0 var(--space-8) var(--space-10, 10px);
-  background: var(--sys-color-surface-container);
-  color: var(--sys-color-on-surface-variant);
+  display: grid;
+  gap: var(--space-8);
+  margin-top: var(--space-6, 6px);
+  border-left: 2px solid var(--sys-color-primary);
+  border-radius: 0 var(--shape-corner-sm) var(--shape-corner-sm) 0;
+  padding: var(--space-10, 10px) var(--space-12) var(--space-10, 10px) var(--space-12);
+  background: color-mix(in srgb, var(--sys-color-surface-container) 82%, var(--comp-card-bg-strong) 18%);
+  color: var(--sys-color-on-surface);
   font-size: var(--type-body-sm-size);
   line-height: var(--type-body-sm-line);
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+.evidence-preview-quote::before {
+  content: "실제 리뷰";
+  color: var(--sys-color-on-surface-muted);
+  font-size: var(--type-label-sm-size);
+  line-height: var(--type-label-sm-line);
+  font-weight: var(--font-weight-medium);
 }
 
 .evidence-card-action {
@@ -1380,10 +1394,12 @@ select:hover:not(:disabled) {
 
 .evidence-popover-label {
   margin: 0;
-  color: var(--sys-color-on-surface);
-  font-size: var(--type-label-md-size);
-  line-height: var(--type-label-md-line);
-  font-weight: var(--font-weight-bold);
+  color: var(--sys-color-on-surface-muted);
+  font-size: var(--type-label-sm-size);
+  line-height: var(--type-label-sm-line);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .evidence-snippets {
@@ -1403,7 +1419,8 @@ select:hover:not(:disabled) {
 }
 
 .evidence-popover-snippets li {
-  color: var(--sys-color-on-surface-variant);
+  color: var(--sys-color-on-surface);
+  padding-left: var(--space-4);
 }
 
 .evidence-card.is-open .evidence-card-trigger {
