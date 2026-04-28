@@ -5,7 +5,7 @@ import ReportPage from "./features/report/pages/ReportPage";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/recommend" element={<RecommendPage />} />

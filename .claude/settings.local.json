@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone *)",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git fetch *)",
+      "Bash(git checkout *)",
+      "Bash(npm install *)",
+      "WebSearch",
+      "WebFetch(domain:fredericksen.substack.com)",
+      "Bash(npm run *)",
+      "Bash(curl -s \"https://store.steampowered.com/curator/34786873/ajaxgetfilteredrecommendations/?count=10&start=0&sort=recent\" -H \"Accept: application/json\")",
+      "Bash(curl -s \"https://store.steampowered.com/curator/44896253/ajaxgetfilteredrecommendations/?count=10&start=0&sort=recent\" -H \"Accept: application/json\")",
+      "Bash(curl -s \"https://store.steampowered.com/curator/44896253/ajaxgetfilteredrecommendations/?count=10&start=0&sort=recent\")",
+      "Bash(curl -s \"https://store.steampowered.com/curator/34786873/ajaxgetfilteredrecommendations/?count=20&start=0&sort=recent\")",
+      "Bash(node -e ' *)",
+      "Bash(curl -s \"https://store.steampowered.com/curator/34786873/ajaxgetfilteredrecommendations/?count=50&start=0&sort=recent\")",
+      "Bash(node *)",
+      "Bash(curl -s \"https://store.steampowered.com/curator/34786873/ajaxgetfilteredrecommendations/?count=50&start=50&sort=recent\")",
+      "Bash(git reset *)",
+      "Bash(git pull *)",
+      "Bash(curl -s --connect-timeout 5 \"http://3.34.5.207:8000/api/games\")",
+      "Bash(curl -sv --connect-timeout 5 \"http://3.34.5.207:8000\")",
+      "Bash(curl -sv --connect-timeout 5 \"http://43.200.60.222:8000\")",
+      "Bash(curl -s --connect-timeout 5 -X POST \"http://43.200.60.222:8000/api/recommend\" -H \"Content-Type: application/json\" -d '{\"query\":\"액션 게임\",\"top_k\":5}')",
+      "Bash(curl -sv --connect-timeout 5 -X POST \"http://43.200.60.222:8000/api/recommend\" -H \"Content-Type: application/json\" -d '{\"query\":\"액션 게임\",\"top_k\":5}')",
+      "Bash(curl -sv --connect-timeout 5 -X POST \"http://43.200.60.222:8000/api/recommend\" -H \"Content-Type: application/json\" -d \"{\\\\\"query\\\\\":\\\\\"action game\\\\\",\\\\\"top_k\\\\\":5}\")",
+      "Bash(curl -s -I -X OPTIONS \"http://43.200.60.222:8000/api/recommend\" -H \"Origin: http://localhost:5173\" -H \"Access-Control-Request-Method: POST\")"
+    ]
+  }
+}
