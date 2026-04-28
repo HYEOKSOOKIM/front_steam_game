@@ -356,6 +356,16 @@ export default function ReportPage() {
     setStatusLine("");
   }
 
+  function handleResetSearchWithScroll() {
+    handleResetSearch();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function handleNavigateHome() {
+    navigate("/");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
   return (
     <main className={report ? "report-shell" : "report-shell report-shell-search"}>
       <Topbar
@@ -435,6 +445,20 @@ export default function ReportPage() {
               </div>
             </div>
           )}
+
+          <section className="report-cta">
+            <div className="report-cta__inner">
+              <h2 className="report-cta__title">다른 게임도 궁금하세요?</h2>
+              <div className="report-cta__buttons">
+                <button className="report-cta__btn report-cta__btn--filled" onClick={handleResetSearchWithScroll}>
+                  다른 게임 검색
+                </button>
+                <button className="report-cta__btn report-cta__btn--outlined" onClick={handleNavigateHome}>
+                  메인으로
+                </button>
+              </div>
+            </div>
+          </section>
 
           <StatusFooter />
         </>

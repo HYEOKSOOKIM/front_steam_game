@@ -51,6 +51,42 @@ function steamReviewScoreLabel(value) {
   return labels[String(value || "").trim()] || String(value || "").trim();
 }
 
+function reviewToneClass(label) {
+  if (!label) {
+    return "status-neutral";
+  }
+
+  if (label === "대체로 긍정적") {
+    return "status-positive-soft";
+  }
+
+  if (label === "매우 긍정적") {
+    return "status-positive-mid";
+  }
+
+  if (label === "압도적으로 긍정적") {
+    return "status-positive-strong";
+  }
+
+  if (label === "복합적") {
+    return "status-warning";
+  }
+
+  if (label === "대체로 부정적") {
+    return "status-negative-soft";
+  }
+
+  if (label === "매우 부정적") {
+    return "status-negative-mid";
+  }
+
+  if (label === "압도적으로 부정적") {
+    return "status-negative-strong";
+  }
+
+  return "status-neutral";
+}
+
 function buildSteamReviewSummary(game) {
   const totalReviews = Number(game?.steam_total_reviews);
   const totalPositive = Number(game?.steam_total_positive);
@@ -61,29 +97,26 @@ function buildSteamReviewSummary(game) {
 
   const positivePercent = Math.round((totalPositive / totalReviews) * 100);
   const scoreLabel = steamReviewScoreLabel(game?.steam_review_score_desc);
-  const prefix = scoreLabel ? `${scoreLabel} · ` : "";
 
-  return `${prefix}사용자 평가 ${formatNumber(totalReviews)}개 중 ${positivePercent}%가 긍정적이에요`;
+  return {
+    scoreLabel,
+    description: `사용자 평가 ${formatNumber(totalReviews)}개 중 ${positivePercent}%가 긍정적이에요`,
+  };
 }
 
-function buildSummary(game, sourceReviewCount, minReviewCount) {
+function buildFallbackSummary(game, sourceReviewCount, minReviewCount) {
   const sourceCount = Number(sourceReviewCount || 0);
   const minimumCount = Number(minReviewCount || 100);
 
   if (sourceCount < minimumCount) {
-    return "아직 한국어 리뷰 데이터가 충분하지 않아요.";
-  }
-
-  const steamReviewSummary = buildSteamReviewSummary(game);
-  if (steamReviewSummary) {
-    return steamReviewSummary;
+    return "아직 수집된 리뷰 데이터가 충분하지 않아요.";
   }
 
   if (game?.short_description) {
     return game.short_description;
   }
 
-  return "한국어 리뷰에서 자주 언급된 장점과 아쉬운 점을 정리했어요.";
+  return "수집된 리뷰에서 자주 언급된 장점과 아쉬운 점을 정리했어요.";
 }
 
 export default function GameIntroSection({
@@ -98,6 +131,8 @@ export default function GameIntroSection({
     game?.header_image || (appid ? `https://cdn.akamai.steamstatic.com/steam/apps/${appid}/header.jpg` : "");
   const sourceCount = formatNumber(sourceReviewCount);
   const steamStoreUrl = game?.steam_store_url || (appid ? `https://store.steampowered.com/app/${appid}` : "");
+  const steamReviewSummary = buildSteamReviewSummary(game);
+  const fallbackSummary = buildFallbackSummary(game, sourceReviewCount, minReviewCount);
 
   return (
     <section className="game-intro-card">
@@ -122,19 +157,25 @@ export default function GameIntroSection({
         <div className="game-intro-title-row">
           <h2 className="game-intro-title">{game?.name || `appid ${appid}`}</h2>
           {steamStoreUrl ? (
-            <a
-              className="game-intro-store-link"
-              href={steamStoreUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a className="game-intro-store-link" href={steamStoreUrl} target="_blank" rel="noreferrer">
               Steam에서 보기
             </a>
           ) : null}
         </div>
 
         <div className="game-intro-overview">
-          <p className="game-intro-summary">{buildSummary(game, sourceReviewCount, minReviewCount)}</p>
+          {steamReviewSummary ? (
+            <p className="game-intro-summary game-intro-review-summary">
+              {steamReviewSummary.scoreLabel ? (
+                <span className={`status-chip ${reviewToneClass(steamReviewSummary.scoreLabel)}`}>
+                  {steamReviewSummary.scoreLabel}
+                </span>
+              ) : null}
+              <span>{steamReviewSummary.description}</span>
+            </p>
+          ) : (
+            <p className="game-intro-summary">{fallbackSummary}</p>
+          )}
 
           {genres.length > 0 ? (
             <div className="game-intro-tags-block">
