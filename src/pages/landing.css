@@ -69,8 +69,9 @@
   border: 1px solid var(--comp-button-outlined-border);
 }
 .lp-btn--outlined:hover {
+  background: var(--sys-color-primary-hover);
   border-color: var(--sys-color-primary);
-  color: var(--sys-color-primary);
+  color: #000;
   transform: translateY(-2px);
 }
 

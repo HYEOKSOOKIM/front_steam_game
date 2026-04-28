@@ -112,7 +112,7 @@ export default function GameIntroSection({
           />
         ) : (
           <div className="game-intro-placeholder" aria-label="게임 이미지 없음">
-            Steam Report
+            Steam Review Report
           </div>
         )}
       </div>

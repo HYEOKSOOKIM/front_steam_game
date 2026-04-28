@@ -95,7 +95,7 @@ function SearchLanding({
 
   return (
     <section className="report-search-home">
-      <p className="report-search-kicker">Steam Report</p>
+      <p className="report-search-kicker">Steam Review Report</p>
       <h1 className="report-search-title">어떤 게임이 궁금하세요?</h1>
       <p className="report-search-subtitle">
         한국 유저 리뷰를 바탕으로, 게임의 장단점을 한눈에 정리해드려요
