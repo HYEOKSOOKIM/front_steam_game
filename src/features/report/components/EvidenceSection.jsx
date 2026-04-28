@@ -4,6 +4,8 @@ import { formatSnippetForDisplay } from "../utils/reportMappers";
 function EvidenceColumn({ title, tone, blocks, emptyMessage, activeKey, onToggleEvidence }) {
   const classes = [
     "evidence-section",
+    `evidence-section-${tone}`,
+    tone === "positive" ? "tone-panel-positive" : "tone-panel-negative",
     blocks.length === 0 ? "is-empty" : "",
     blocks.length === 1 ? "is-single" : "",
   ]
@@ -33,9 +35,7 @@ function EvidenceColumn({ title, tone, blocks, emptyMessage, activeKey, onToggle
                 </div>
                 <p className="evidence-why">{block.whyItMatters || "-"}</p>
                 {block.evidenceSnippets[0] ? (
-                  <span className="evidence-preview-quote">
-                    {formatSnippetForDisplay(block.evidenceSnippets[0])}
-                  </span>
+                  <span className="evidence-preview-quote">{formatSnippetForDisplay(block.evidenceSnippets[0])}</span>
                 ) : null}
                 <button
                   className="evidence-inline-link"

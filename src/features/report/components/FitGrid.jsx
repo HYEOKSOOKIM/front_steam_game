@@ -1,7 +1,7 @@
 function BulletList({ values }) {
   const items = Array.isArray(values) ? values : [];
   if (items.length === 0) {
-    return <p className="placeholder">판단에 필요한 데이터가 아직 충분하지 않아요.</p>;
+    return <p className="placeholder">아직 충분히 정리된 데이터가 없어요.</p>;
   }
 
   return (
@@ -19,7 +19,7 @@ export default function FitGrid({ goodFor, notGoodFor }) {
 
   return (
     <section className="fit-grid">
-      <article className="section-card">
+      <article className="section-card fit-section-card fit-section-card-positive tone-panel-positive">
         <div className="section-title-row">
           <h2>이런 분께 추천해요</h2>
         </div>
@@ -27,7 +27,7 @@ export default function FitGrid({ goodFor, notGoodFor }) {
           <BulletList values={goodItems} />
         </div>
       </article>
-      <article className="section-card">
+      <article className="section-card fit-section-card fit-section-card-negative tone-panel-negative">
         <div className="section-title-row">
           <h2>이런 분께는 아쉬울 수 있어요</h2>
         </div>
