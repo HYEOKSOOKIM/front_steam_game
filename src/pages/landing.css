@@ -74,6 +74,17 @@
   transform: translateY(-2px);
 }
 
+.lp-btn--ghost {
+  background: transparent;
+  color: var(--sys-color-on-surface-muted);
+  border: 1px solid transparent;
+}
+.lp-btn--ghost:hover {
+  color: var(--sys-color-on-surface-variant);
+  border-color: var(--comp-button-outlined-border);
+  transform: translateY(-2px);
+}
+
 .lp-btn--lg {
   padding: 13px var(--space-32);
   font-size: var(--type-body-lg-size);

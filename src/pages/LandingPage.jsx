@@ -41,13 +41,13 @@ export default function LandingPage() {
           </span>
 
           <h1 className="lp-hero__title">
-            다음 게임,<br />
-            <em>이미 답이 있습니다</em>
+            다음 게임을 고민하세요?<br />
+            <em>여기서 정하세요</em>
           </h1>
 
           <p className="lp-hero__sub">
-            Steam 리뷰 데이터로 당신에게 맞는 게임을 추천하고,<br />
-            구매 전 꼭 알아야 할 것만 정리해 드립니다.
+            취향만 말하면 리뷰 기반으로<br />
+            저희가 바로 추천해 드릴게요
           </p>
 
           <div className="lp-hero__ctas">
@@ -57,9 +57,12 @@ export default function LandingPage() {
             <button className="lp-btn lp-btn--outlined lp-btn--lg" onClick={() => navigate("/report")}>
               리포트 보기
             </button>
+            <button className="lp-btn lp-btn--ghost lp-btn--lg" onClick={() => navigate("/report")}>
+              리뷰 분석 보기
+            </button>
           </div>
 
-          <p className="lp-hero__hint">Steam 리뷰 데이터 기반 · 별도 로그인 불필요</p>
+          <p className="lp-hero__hint">로그인 없이 바로 이용 가능</p>
         </div>
 
         <div className="lp-hero__scroll" aria-hidden="true">
