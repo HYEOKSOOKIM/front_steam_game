@@ -1,7 +1,7 @@
 function CardList({ values }) {
   const items = Array.isArray(values) ? values : [];
   if (items.length === 0) {
-    return <p className="placeholder">판단에 필요한 신호가 아직 충분하지 않아요.</p>;
+    return <p className="placeholder">아직 충분히 정리된 신호가 없어요.</p>;
   }
 
   return (
@@ -26,7 +26,7 @@ export default function StrengthRiskSection({ strengths, risks }) {
 
   return (
     <section className="strength-risk-grid">
-      <article className="section-card">
+      <article className="section-card strength-section-card tone-panel-positive">
         <div className="section-title-row">
           <h2>이런 점이 좋아요</h2>
         </div>
@@ -34,7 +34,7 @@ export default function StrengthRiskSection({ strengths, risks }) {
           <CardList values={strengthItems} />
         </div>
       </article>
-      <article className="section-card">
+      <article className="section-card risk-section-card tone-panel-negative">
         <div className="section-title-row">
           <h2>이건 알고 가세요</h2>
         </div>

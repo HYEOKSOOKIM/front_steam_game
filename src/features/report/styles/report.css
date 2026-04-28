@@ -1102,8 +1102,56 @@ select:hover:not(:disabled) {
   padding: var(--space-16);
 }
 
+.tone-panel-positive {
+  background: #31414d;
+  border-color: #46614f;
+}
+
+.tone-panel-negative {
+  background: #373a4d;
+  border-color: #684853;
+}
+
+.tone-panel-positive .section-title-row h2,
+.tone-panel-positive h3 {
+  color: #84cf68;
+}
+
+.tone-panel-positive .section-title-row h2::before {
+  background: #84cf68;
+}
+
+.tone-panel-negative .section-title-row h2,
+.tone-panel-negative h3 {
+  color: #da706f;
+}
+
+.tone-panel-negative .section-title-row h2::before {
+  background: #da706f;
+}
+
+.fit-section-card-positive .fit-card-body {
+  background: #34495a;
+  border-color: #486756;
+  box-shadow: none;
+}
+
+.fit-section-card-negative .fit-card-body {
+  background: #3b3f58;
+  border-color: #73505b;
+  box-shadow: none;
+}
+
 .fit-card-body .placeholder {
   color: var(--sys-color-on-surface-muted);
+}
+
+.fit-section-card-positive .bullet-list li::marker {
+  color: #97d97f;
+}
+
+.fit-section-card-negative .bullet-list li::marker {
+  color: #e58a8d;
 }
 
 .bullet-list li {
@@ -1125,12 +1173,33 @@ select:hover:not(:disabled) {
   border-radius: var(--shape-corner-sm);
   display: grid;
   overflow: hidden;
+  position: relative;
 }
 
 .mini-card-head {
   padding: var(--space-14, 14px) var(--space-16) var(--space-10, 10px);
   border-bottom: 1px solid var(--comp-card-border);
   background: color-mix(in srgb, var(--comp-card-bg-strong) 82%, var(--sys-color-surface-container) 18%);
+}
+
+.strength-section-card .mini-card {
+  background: #34495a;
+  border-color: #486756;
+}
+
+.strength-section-card .mini-card-head {
+  background: #31414d;
+  border-bottom-color: #486756;
+}
+
+.risk-section-card .mini-card {
+  background: #3b3f58;
+  border-color: #73505b;
+}
+
+.risk-section-card .mini-card-head {
+  background: #373a4d;
+  border-bottom-color: #73505b;
 }
 
 .mini-card h3 {
@@ -1155,11 +1224,9 @@ select:hover:not(:disabled) {
 }
 
 .evidence-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-12);
-  align-content: start;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
   min-height: 0;
 }
 
@@ -1246,7 +1313,7 @@ select:hover:not(:disabled) {
   overflow: hidden;
   overflow-wrap: anywhere;
   word-break: break-word;
-  align-self: start;
+  flex: 0 0 auto;
 }
 
 .evidence-card + .evidence-card {
@@ -1444,7 +1511,7 @@ select:hover:not(:disabled) {
   .evidence-grid {
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: var(--space-6, 6px);
+    padding: var(--space-4) var(--space-8) var(--space-12) 0;
     scrollbar-gutter: stable;
   }
 }
