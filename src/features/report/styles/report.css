@@ -567,9 +567,9 @@ select:hover:not(:disabled) {
   background: var(--comp-card-bg-strong);
   padding: var(--space-12) var(--space-14, 14px);
   display: grid;
-  grid-template-rows: 16px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
   gap: var(--space-6, 6px);
-  align-content: start;
+  align-content: stretch;
   min-height: 92px;
 }
 
@@ -589,7 +589,7 @@ select:hover:not(:disabled) {
   line-height: var(--type-heading-sm-line);
   font-weight: var(--type-heading-sm-weight);
   overflow-wrap: anywhere;
-  align-self: end;
+  align-self: center;
 }
 
 .hero-card,

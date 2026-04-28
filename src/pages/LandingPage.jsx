@@ -41,7 +41,7 @@ export default function LandingPage() {
           </span>
 
           <h1 className="lp-hero__title">
-            다음 게임을 고민하세요?<br />
+            다음 게임을 고민 중이신가요?<br />
             <em>여기서 정하세요</em>
           </h1>
 
@@ -153,12 +153,12 @@ export default function LandingPage() {
           <div className="lp-feature__copy">
             <span className="lp-feature__path lp-feature__path--b">PATH 02</span>
             <h2 className="lp-feature__title">
-              살지 말지,<br />5초 만에 판단
+              리뷰는 저희가 보고,<br />핵심만 정리해드릴게요
             </h2>
             <p className="lp-feature__desc">
-              리뷰 수천 개를 일일이 읽을 필요 없습니다.<br />
-              강점, 리스크, 구매 판단을 AI가 정리해<br />
-              한 화면에 보여드립니다.
+              수천 개의 리뷰를 일일이 읽을 필요 없습니다.<br />
+              원하는 게임의 강점, 리스크, 구매 판단을 AI가 정리해<br />
+              한 화면에 리포트로 보여드립니다.
             </p>
             <button className="lp-btn lp-btn--filled" onClick={() => navigate("/report")}>
               리포트 확인하기
@@ -178,7 +178,7 @@ export default function LandingPage() {
               게임 추천 받기
             </button>
             <button className="lp-btn lp-btn--outlined lp-btn--lg" onClick={() => navigate("/report")}>
-              리포트 보기
+              리뷰 분석 보기
             </button>
           </div>
         </div>
