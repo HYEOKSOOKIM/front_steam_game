@@ -1,22 +1,23 @@
-function CardList({ values }) {
+function CardList({ values, tone }) {
   const items = Array.isArray(values) ? values : [];
   if (items.length === 0) {
-    return <p className="placeholder">아직 충분히 정리된 신호가 없어요.</p>;
+    return <p className="strength-risk-empty">아직 충분히 정리된 신호가 없어요.</p>;
   }
 
   return (
-    <>
-      {items.slice(0, 3).map((value, index) => (
-        <article className="mini-card" key={`${value?.title || "card"}-${index}`}>
-          <div className="mini-card-head">
-            <h3>{String(value?.title || "-")}</h3>
-          </div>
-          <div className="mini-card-body">
-            <p>{String(value?.summary || "-")}</p>
-          </div>
-        </article>
-      ))}
-    </>
+    <ul className="strength-risk-list">
+      {items.slice(0, 3).map((value, index) => {
+        const title = String(value?.title || "").trim();
+        const summary = String(value?.summary || "-").trim();
+        const content = title ? `${title}: ${summary}` : summary;
+
+        return (
+          <li className={`strength-risk-item strength-risk-item--${tone}`} key={`${title || "item"}-${index}`}>
+            {content}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -26,21 +27,13 @@ export default function StrengthRiskSection({ strengths, risks }) {
 
   return (
     <section className="strength-risk-grid">
-      <article className="section-card strength-section-card tone-panel-positive">
-        <div className="section-title-row">
-          <h2>이런 점이 좋아요</h2>
-        </div>
-        <div className="stack-list">
-          <CardList values={strengthItems} />
-        </div>
+      <article className="section-card strength-section-card tone-panel-positive report-summary-card">
+        <div className="mock-report-card__label">강점</div>
+        <CardList values={strengthItems} tone="strength" />
       </article>
-      <article className="section-card risk-section-card tone-panel-negative">
-        <div className="section-title-row">
-          <h2>이건 알고 가세요</h2>
-        </div>
-        <div className="stack-list">
-          <CardList values={riskItems} />
-        </div>
+      <article className="section-card risk-section-card tone-panel-negative report-summary-card">
+        <div className="mock-report-card__label">리스크</div>
+        <CardList values={riskItems} tone="risk" />
       </article>
     </section>
   );

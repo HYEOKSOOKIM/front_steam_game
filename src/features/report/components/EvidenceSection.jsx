@@ -2,6 +2,7 @@ import { useState } from "react";
 import { formatSnippetForDisplay } from "../utils/reportMappers";
 
 function EvidenceColumn({ title, tone, blocks, emptyMessage, activeKey, onToggleEvidence }) {
+  const label = tone === "positive" ? "강점 근거" : "리스크 근거";
   const classes = [
     "evidence-section",
     `evidence-section-${tone}`,
@@ -15,7 +16,8 @@ function EvidenceColumn({ title, tone, blocks, emptyMessage, activeKey, onToggle
   return (
     <article className={classes}>
       <div className="evidence-section-head">
-        <h3>{title}</h3>
+        <div className="mock-report-card__label">{label}</div>
+        <h3 className="evidence-section-title">{title}</h3>
       </div>
       <div className="evidence-grid">
         {blocks.length === 0 ? <p className="placeholder">{emptyMessage}</p> : null}
