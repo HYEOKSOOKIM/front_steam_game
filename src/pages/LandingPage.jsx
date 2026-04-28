@@ -55,14 +55,11 @@ export default function LandingPage() {
               게임 추천 받기
             </button>
             <button className="lp-btn lp-btn--outlined lp-btn--lg" onClick={() => navigate("/report")}>
-              리포트 보기
-            </button>
-            <button className="lp-btn lp-btn--ghost lp-btn--lg" onClick={() => navigate("/report")}>
               리뷰 분석 보기
             </button>
           </div>
 
-          <p className="lp-hero__hint">로그인 없이 바로 이용 가능</p>
+          <p className="lp-hero__hint">Steam 리뷰 데이터 기반 · 로그인 없이 바로 이용 가능</p>
         </div>
 
         <div className="lp-hero__scroll" aria-hidden="true">
