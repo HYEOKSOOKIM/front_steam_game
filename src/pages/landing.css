@@ -114,6 +114,7 @@
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 20%, transparent 75%);
   pointer-events: none;
+  will-change: background-position;
   animation: lp-grid-drift 12s linear infinite;
 }
 
@@ -141,7 +142,7 @@
 
 @keyframes lp-glow-breathe {
   0%, 100% { opacity: 1;   transform: translateX(-50%) scale(1); }
-  50%       { opacity: 1.4; transform: translateX(-50%) scale(1.12); }
+  50%       { opacity: 0.9; transform: translateX(-50%) scale(1.12); }
 }
 
 .lp-hero__content {
@@ -204,6 +205,7 @@
   background-clip: text;
   animation: lp-gradient-text 4s ease-in-out infinite alternate;
   background-size: 200% 100%;
+  will-change: background-position;
 }
 
 @keyframes lp-gradient-text {
@@ -664,6 +666,7 @@
   background-size: 300% 300%;
   animation: lp-cta-gradient 7s ease-in-out infinite;
   pointer-events: none;
+  will-change: background-position;
 }
 
 /* 상단 글로우 */
@@ -753,5 +756,32 @@
     align-items: stretch;
     width: 100%;
     max-width: 320px;
+  }
+}
+
+/* 모션 감소 설정 사용자: 모든 애니메이션 비활성화 */
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero::before,
+  .lp-hero::after,
+  .lp-hero__title em,
+  .lp-cta::before,
+  .lp-hero__badge,
+  .lp-hero__badge-dot,
+  .lp-hero__title,
+  .lp-hero__sub,
+  .lp-hero__ctas,
+  .lp-hero__hint,
+  .lp-hero__scroll,
+  .lp-hero__scroll-dot,
+  .mock-window,
+  .mock-input__cursor,
+  .lp-feature .lp-feature__copy,
+  .lp-feature .lp-feature__demo,
+  .lp-cta {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    will-change: auto !important;
   }
 }
