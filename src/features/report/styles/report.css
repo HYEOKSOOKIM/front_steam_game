@@ -688,6 +688,24 @@ select:hover:not(:disabled) {
   box-shadow: 0 0 0 6px rgba(79, 216, 157, 0.12);
 }
 
+.game-title--buy-now::before,
+.game-title--buy-sale::before,
+.game-title--buy-free::before,
+.game-title--buy-try::before {
+  background: var(--semantic-buy-now);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--semantic-buy-now) 18%, transparent);
+}
+
+.game-title--buy-wait::before {
+  background: var(--semantic-buy-wait);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--semantic-buy-wait) 18%, transparent);
+}
+
+.game-title--buy-avoid::before {
+  background: var(--semantic-buy-avoid);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--semantic-buy-avoid) 18%, transparent);
+}
+
 .buy-badge {
   display: inline-flex;
   align-items: center;
@@ -1045,23 +1063,26 @@ select:hover:not(:disabled) {
 
 .review-trend-toggle {
   min-height: 40px;
-  border: 1px solid var(--comp-button-outlined-border);
+  border: 1px solid color-mix(in srgb, var(--sys-color-primary) 42%, transparent);
   border-radius: var(--shape-corner-sm);
-  background: var(--comp-button-outlined-bg);
-  color: var(--comp-button-outlined-label);
+  background: var(--sys-color-primary);
+  color: #000;
   padding: var(--space-8) var(--space-16);
   font-size: var(--type-label-md-size);
   line-height: var(--type-label-md-line);
   font-weight: var(--font-weight-bold);
   white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(102, 192, 244, 0.22);
 }
 
 .review-trend-toggle:hover:not(:disabled) {
-  background: var(--comp-button-ghost-bg-hover);
+  background: var(--sys-color-primary-hover);
+  color: #000;
+  border-color: color-mix(in srgb, var(--sys-color-primary-hover) 48%, transparent);
 }
 
 .review-trend-toggle:active:not(:disabled) {
-  background: var(--comp-card-pressed-overlay);
+  background: color-mix(in srgb, var(--sys-color-primary-hover) 88%, #000 12%);
 }
 
 .review-trend-expanded {
