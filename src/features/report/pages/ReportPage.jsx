@@ -258,7 +258,8 @@ export default function ReportPage() {
   const recentState = display.recent_state || {};
   const evidenceSections = useMemo(() => normalizeEvidenceSections(report), [report]);
 
-  const badgeClass = `buy-badge ${buyBadgeClass(recommendation)}`;
+  const recommendationToneClass = buyBadgeClass(recommendation);
+  const badgeClass = `buy-badge ${recommendationToneClass}`;
   const goodFor = toList(display.good_for);
   const notGoodFor = toList(display.not_good_for);
   const topStrengths = toList(display.top_strengths);
@@ -409,7 +410,9 @@ export default function ReportPage() {
               <div className="report-core-stack">
                 <section className="hero-card">
                   <div className="hero-meta">
-                    <p className="game-title">한눈에 보는 결론</p>
+                    <p className={`game-title ${recommendationToneClass ? `game-title--${recommendationToneClass}` : ""}`}>
+                      한눈에 보는 결론
+                    </p>
                   </div>
                   <h1 className="headline">
                     {display.headline || "많은 리뷰의 공통된 흐름을 바탕으로 구매 판단만 빠르게 정리했어요."}

@@ -688,6 +688,24 @@ select:hover:not(:disabled) {
   box-shadow: 0 0 0 6px rgba(79, 216, 157, 0.12);
 }
 
+.game-title--buy-now::before,
+.game-title--buy-sale::before,
+.game-title--buy-free::before,
+.game-title--buy-try::before {
+  background: var(--semantic-buy-now);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--semantic-buy-now) 18%, transparent);
+}
+
+.game-title--buy-wait::before {
+  background: var(--semantic-buy-wait);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--semantic-buy-wait) 18%, transparent);
+}
+
+.game-title--buy-avoid::before {
+  background: var(--semantic-buy-avoid);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--semantic-buy-avoid) 18%, transparent);
+}
+
 .buy-badge {
   display: inline-flex;
   align-items: center;

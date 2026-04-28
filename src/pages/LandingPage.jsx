@@ -128,7 +128,7 @@ export default function LandingPage() {
                     <div className="mock-report-meta">95% 긍정적 · 리뷰 127,450개</div>
                   </div>
                 </div>
-                <span className="mock-verdict">지금 사세요</span>
+                <span className="mock-verdict">구매 추천</span>
               </div>
 
               <div className="mock-report-grid">
