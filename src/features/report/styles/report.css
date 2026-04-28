@@ -589,8 +589,9 @@ select:hover:not(:disabled) {
 .hero-card,
 .section-card {
   background: var(--comp-card-bg);
-  border: 1px solid var(--comp-card-border);
+  border: 1px solid rgba(102,192,244,0.18);
   border-radius: var(--shape-corner-md);
+  box-shadow: 0 0 0 1px rgba(102,192,244,0.06), var(--shadow-elevation-1);
 }
 
 .hero-card {
@@ -811,7 +812,7 @@ select:hover:not(:disabled) {
   width: var(--space-4);
   height: var(--space-16);
   border-radius: var(--shape-corner-full);
-  background: var(--sys-color-primary);
+  background: linear-gradient(180deg, var(--sys-color-primary), var(--sys-color-accent));
 }
 
 .section-card.insufficient-review-card h2 {
@@ -835,8 +836,9 @@ select:hover:not(:disabled) {
   position: absolute;
   inset: 0 0 auto 0;
   height: var(--space-2);
-  background: var(--sys-color-primary);
-  opacity: 0.65;
+  background: linear-gradient(90deg, var(--sys-color-primary), var(--sys-color-accent));
+  opacity: 0.75;
+  animation: rp-glow-breathe 4s ease-in-out infinite;
 }
 
 .section-title-row {
@@ -1207,12 +1209,13 @@ select:hover:not(:disabled) {
 }
 
 .mini-card {
-  border: 1px solid var(--comp-card-border);
+  border: 1px solid rgba(102,192,244,0.15);
   background: var(--comp-card-bg-strong);
   border-radius: var(--shape-corner-sm);
   display: grid;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 0 0 1px rgba(102,192,244,0.05);
 }
 
 .mini-card-head {
@@ -1277,7 +1280,7 @@ select:hover:not(:disabled) {
 }
 
 .evidence-section {
-  border: 1px solid var(--comp-card-border);
+  border: 1px solid rgba(102,192,244,0.15);
   background: var(--comp-card-bg-strong);
   border-radius: var(--shape-corner-sm);
   padding: var(--space-16);
@@ -1286,6 +1289,7 @@ select:hover:not(:disabled) {
   gap: var(--space-12);
   align-self: start;
   min-height: 0;
+  box-shadow: 0 0 0 1px rgba(102,192,244,0.05);
 }
 
 .evidence-section.is-empty {
