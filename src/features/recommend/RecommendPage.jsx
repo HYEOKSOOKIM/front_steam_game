@@ -83,6 +83,7 @@ export default function RecommendPage() {
   const [statusLine, setStatusLine] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [result, setResult] = useState(null);
+  const [submittedQuery, setSubmittedQuery] = useState("");
   const [playedGames, setPlayedGames] = useState([]);
   const [isQueryControlsCollapsed, setIsQueryControlsCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("");
@@ -225,6 +226,7 @@ export default function RecommendPage() {
     setErrorMsg("");
     setResult(null);
     setStatusLine("");
+    setSubmittedQuery("");
     setIsQueryControlsCollapsed(false);
     setSelectedKey("");
   }
@@ -301,7 +303,8 @@ export default function RecommendPage() {
           playedAppIds,
         });
         setResult(data);
-        setStatusLine("자연어 추천 완료");
+        setSubmittedQuery(trimmed);
+        setStatusLine("");
         setIsQueryControlsCollapsed(true);
         return;
       }
@@ -371,13 +374,22 @@ export default function RecommendPage() {
             취향 기반 추천
           </button>
           {mode === "query" && result && (
-            <button
-              type="button"
-              className="recommend-query-tools-btn recommend-inline-toggle-btn"
-              onClick={() => setIsQueryControlsCollapsed((prev) => !prev)}
-            >
-              {isQueryControlsCollapsed ? "검색 패널 펼치기" : "검색 패널 접기"}
-            </button>
+            <div className="recommend-inline-toggle-wrap">
+              {isQueryControlsCollapsed && (
+                <span className="recommend-inline-toggle-hint">
+                  검색창이 숨겨져 있어요
+                </span>
+              )}
+              <button
+                type="button"
+                className={`recommend-query-tools-btn recommend-inline-toggle-btn ${
+                  isQueryControlsCollapsed ? "is-emphasis" : ""
+                }`}
+                onClick={() => setIsQueryControlsCollapsed((prev) => !prev)}
+              >
+                {isQueryControlsCollapsed ? "검색 패널 펼치기" : "검색 패널 접기"}
+              </button>
+            </div>
           )}
         </div>
       </section>
@@ -529,7 +541,14 @@ export default function RecommendPage() {
         </section>
       )}
 
-      {result && commonGenres.length > 0 && (
+      {mode === "query" && result && submittedQuery && (
+        <section className="section-card">
+          <h2 className="recommend-card-name">입력한 질문</h2>
+          <p className="recommend-card-reason">{submittedQuery}</p>
+        </section>
+      )}
+
+      {mode !== "query" && result && commonGenres.length > 0 && (
         <section className="section-card">
           <h2 className="recommend-card-name">공통 장르</h2>
           <div className="recommend-card-tags">
