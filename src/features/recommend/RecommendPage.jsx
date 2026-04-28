@@ -84,6 +84,7 @@ export default function RecommendPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [result, setResult] = useState(null);
   const [playedGames, setPlayedGames] = useState([]);
+  const [isQueryControlsCollapsed, setIsQueryControlsCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("");
 
   const rows = result?.results || [];
@@ -126,17 +127,6 @@ export default function RecommendPage() {
     return found || sortedRows[0];
   }, [sortedRows, selectedKey]);
 
-  const queryDebugMeta = useMemo(() => {
-    if (mode !== "query") return null;
-    const meta = result?.meta;
-    if (!meta || typeof meta !== "object") return null;
-    return {
-      excluded_app_ids: Array.isArray(meta.excluded_app_ids) ? meta.excluded_app_ids : [],
-      played_resolved: Array.isArray(meta.played_resolved) ? meta.played_resolved : [],
-      played_unresolved: Array.isArray(meta.played_unresolved) ? meta.played_unresolved : [],
-    };
-  }, [mode, result]);
-
   useEffect(() => {
     if (sortedRows.length === 0) {
       if (selectedKey) setSelectedKey("");
@@ -148,11 +138,6 @@ export default function RecommendPage() {
       setSelectedKey(getItemKey(sortedRows[0], 0));
     }
   }, [sortedRows, selectedKey]);
-
-  useEffect(() => {
-    if (!queryDebugMeta) return;
-    console.debug("[recommend.meta]", queryDebugMeta);
-  }, [queryDebugMeta]);
 
   useEffect(() => {
     if (mode !== "preference") return;
@@ -240,6 +225,7 @@ export default function RecommendPage() {
     setErrorMsg("");
     setResult(null);
     setStatusLine("");
+    setIsQueryControlsCollapsed(false);
     setSelectedKey("");
   }
 
@@ -316,6 +302,7 @@ export default function RecommendPage() {
         });
         setResult(data);
         setStatusLine("자연어 추천 완료");
+        setIsQueryControlsCollapsed(true);
         return;
       }
 
@@ -350,16 +337,20 @@ export default function RecommendPage() {
 
   return (
     <main className="recommend-shell">
-      <header className="recommend-hero">
-        <div>
-          <p className="recommend-kicker">Steam Recommender</p>
-          <h1 className="recommend-title">취향 기반 게임 추천</h1>
-          <p className="recommend-subtitle">원하는 분위기와 장르를 입력하거나, 좋아/비선호 게임 기반으로 추천을 받을 수 있습니다.</p>
+      <header className="recommend-topbar">
+        <div className="brand-block">
+          <p className="brand">Steam Recommender</p>
+          <p className="brand-subtitle">자연어 질의와 취향 기반으로 추천을 제공합니다</p>
         </div>
-        <button className="back-btn" onClick={() => navigate("/")}>메인으로</button>
+        <div className="topbar-actions">
+          <button className="report-back-btn" onClick={() => navigate("/")}>메인으로</button>
+        </div>
       </header>
 
-      <section className="recommend-card">
+      <section className="section-card recommend-mode-card">
+        <div className="section-title-row">
+          <h2>추천 모드</h2>
+        </div>
         <div className="recommend-mode-tabs" role="tablist" aria-label="추천 모드 선택">
           <button
             type="button"
@@ -379,30 +370,40 @@ export default function RecommendPage() {
           >
             취향 기반 추천
           </button>
+          {mode === "query" && result && (
+            <button
+              type="button"
+              className="recommend-query-tools-btn recommend-inline-toggle-btn"
+              onClick={() => setIsQueryControlsCollapsed((prev) => !prev)}
+            >
+              {isQueryControlsCollapsed ? "검색 패널 펼치기" : "검색 패널 접기"}
+            </button>
+          )}
         </div>
       </section>
 
-      {mode === "query" && (
-        <section className="recommend-card recommend-played-card">
+      {mode === "query" && !isQueryControlsCollapsed && (
+        <section className="section-card recommend-played-card">
           <PlayedGamesAutocomplete items={playedGames} onChange={setPlayedGames} />
         </section>
       )}
 
-      <form className={`recommend-form ${mode === "query" ? "is-query" : "is-preference"}`} onSubmit={handleSubmit}>
+      {(mode !== "query" || !isQueryControlsCollapsed) && (
+        <form className={`section-card recommend-form ${mode === "query" ? "is-query" : "is-preference"}`} onSubmit={handleSubmit}>
         {mode === "query" ? (
-          <>
+          <div className="recommend-search-box">
             <input
-              className="recommend-input"
+              className="recommend-search-input"
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="예: 힐링되는 싱글 RPG 추천해줘. 공포는 제외"
               disabled={loading}
             />
-            <button className="recommend-btn" type="submit" disabled={loading || !query.trim()}>
+            <button className="recommend-search-submit" type="submit" disabled={loading || !query.trim()}>
               {loading ? "검색 중..." : "추천 받기"}
             </button>
-          </>
+          </div>
         ) : (
           <>
             <div className="recommend-pref-grid">
@@ -518,7 +519,8 @@ export default function RecommendPage() {
             </button>
           </>
         )}
-      </form>
+        </form>
+      )}
 
       {(statusLine || errorMsg) && (
         <section className="recommend-summary">
@@ -527,15 +529,8 @@ export default function RecommendPage() {
         </section>
       )}
 
-      {import.meta.env.DEV && queryDebugMeta && (
-        <details className="recommend-dev-meta">
-          <summary>개발자 디버그 정보</summary>
-          <pre>{JSON.stringify(queryDebugMeta, null, 2)}</pre>
-        </details>
-      )}
-
       {result && commonGenres.length > 0 && (
-        <section className="recommend-card">
+        <section className="section-card">
           <h2 className="recommend-card-name">공통 장르</h2>
           <div className="recommend-card-tags">
             {commonGenres.map((genre) => (
@@ -550,7 +545,7 @@ export default function RecommendPage() {
       )}
 
       {sortedRows.length > 0 && (
-        <section className="recommend-card">
+        <section className="section-card">
           <h2 className="recommend-card-name">추천 게임 카드</h2>
           <ol className="recommend-poster-list">
             {sortedRows.map((item, idx) => {
@@ -590,7 +585,7 @@ export default function RecommendPage() {
       )}
 
       {selectedItem && (
-        <section className="recommend-card">
+        <section className="section-card">
           <div className="recommend-card-head">
             <h2 className="recommend-card-name">{selectedItem.display_name || selectedItem.name}</h2>
             <span className={`recommend-confidence ${confidenceClass(selectedItem)}`}>
