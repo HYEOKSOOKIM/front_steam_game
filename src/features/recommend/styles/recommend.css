@@ -606,12 +606,14 @@
 }
 
 .recommend-chip button {
-  min-height: 0;
+  min-width: 24px;
+  min-height: 24px;
   border: 0;
   background: transparent;
   color: inherit;
-  padding: 0;
+  padding: 2px 4px;
   cursor: pointer;
+  line-height: 1;
 }
 
 .recommend-chip-input {
@@ -692,6 +694,12 @@
 .recommend-chip-input:focus-visible {
   outline: var(--comp-focus-ring-width) solid var(--comp-focus-ring-color);
   outline-offset: var(--comp-focus-ring-offset);
+}
+
+@media (max-width: 1100px) {
+  .recommend-poster-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 920px) {

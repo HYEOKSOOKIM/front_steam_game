@@ -407,6 +407,7 @@ export default function RecommendPage() {
             <input
               className="recommend-search-input"
               type="text"
+              aria-label="게임 추천 요청 입력"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="예: 힐링되는 싱글 RPG 추천해줘. 공포는 제외"
