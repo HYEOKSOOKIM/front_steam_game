@@ -76,6 +76,11 @@
   margin-bottom: var(--space-12);
 }
 
+.recommend-mode-card .section-title-row {
+  align-items: center;
+  margin-bottom: 0;
+}
+
 .section-title-row h2,
 .section-card h2 {
   margin: 0;
@@ -101,11 +106,15 @@
 .recommend-mode-tabs {
   display: flex;
   gap: var(--space-8);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
 }
 
 .recommend-inline-toggle-btn {
   margin-left: auto;
+  width: auto;
+  min-height: 36px;
+  padding: 8px 12px;
 }
 
 .recommend-inline-toggle-wrap {
@@ -113,6 +122,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-8);
+  flex-wrap: nowrap;
 }
 
 .recommend-inline-toggle-hint {
@@ -215,6 +225,20 @@
   display: grid;
   gap: var(--space-12);
   background: var(--comp-card-bg);
+}
+
+.recommend-option-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-label-md-size);
+  line-height: var(--type-label-md-line);
+}
+
+.recommend-option-check input {
+  width: 16px;
+  height: 16px;
 }
 
 .recommend-search-box {
@@ -740,6 +764,10 @@
   .recommend-inline-toggle-wrap {
     width: 100%;
     justify-content: flex-end;
+  }
+
+  .recommend-inline-toggle-btn {
+    width: auto;
   }
 
   .recommend-inline-toggle-hint {

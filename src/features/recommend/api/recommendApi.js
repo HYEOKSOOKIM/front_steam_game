@@ -18,10 +18,20 @@ export async function fetchRecommendations(query, topK = 5, options = {}) {
   const playedAppIds = Array.isArray(options.playedAppIds)
     ? options.playedAppIds.filter((value) => Number.isFinite(Number(value)))
     : [];
+  const likedGames = Array.isArray(options.likedGames)
+    ? options.likedGames.filter((value) => Number.isFinite(Number(value)))
+    : [];
+  const dislikedGames = Array.isArray(options.dislikedGames)
+    ? options.dislikedGames.filter((value) => Number.isFinite(Number(value)))
+    : [];
+  const includeFreeGames = options.includeFreeGames !== false;
 
   const payload = { query, top_k: topK };
   if (playedGames.length > 0) payload.played_games = playedGames;
   if (playedAppIds.length > 0) payload.played_app_ids = playedAppIds.map((value) => Number(value));
+  if (likedGames.length > 0) payload.liked_games = likedGames.map((value) => Number(value));
+  if (dislikedGames.length > 0) payload.disliked_games = dislikedGames.map((value) => Number(value));
+  payload.include_free_games = includeFreeGames;
 
   return postJson(
     "/api/recommend",
