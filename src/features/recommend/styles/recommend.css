@@ -236,9 +236,57 @@
   line-height: var(--type-label-md-line);
 }
 
+.recommend-search-home-wide {
+  width: min(920px, 100%);
+}
+
 .recommend-option-check input {
   width: 16px;
   height: 16px;
+}
+
+.recommend-pref-toggle-btn {
+  width: fit-content;
+  border-radius: var(--shape-corner-full);
+  justify-self: center;
+}
+
+.recommend-loading-screen {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  min-height: 50vh;
+  display: grid;
+  place-items: center;
+  gap: var(--space-12);
+  text-align: center;
+}
+
+.recommend-loading-orb {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  border: 3px solid color-mix(in srgb, var(--sys-color-primary) 26%, transparent);
+  border-top-color: var(--sys-color-primary);
+  animation: recommend-spin 1s linear infinite;
+}
+
+.recommend-loading-title {
+  margin: 0;
+  color: var(--sys-color-on-surface);
+  font-size: var(--type-heading-sm-size);
+  line-height: var(--type-heading-sm-line);
+  font-weight: var(--font-weight-bold);
+}
+
+.recommend-loading-message {
+  margin: 0;
+  color: var(--sys-color-on-surface-variant);
+  font-size: var(--type-body-md-size);
+  line-height: var(--type-body-md-line);
+}
+
+@keyframes recommend-spin {
+  to { transform: rotate(360deg); }
 }
 
 .recommend-search-box {
@@ -552,6 +600,37 @@
 
 .recommend-link:hover {
   background: var(--comp-button-ghost-bg-hover);
+}
+
+.recommend-restart-wrap {
+  display: grid;
+  place-items: center;
+  margin-top: var(--space-16);
+}
+
+.recommend-restart-btn {
+  min-height: 52px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: var(--sys-color-primary);
+  color: var(--sys-color-on-primary);
+  font-size: var(--type-title-sm-size);
+  line-height: var(--type-title-sm-line);
+  font-weight: var(--font-weight-bold);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--sys-color-primary) 35%, transparent);
+}
+
+.recommend-restart-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--sys-color-primary) 88%, white);
+}
+
+.recommend-under-result-input {
+  padding: var(--space-16);
+}
+
+.recommend-under-result-form {
+  display: grid;
+  gap: 0;
 }
 
 .recommend-pref-grid {
