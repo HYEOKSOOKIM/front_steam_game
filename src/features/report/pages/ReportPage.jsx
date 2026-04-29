@@ -1,4 +1,11 @@
-import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchDemoGames, fetchReport } from "../api/reportApi";
 import DecisionGrid from "../components/DecisionGrid";
@@ -26,7 +33,9 @@ const REPORT_NOT_FOUND_MESSAGE =
   "리포트를 찾지 못했어요\n입력한 게임 이름을 다시 확인하거나, 다른 게임으로 검색해보세요.";
 
 function normalizeSearchText(value) {
-  return String(value || "").trim().toLowerCase();
+  return String(value || "")
+    .trim()
+    .toLowerCase();
 }
 
 function gameLabel(game) {
@@ -47,7 +56,9 @@ function findGameByQuery(games, query) {
     return exactAppid;
   }
 
-  const exactName = games.find((game) => normalizeSearchText(game.name) === normalized);
+  const exactName = games.find(
+    (game) => normalizeSearchText(game.name) === normalized,
+  );
   if (exactName) {
     return exactName;
   }
@@ -91,7 +102,8 @@ function SearchLanding({
   loading,
   statusLine,
 }) {
-  const activeSuggestion = activeSuggestionIndex >= 0 ? suggestions[activeSuggestionIndex] : null;
+  const activeSuggestion =
+    activeSuggestionIndex >= 0 ? suggestions[activeSuggestionIndex] : null;
 
   return (
     <section className="report-search-home">
@@ -115,21 +127,29 @@ function SearchLanding({
             onKeyDown={onInputKeyDown}
             onFocus={onFocus}
             onBlur={onBlur}
-            placeholder="예: Elden Ring, GTA V"
+            placeholder="리뷰 분석을 보고 싶은 게임명을 입력해 주세요. 예: EldenRing, 붉은사막"
             autoComplete="off"
             disabled={loading || games.length === 0}
             role="combobox"
             aria-expanded={showSuggestions}
             aria-controls="report-search-suggestions"
             aria-activedescendant={
-              showSuggestions && activeSuggestion ? `report-suggestion-${activeSuggestion.appid}` : undefined
+              showSuggestions && activeSuggestion
+                ? `report-suggestion-${activeSuggestion.appid}`
+                : undefined
             }
           />
-          <button className="report-search-submit" type="submit" disabled={loading || games.length === 0}>
+          <button
+            className="report-search-submit"
+            type="submit"
+            disabled={loading || games.length === 0}
+          >
             검색
           </button>
         </div>
-        <p className="report-search-helper">한국어 리뷰만을 기반으로 분석해요</p>
+        <p className="report-search-helper">
+          한국어 리뷰만을 기반으로 분석해요
+        </p>
 
         {showSuggestions ? (
           <div
@@ -179,9 +199,14 @@ export default function ReportPage() {
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [report, setReport] = useState(null);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
-  const [statusLine, setStatusLine] = useState("게임 목록을 준비하는 중입니다...");
+  const [statusLine, setStatusLine] = useState(
+    "게임 목록을 준비하는 중입니다...",
+  );
 
-  const suggestions = useMemo(() => filterGames(games, searchQuery), [games, searchQuery]);
+  const suggestions = useMemo(
+    () => filterGames(games, searchQuery),
+    [games, searchQuery],
+  );
   const showSuggestions = isSearchFocused && suggestions.length > 0 && !report;
 
   useEffect(() => {
@@ -238,7 +263,9 @@ export default function ReportPage() {
         }
 
         setGames(loadedGames);
-        setStatusLine(loadedGames.length === 0 ? "표시 가능한 리포트가 없어요." : "");
+        setStatusLine(
+          loadedGames.length === 0 ? "표시 가능한 리포트가 없어요." : "",
+        );
       } catch (error) {
         if (!isCancelled) {
           setStatusLine(error?.message || "초기화에 실패했어요.");
@@ -256,7 +283,10 @@ export default function ReportPage() {
   const game = report?.game ?? {};
   const recommendation = display.buy_recommendation || "";
   const recentState = display.recent_state || {};
-  const evidenceSections = useMemo(() => normalizeEvidenceSections(report), [report]);
+  const evidenceSections = useMemo(
+    () => normalizeEvidenceSections(report),
+    [report],
+  );
 
   const recommendationToneClass = buyBadgeClass(recommendation);
   const badgeClass = `buy-badge ${recommendationToneClass}`;
@@ -275,7 +305,9 @@ export default function ReportPage() {
     event.preventDefault();
 
     const selectedSuggestion =
-      showSuggestions && activeSuggestionIndex >= 0 ? suggestions[activeSuggestionIndex] : null;
+      showSuggestions && activeSuggestionIndex >= 0
+        ? suggestions[activeSuggestionIndex]
+        : null;
     if (selectedSuggestion) {
       await handleSelectGame(selectedSuggestion);
       return;
@@ -325,7 +357,9 @@ export default function ReportPage() {
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActiveSuggestionIndex((currentIndex) => (currentIndex + 1) % suggestions.length);
+      setActiveSuggestionIndex(
+        (currentIndex) => (currentIndex + 1) % suggestions.length,
+      );
       return;
     }
 
@@ -368,7 +402,9 @@ export default function ReportPage() {
   }
 
   return (
-    <main className={report ? "report-shell" : "report-shell report-shell-search"}>
+    <main
+      className={report ? "report-shell" : "report-shell report-shell-search"}
+    >
       <Topbar
         onBackHome={() => navigate("/")}
         onResetSearch={handleResetSearch}
@@ -410,18 +446,27 @@ export default function ReportPage() {
               <div className="report-core-stack">
                 <section className="hero-card">
                   <div className="hero-meta">
-                    <p className={`game-title ${recommendationToneClass ? `game-title--${recommendationToneClass}` : ""}`}>
+                    <p
+                      className={`game-title ${recommendationToneClass ? `game-title--${recommendationToneClass}` : ""}`}
+                    >
                       한눈에 보는 결론
                     </p>
                   </div>
                   <h1 className="headline">
-                    {display.headline || "많은 리뷰의 공통된 흐름을 바탕으로 구매 판단만 빠르게 정리했어요."}
+                    {display.headline ||
+                      "많은 리뷰의 공통된 흐름을 바탕으로 구매 판단만 빠르게 정리했어요."}
                   </h1>
                 </section>
 
                 <section className="section-card review-trend-card">
                   <h2>월별 한국어 리뷰 흐름</h2>
-                  <Suspense fallback={<div className="review-trend-loading">차트를 불러오는 중이에요...</div>}>
+                  <Suspense
+                    fallback={
+                      <div className="review-trend-loading">
+                        차트를 불러오는 중이에요...
+                      </div>
+                    }
+                  >
                     <ReviewTrendChart trend={report?.review_trend} />
                   </Suspense>
                 </section>
@@ -439,7 +484,10 @@ export default function ReportPage() {
 
                 <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />
 
-                <StrengthRiskSection strengths={topStrengths} risks={topRisks} />
+                <StrengthRiskSection
+                  strengths={topStrengths}
+                  risks={topRisks}
+                />
 
                 <EvidenceSection
                   positiveBlocks={evidenceSections.loved}
@@ -453,10 +501,16 @@ export default function ReportPage() {
             <div className="report-cta__inner">
               <h2 className="report-cta__title">다른 게임도 궁금하세요?</h2>
               <div className="report-cta__buttons">
-                <button className="report-cta__btn report-cta__btn--filled" onClick={handleResetSearchWithScroll}>
+                <button
+                  className="report-cta__btn report-cta__btn--filled"
+                  onClick={handleResetSearchWithScroll}
+                >
                   다른 게임 검색
                 </button>
-                <button className="report-cta__btn report-cta__btn--outlined" onClick={handleNavigateHome}>
+                <button
+                  className="report-cta__btn report-cta__btn--outlined"
+                  onClick={handleNavigateHome}
+                >
                   메인으로
                 </button>
               </div>
