@@ -1,11 +1,9 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  fetchPreferenceRecommendations,
   fetchRecommendations,
   fetchRecommendSuggestions,
 } from "./api/recommendApi";
-import PlayedGamesAutocomplete from "./components/PlayedGamesAutocomplete";
 import "./styles/recommend.css";
 
 const FIXED_TOP_K = 5;
@@ -67,7 +65,6 @@ function includesAppId(items, appId) {
 
 export default function RecommendPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState("query");
   const [query, setQuery] = useState("");
   const [likedGames, setLikedGames] = useState([]);
   const [dislikedGames, setDislikedGames] = useState([]);
@@ -84,11 +81,15 @@ export default function RecommendPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [result, setResult] = useState(null);
   const [submittedQuery, setSubmittedQuery] = useState("");
-  const [playedGames, setPlayedGames] = useState([]);
-  const [isQueryControlsCollapsed, setIsQueryControlsCollapsed] = useState(false);
+  const [includeFreeGames, setIncludeFreeGames] = useState(true);
+  const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("");
 
-  const rows = result?.results || [];
+  const rows = useMemo(() => {
+    const raw = Array.isArray(result?.results) ? result.results : [];
+    if (includeFreeGames) return raw;
+    return raw.filter((item) => item?.is_free !== true);
+  }, [result, includeFreeGames]);
 
   const sortedRows = useMemo(() => {
     return rows
@@ -141,7 +142,6 @@ export default function RecommendPage() {
   }, [sortedRows, selectedKey]);
 
   useEffect(() => {
-    if (mode !== "preference") return;
     const keyword = likedInput.trim();
     if (keyword.length < 1) {
       setLikedSuggestions([]);
@@ -179,10 +179,9 @@ export default function RecommendPage() {
       canceled = true;
       clearTimeout(timer);
     };
-  }, [likedInput, mode, likedGames, dislikedGames]);
+  }, [likedInput, likedGames, dislikedGames]);
 
   useEffect(() => {
-    if (mode !== "preference") return;
     const keyword = dislikedInput.trim();
     if (keyword.length < 1) {
       setDislikedSuggestions([]);
@@ -220,16 +219,7 @@ export default function RecommendPage() {
       canceled = true;
       clearTimeout(timer);
     };
-  }, [dislikedInput, mode, likedGames, dislikedGames]);
-
-  function resetResultStates() {
-    setErrorMsg("");
-    setResult(null);
-    setStatusLine("");
-    setSubmittedQuery("");
-    setIsQueryControlsCollapsed(false);
-    setSelectedKey("");
-  }
+  }, [dislikedInput, likedGames, dislikedGames]);
 
   function addGameChip(target, item) {
     const appId = String(item?.app_id ?? item?.appId ?? "");
@@ -282,60 +272,46 @@ export default function RecommendPage() {
     setSelectedKey("");
 
     try {
-      if (mode === "query") {
-        const trimmed = query.trim();
-        if (!trimmed) {
-          setErrorMsg("질문을 입력해 주세요.");
-          setStatusLine("");
-          return;
-        }
-
-        const playedGameNames = playedGames
-          .map((item) => String(item?.label || "").trim())
-          .filter(Boolean);
-        const playedAppIds = playedGames
-          .map((item) => Number(item?.appId))
-          .filter((value) => Number.isFinite(value) && value > 0);
-
-        setStatusLine("자연어 추천 결과를 불러오는 중입니다...");
-        const data = await fetchRecommendations(trimmed, FIXED_TOP_K, {
-          playedGames: playedGameNames,
-          playedAppIds,
-        });
-        setResult(data);
-        setSubmittedQuery(trimmed);
-        setStatusLine("");
-        setIsQueryControlsCollapsed(true);
-        return;
-      }
-
-      if (likedGames.length === 0) {
-        setErrorMsg("좋아하는 게임을 최소 1개 이상 선택해 주세요.");
+      const trimmed = query.trim();
+      if (!trimmed && likedGames.length === 0) {
+        setErrorMsg("질문 또는 재밌었던 게임을 최소 1개 이상 입력해 주세요.");
         setStatusLine("");
         return;
       }
 
-      setStatusLine("취향 기반 추천 결과를 불러오는 중입니다...");
-      const data = await fetchPreferenceRecommendations(
-        likedGames.map((item) => item.appId),
-        dislikedGames.map((item) => item.appId),
-        FIXED_TOP_K
-      );
+      const likedAppIds = likedGames
+        .map((item) => Number(item?.appId))
+        .filter((value) => Number.isFinite(value) && value > 0);
+      const dislikedAppIds = dislikedGames
+        .map((item) => Number(item?.appId))
+        .filter((value) => Number.isFinite(value) && value > 0);
+      const playedAppIds = [...new Set([...likedAppIds, ...dislikedAppIds])];
+      const playedGameNames = [
+        ...new Set(
+          [...likedGames, ...dislikedGames]
+            .map((item) => String(item?.label || "").trim())
+            .filter(Boolean)
+        ),
+      ];
+
+      setStatusLine("추천 결과를 불러오는 중입니다...");
+      const data = await fetchRecommendations(trimmed, FIXED_TOP_K, {
+        playedGames: playedGameNames,
+        playedAppIds,
+        likedGames: likedAppIds,
+        dislikedGames: dislikedAppIds,
+        includeFreeGames,
+      });
       setResult(data);
-      setStatusLine("취향 기반 추천 완료");
+      setSubmittedQuery(trimmed);
+      setStatusLine("");
+      setIsControlsCollapsed(true);
     } catch (err) {
       setErrorMsg(err?.message || "추천 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.");
       setStatusLine("");
     } finally {
       setLoading(false);
     }
-  }
-
-  function switchMode(nextMode) {
-    setMode(nextMode);
-    setLikedSuggestOpen(false);
-    setDislikedSuggestOpen(false);
-    resetResultStates();
   }
 
   return (
@@ -352,30 +328,10 @@ export default function RecommendPage() {
 
       <section className="section-card recommend-mode-card">
         <div className="section-title-row">
-          <h2>추천 모드</h2>
-        </div>
-        <div className="recommend-mode-tabs" role="tablist" aria-label="추천 모드 선택">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === "query"}
-            className={`recommend-mode-tab ${mode === "query" ? "is-active" : ""}`}
-            onClick={() => switchMode("query")}
-          >
-            자연어 추천
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === "preference"}
-            className={`recommend-mode-tab ${mode === "preference" ? "is-active" : ""}`}
-            onClick={() => switchMode("preference")}
-          >
-            취향 기반 추천
-          </button>
-          {mode === "query" && result && (
+          <h2>추천 입력</h2>
+          {result && (
             <div className="recommend-inline-toggle-wrap">
-              {isQueryControlsCollapsed && (
+              {isControlsCollapsed && (
                 <span className="recommend-inline-toggle-hint">
                   검색창이 숨겨져 있어요
                 </span>
@@ -383,26 +339,20 @@ export default function RecommendPage() {
               <button
                 type="button"
                 className={`recommend-query-tools-btn recommend-inline-toggle-btn ${
-                  isQueryControlsCollapsed ? "is-emphasis" : ""
+                  isControlsCollapsed ? "is-emphasis" : ""
                 }`}
-                onClick={() => setIsQueryControlsCollapsed((prev) => !prev)}
+                onClick={() => setIsControlsCollapsed((prev) => !prev)}
               >
-                {isQueryControlsCollapsed ? "검색 패널 펼치기" : "검색 패널 접기"}
+                {isControlsCollapsed ? "검색 패널 펼치기" : "검색 패널 접기"}
               </button>
             </div>
           )}
         </div>
       </section>
 
-      {mode === "query" && !isQueryControlsCollapsed && (
-        <section className="section-card recommend-played-card">
-          <PlayedGamesAutocomplete items={playedGames} onChange={setPlayedGames} />
-        </section>
-      )}
-
-      {(mode !== "query" || !isQueryControlsCollapsed) && (
-        <form className={`section-card recommend-form ${mode === "query" ? "is-query" : "is-preference"}`} onSubmit={handleSubmit}>
-        {mode === "query" ? (
+      {!isControlsCollapsed && (
+        <form className="section-card recommend-form is-preference" onSubmit={handleSubmit}>
+          <>
           <div className="recommend-search-box">
             <input
               className="recommend-search-input"
@@ -413,12 +363,16 @@ export default function RecommendPage() {
               placeholder="예: 힐링되는 싱글 RPG 추천해줘. 공포는 제외"
               disabled={loading}
             />
-            <button className="recommend-search-submit" type="submit" disabled={loading || !query.trim()}>
-              {loading ? "검색 중..." : "추천 받기"}
-            </button>
           </div>
-        ) : (
-          <>
+            <label className="recommend-option-check">
+              <input
+                type="checkbox"
+                checked={includeFreeGames}
+                onChange={(e) => setIncludeFreeGames(e.target.checked)}
+                disabled={loading}
+              />
+              무료 게임 포함
+            </label>
             <div className="recommend-pref-grid">
               <div
                 className="recommend-chip-field"
@@ -528,10 +482,9 @@ export default function RecommendPage() {
               </div>
             </div>
             <button className="recommend-btn" type="submit" disabled={loading}>
-              {loading ? "검색 중..." : "취향으로 추천 받기"}
+              {loading ? "검색 중..." : "추천 받기"}
             </button>
           </>
-        )}
         </form>
       )}
 
@@ -542,14 +495,14 @@ export default function RecommendPage() {
         </section>
       )}
 
-      {mode === "query" && result && submittedQuery && (
+      {result && submittedQuery && (
         <section className="section-card">
           <h2 className="recommend-card-name">입력한 질문</h2>
           <p className="recommend-card-reason">{submittedQuery}</p>
         </section>
       )}
 
-      {mode !== "query" && result && commonGenres.length > 0 && (
+      {result && commonGenres.length > 0 && (
         <section className="section-card">
           <h2 className="recommend-card-name">공통 장르</h2>
           <div className="recommend-card-tags">
