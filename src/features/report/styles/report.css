@@ -602,6 +602,24 @@ select:hover:not(:disabled) {
   align-self: center;
 }
 
+.game-intro-price {
+  display: grid;
+  gap: var(--space-4);
+  align-content: center;
+}
+
+.game-intro-price-current {
+  display: block;
+}
+
+.game-intro-price-original {
+  display: block;
+  color: var(--sys-color-on-surface-muted);
+  font-size: var(--type-label-md-size);
+  line-height: var(--type-label-md-line);
+  font-weight: var(--font-weight-medium);
+}
+
 .hero-card,
 .section-card {
   background: var(--comp-card-bg);
@@ -1554,8 +1572,8 @@ select:hover:not(:disabled) {
 }
 
 .evidence-card-heading {
-  display: grid;
-  gap: var(--space-2);
+  display: flex;
+  align-items: center;
   min-width: 0;
 }
 
@@ -1566,15 +1584,6 @@ select:hover:not(:disabled) {
   line-height: var(--type-label-lg-line);
   font-weight: var(--font-weight-bold);
   word-break: keep-all;
-}
-
-.evidence-card-kicker {
-  color: var(--sys-color-on-surface-muted);
-  font-size: var(--type-label-sm-size);
-  line-height: var(--type-label-sm-line);
-  font-weight: var(--type-label-sm-weight);
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
 }
 
 .evidence-index {
@@ -1591,16 +1600,6 @@ select:hover:not(:disabled) {
   font-size: var(--comp-chip-font-size-sm);
   line-height: var(--comp-chip-line-sm);
   font-weight: var(--font-weight-medium);
-}
-
-.evidence-why {
-  margin: 0;
-  color: var(--sys-color-on-surface-variant);
-  font-size: var(--type-body-md-size);
-  line-height: var(--type-body-md-line);
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  max-width: 54ch;
 }
 
 .evidence-preview-quote {

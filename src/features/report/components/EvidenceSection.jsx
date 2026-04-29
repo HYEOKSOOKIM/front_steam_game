@@ -32,10 +32,8 @@ function EvidenceColumn({ title, tone, blocks, emptyMessage, activeKey, onToggle
                   <span className="evidence-index">{blockIndex + 1}</span>
                   <div className="evidence-card-heading">
                     <span className="evidence-card-title">{block.title || "-"}</span>
-                    <span className="evidence-card-kicker">핵심 근거</span>
                   </div>
                 </div>
-                <p className="evidence-why">{block.whyItMatters || "-"}</p>
                 {block.evidenceSnippets[0] ? (
                   <span className="evidence-preview-quote">{formatSnippetForDisplay(block.evidenceSnippets[0])}</span>
                 ) : null}
