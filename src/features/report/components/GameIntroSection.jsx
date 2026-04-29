@@ -8,9 +8,38 @@ function formatNumber(value) {
   return n.toLocaleString("ko-KR");
 }
 
-function priceLabel(game) {
+function formatPriceValue(value, currency = "KRW") {
+  const formatted = formatNumber(value);
+  if (!formatted) {
+    return null;
+  }
+  if (String(currency || "").toUpperCase() === "KRW") {
+    return `₩${formatted}`;
+  }
+  return `${formatted} ${currency || ""}`.trim();
+}
+
+function priceSummary(game) {
   if (game?.is_free) {
-    return "무료";
+    return {
+      primary: "무료",
+      secondary: "",
+    };
+  }
+
+  const currency = game?.price_currency || "KRW";
+  const current =
+    game?.price_current_formatted || formatPriceValue(game?.price_current, currency);
+  const original =
+    game?.price_original_formatted || formatPriceValue(game?.price_original, currency);
+  const discount = Number(game?.price_discount_percent);
+
+  if (current) {
+    const hasDiscount = Number.isFinite(discount) && discount > 0 && original && original !== current;
+    return {
+      primary: `현재 ${current}`,
+      secondary: hasDiscount ? `정가 ${original} · -${discount}%` : "",
+    };
   }
 
   const labels = {
@@ -18,7 +47,10 @@ function priceLabel(game) {
     free_to_play: "무료",
     unknown: "가격 정보 없음",
   };
-  return labels[String(game?.price_model || "unknown")] || "가격 정보 없음";
+  return {
+    primary: labels[String(game?.price_model || "unknown")] || "가격 정보 없음",
+    secondary: "",
+  };
 }
 
 function releaseLabel(game) {
@@ -133,6 +165,7 @@ export default function GameIntroSection({
   const steamStoreUrl = game?.steam_store_url || (appid ? `https://store.steampowered.com/app/${appid}` : "");
   const steamReviewSummary = buildSteamReviewSummary(game);
   const fallbackSummary = buildFallbackSummary(game, sourceReviewCount, minReviewCount);
+  const price = priceSummary(game);
 
   return (
     <section className="game-intro-card">
@@ -194,7 +227,12 @@ export default function GameIntroSection({
         <dl className="game-intro-meta">
           <div>
             <dt>가격</dt>
-            <dd>{priceLabel(game)}</dd>
+            <dd className="game-intro-price">
+              <span className="game-intro-price-current">{price.primary}</span>
+              {price.secondary ? (
+                <span className="game-intro-price-original">{price.secondary}</span>
+              ) : null}
+            </dd>
           </div>
           <div>
             <dt>상태</dt>
