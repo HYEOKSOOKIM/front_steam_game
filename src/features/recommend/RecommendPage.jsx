@@ -29,22 +29,11 @@ function toFixedNumber(value, digits = 3) {
   return n.toFixed(digits);
 }
 
-function confidenceClass(item) {
-  const ko = String(item?.confidence_ko || "");
-  const en = String(item?.confidence || "").toLowerCase();
-  if (ko.includes("높") || en === "high") return "is-high";
-  if (ko.includes("중") || en === "medium") return "is-medium";
-  if (ko.includes("낮") || en === "low") return "is-low";
-  return "is-unknown";
-}
-
-function confidenceRank(item) {
-  const ko = String(item?.confidence_ko || "");
-  const en = String(item?.confidence || "").toLowerCase();
-  if (ko.includes("높") || en === "high") return 3;
-  if (ko.includes("중") || en === "medium") return 2;
-  if (ko.includes("낮") || en === "low") return 1;
-  return 0;
+function toScore(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "-";
+  const score = n <= 1 ? n * 100 : n;
+  return `${score.toFixed(1)}점`;
 }
 
 function getImageUrl(item) {
@@ -101,16 +90,7 @@ export default function RecommendPage() {
     return raw.filter((item) => item?.is_free !== true);
   }, [result, includeFreeGames]);
 
-  const sortedRows = useMemo(() => {
-    return rows
-      .map((row, idx) => ({ row, idx }))
-      .sort((a, b) => {
-        const byConfidence = confidenceRank(b.row) - confidenceRank(a.row);
-        if (byConfidence !== 0) return byConfidence;
-        return a.idx - b.idx;
-      })
-      .map((x) => x.row);
-  }, [rows]);
+  const sortedRows = useMemo(() => rows, [rows]);
 
   const selectedItem = useMemo(() => {
     if (sortedRows.length === 0) return null;
@@ -353,7 +333,7 @@ export default function RecommendPage() {
       )}
 
       {!result && !loading && !isControlsCollapsed && (
-        <section className="report-search-home recommend-search-home-wide">
+        <section className="report-search-home recommend-search-home-wide" style={{ marginBottom: 0, paddingBottom: 0 }}>
           <p className="report-search-kicker">Steam Recommender</p>
           <h1 className="report-search-title">원하는 게임을 추천받아 보세요</h1>
           <p className="report-search-subtitle">원하는 분위기나 조건을 편하게 질문하면, 그에 맞는 게임을 추천해드려요.</p>
@@ -510,7 +490,7 @@ export default function RecommendPage() {
       )}
 
       {result && submittedQuery && (
-        <section className="section-card">
+        <section className="section-card recommend-summary-question" style={{ marginTop: -10, marginBottom: 0 }}>
           <h2 className="recommend-card-name">입력한 질문</h2>
           <p className="recommend-card-reason">{submittedQuery}</p>
         </section>
@@ -520,110 +500,101 @@ export default function RecommendPage() {
         <p className="recommend-empty">{result.empty_reason || "추천 결과가 없습니다. 다른 입력으로 시도해보세요."}</p>
       )}
 
-      {sortedRows.length > 0 && (
-        <section className="section-card">
-          <h2 className="recommend-card-name">추천 게임 카드</h2>
-          <ol className="recommend-poster-list">
-            {sortedRows.map((item, idx) => {
-              const key = getItemKey(item, idx);
-              const imageUrl = getImageUrl(item);
-              const isSelected = key === selectedKey || (!selectedKey && idx === 0);
-              return (
-                <li key={key} className="recommend-poster-item">
-                  <button
-                    type="button"
-                    className={`recommend-poster-button ${isSelected ? "is-active" : ""}`}
-                    onClick={() => setSelectedKey(key)}
-                  >
-                    <span className="recommend-poster-rank">#{idx + 1}</span>
-                    <div className="recommend-poster-thumb">
-                      {imageUrl ? (
-                        <img
-                          className="recommend-poster-image"
-                          src={imageUrl}
-                          alt={`${item.display_name || item.name || "추천 게임"} 포스터`}
-                          loading="lazy"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                      ) : (
-                        <span className="recommend-poster-fallback">NO IMAGE</span>
-                      )}
-                    </div>
-                    <p className="recommend-poster-name">{item.display_name || item.name}</p>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      )}
+      {sortedRows.length > 0 && selectedItem && (
+        <section className="section-card recommend-result-layout" style={{ marginTop: -10 }}>
+          <aside className="recommend-result-list-pane">
+            <h2 className="recommend-card-name">추천 게임 카드</h2>
+            <ol className="recommend-poster-list">
+              {sortedRows.map((item, idx) => {
+                const key = getItemKey(item, idx);
+                const imageUrl = getImageUrl(item);
+                const isSelected = key === selectedKey || (!selectedKey && idx === 0);
+                return (
+                  <li key={key} className="recommend-poster-item">
+                    <button
+                      type="button"
+                      className={`recommend-poster-button ${isSelected ? "is-active" : ""}`}
+                      onClick={() => setSelectedKey(key)}
+                    >
+                      <span className="recommend-poster-rank">#{idx + 1}</span>
+                      <div className="recommend-poster-thumb">
+                        {imageUrl ? (
+                          <img
+                            className="recommend-poster-image"
+                            src={imageUrl}
+                            alt={`${item.display_name || item.name || "추천 게임"} 포스터`}
+                            loading="lazy"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          <span className="recommend-poster-fallback">NO IMAGE</span>
+                        )}
+                      </div>
+                      <p className="recommend-poster-name">{item.display_name || item.name}</p>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </aside>
 
-      {selectedItem && (
-        <section className="section-card">
-          <div className="recommend-card-head">
-            <h2 className="recommend-card-name">{selectedItem.display_name || selectedItem.name}</h2>
-            <span className={`recommend-confidence ${confidenceClass(selectedItem)}`}>
-              {selectedItem.confidence_ko || selectedItem.confidence || "확신도 정보 없음"}
-            </span>
-          </div>
-
-          <div className="recommend-metrics">
-            <div className="metric-box">
-              <span className="label">취향 일치도</span>
-              <strong>{toFixedNumber(selectedItem.similarity)}</strong>
+          <article className="recommend-result-detail-pane">
+            <div className="recommend-card-head">
+              <h2 className="recommend-card-name">{selectedItem.display_name || selectedItem.name}</h2>
+              {selectedItem.steam_url && (
+                <a className="recommend-link recommend-link-inline" href={selectedItem.steam_url} target="_blank" rel="noopener noreferrer">
+                  스팀에서 보기
+                </a>
+              )}
             </div>
-            <div className="metric-box">
-              <span className="label">최근 리뷰 수</span>
-              <strong>{selectedItem.recent_review_count ?? "-"}개</strong>
+
+            <div className="recommend-metrics">
+              <div className="metric-box">
+                <span className="label">취향 일치도</span>
+                <strong>{toScore(selectedItem.similarity)}</strong>
+              </div>
+              <div className="metric-box">
+                <span className="label">최근 리뷰 수</span>
+                <strong>{selectedItem.recent_review_count ?? "-"}개</strong>
+              </div>
+              <div className="metric-box">
+                <span className="label">최근 만족도(1년)</span>
+                <strong>{toPercent(selectedItem.positive_ratio_1y)}</strong>
+              </div>
+              <div className="metric-box">
+                <span className="label">평균 플레이 시간</span>
+                <strong>{selectedItem.median_playtime_1y ?? "-"}분</strong>
+              </div>
             </div>
-            <div className="metric-box">
-              <span className="label">최근 만족도(1년)</span>
-              <strong>{toPercent(selectedItem.positive_ratio_1y)}</strong>
-            </div>
-            <div className="metric-box">
-              <span className="label">평균 플레이 시간</span>
-              <strong>{selectedItem.median_playtime_1y ?? "-"}분</strong>
-            </div>
-          </div>
 
-          <div className="recommend-card-tags">
-            {(selectedItem.genres_ko || selectedItem.genres || []).map((g) => (
-              <span key={g} className="recommend-tag">{g}</span>
-            ))}
-          </div>
-
-          {selectedItem.categories?.length > 0 && <p className="recommend-meta-line">분류: {selectedItem.categories.join(", ")}</p>}
-
-          <p className="recommend-card-reason">
-            <strong>추천 이유</strong>
-            <br />
-            {selectedItem.reason_ko || "추천 이유가 아직 생성되지 않았습니다."}
-          </p>
-
-          {selectedItem.one_liner_ko && (
-            <p className="recommend-card-oneliner">
-              <strong>한줄 평:</strong> {selectedItem.one_liner_ko}
+            <p className="recommend-card-reason">
+              <strong>추천 이유</strong>
+              <br />
+              {selectedItem.reason_ko || "추천 이유가 아직 생성되지 않았습니다."}
             </p>
-          )}
 
-          {selectedItem.evidence_ko?.length > 0 && (
-            <div className="recommend-evidence">
-              <p className="recommend-evidence-title">리뷰 근거</p>
-              <ol className="recommend-evidence-list">
-                {selectedItem.evidence_ko.map((ev, i) => (
-                  <li key={`ev-${i}`}>{ev}</li>
+            {selectedItem.evidence_ko?.length > 0 && (
+              <div className="recommend-evidence">
+                <p className="recommend-evidence-title">리뷰 근거</p>
+                <ol className="recommend-evidence-list">
+                  {selectedItem.evidence_ko.map((ev, i) => (
+                    <li key={`ev-${i}`}>{ev}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            <div className="recommend-card-tags-separated">
+              <p className="recommend-evidence-title">장르 태그</p>
+              <div className="recommend-card-tags">
+                {(selectedItem.genres_ko || selectedItem.genres || []).map((g) => (
+                  <span key={g} className="recommend-tag">{g}</span>
                 ))}
-              </ol>
+              </div>
             </div>
-          )}
-
-          {selectedItem.steam_url && (
-            <a className="recommend-link" href={selectedItem.steam_url} target="_blank" rel="noopener noreferrer">
-              스팀 상점에서 보기
-            </a>
-          )}
+          </article>
         </section>
       )}
 
