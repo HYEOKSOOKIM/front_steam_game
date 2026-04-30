@@ -38,7 +38,7 @@ function formatMonthLabel(value, { compact = false } = {}) {
   if (compact) {
     return `${Number(month)}월`;
   }
-  return `${year}.${month}`;
+  return `${year}년 ${month}월`;
 }
 
 function averagePositiveRatio(points) {
