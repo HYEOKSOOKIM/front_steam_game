@@ -37,7 +37,17 @@
       "Bash(sed -n '402,410p' H:/2026/steam_frontend/src/pages/landing.css)",
       "Bash(sed -n '682,695p' H:/2026/steam_frontend/src/pages/landing.css)",
       "Bash(sed -n '209,214p' H:/2026/steam_frontend/src/pages/landing.css)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(awk NR>=420 && NR<=460 *)",
+      "Bash(awk NR>=240 && NR<=300 *)",
+      "Bash(awk NR>=850 && NR<=880 *)",
+      "Bash(awk 'NR>=2400 && NR<=2420' src/features/report/styles/report.css)",
+      "Bash(awk 'NR>=2530 && NR<=2570' src/features/report/styles/report.css)",
+      "Bash(awk 'NR>=2670 && NR<=2700' src/features/report/styles/report.css)",
+      "Bash(awk 'NR>=2750 && NR<=2780' src/features/report/styles/report.css)",
+      "Bash(awk NR>=2730 && NR<=2770 *)",
+      "Bash(awk NR>=2975 && NR<=3020 *)",
+      "Bash(awk NR>=612 && NR<=700 *)"
     ]
   }
 }

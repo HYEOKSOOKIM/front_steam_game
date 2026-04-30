@@ -3,24 +3,252 @@
    tokens.css 변수 활용, Tailwind 의존 없음
    ============================================================ */
 
+/* ── 랜딩 통합 과정에서 손실된 전역 기본 스타일 복원 ─────── */
+
+/* body 기본값: 색상/폰트가 body.rp-page로 이동되어 추천/분석 페이지에서 사라짐 */
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--sys-color-primary) 10%, transparent) 0%, transparent 60%),
+    linear-gradient(180deg, #171a21 0%, #1b2838 100%);
+  background-attachment: scroll;
+  color: var(--sys-color-on-surface);
+  font-family: var(--font-family-base);
+  font-size: 16px;
+}
+
+/* 버튼/입력 기본값: .report-shell 스코프로 축소되어 추천 페이지에서 사라짐 */
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 40px;
+  border: 0;
+  border-radius: var(--shape-corner-sm);
+  background: var(--comp-button-filled-bg);
+  color: var(--comp-button-filled-label);
+  padding: var(--space-8) var(--space-16);
+  font-size: var(--type-label-lg-size);
+  line-height: var(--type-label-lg-line);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    opacity var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+button:hover:not(:disabled) {
+  background: var(--comp-button-filled-bg-hover);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: var(--comp-focus-ring-width) solid var(--comp-focus-ring-color);
+  outline-offset: var(--comp-focus-ring-offset);
+}
+
+button:disabled {
+  opacity: var(--state-disabled-opacity);
+  cursor: wait;
+}
+
+select {
+  min-width: 250px;
+  min-height: 40px;
+  border: 1px solid var(--comp-input-border);
+  border-radius: var(--shape-corner-sm);
+  background: var(--comp-input-bg);
+  color: var(--comp-input-text);
+  padding: var(--space-8) var(--space-12);
+}
+
+select:hover:not(:disabled) {
+  border-color: var(--comp-input-border-hover);
+}
+
+/* ── .report-shell button (0,1,1) specificity 충돌로 깨진 버튼 클래스 복원 ── */
+
+.report-shell .game-intro-media-preview,
+.report-shell .game-intro-media-preview:hover:not(:disabled) {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  color: inherit;
+  min-height: 215px;
+}
+
+.report-shell .report-back-btn {
+  border: 1px solid var(--comp-button-outlined-border);
+  background: var(--comp-button-outlined-bg);
+  color: var(--comp-button-outlined-label);
+}
+.report-shell .report-back-btn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--sys-color-primary) 72%, transparent);
+  background: color-mix(in srgb, var(--sys-color-primary) 18%, var(--comp-button-outlined-bg));
+  color: var(--report-text-strong);
+  transform: translateY(-2px);
+}
+
+.report-shell .report-suggestion {
+  background: transparent;
+  color: var(--sys-color-on-surface);
+  border-radius: 0;
+  border: 0;
+  border-top: 1px solid var(--comp-card-border);
+  min-height: 52px;
+  font-weight: var(--font-weight-regular);
+  padding: var(--space-12) var(--space-16);
+}
+.report-shell .report-suggestion:hover:not(:disabled),
+.report-shell .report-suggestion.is-active {
+  background: var(--comp-card-hover-overlay);
+}
+
+.report-shell .evidence-card-trigger {
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  padding: var(--space-14, 14px);
+}
+.report-shell .evidence-card-trigger:hover:not(:disabled) {
+  background: transparent;
+}
+
+.report-shell .evidence-inline-link {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sys-color-link);
+  font-weight: var(--font-weight-semibold);
+}
+.report-shell .evidence-inline-link:hover:not(:disabled) {
+  background: transparent;
+  color: var(--comp-link-color-hover);
+}
+
+.report-shell .report-cta__btn--outlined {
+  border: 1px solid var(--comp-button-outlined-border);
+  background: transparent;
+  color: var(--comp-button-outlined-label);
+}
+.report-shell .report-cta__btn--outlined:hover {
+  background: var(--sys-color-primary-hover);
+  border-color: var(--sys-color-primary);
+  color: #000;
+}
+
+.report-shell .game-intro-media-strip-nav {
+  width: 34px;
+  min-width: 34px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--comp-card-border) 78%, transparent);
+  border-radius: var(--shape-corner-sm);
+  background: color-mix(in srgb, var(--comp-card-bg-strong) 88%, var(--sys-color-primary) 12%);
+  color: var(--sys-color-on-surface);
+}
+.report-shell .game-intro-media-strip-nav:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--sys-color-primary) 72%, transparent);
+  background: color-mix(in srgb, var(--sys-color-primary) 88%, white 12%);
+  color: #08131f;
+  transform: translateY(-1px);
+}
+
+.report-shell .game-intro-media-thumb {
+  background: var(--comp-card-bg-strong);
+  border: 1px solid color-mix(in srgb, var(--comp-card-border) 76%, transparent);
+  border-radius: var(--shape-corner-sm);
+  padding: 0;
+  min-height: 48px;
+  color: inherit;
+}
+.report-shell .game-intro-media-thumb:hover,
+.report-shell .game-intro-media-thumb.is-active {
+  background: var(--comp-card-bg-strong);
+  border-color: color-mix(in srgb, var(--sys-color-primary) 72%, transparent);
+}
+
+/* ── 추천 페이지 버튼 — .report-shell button (0,1,1) 특이도 충돌 복원 ────── */
+/* RecommendPage의 <main>이 report-shell 클래스를 공유해 같은 충돌 발생      */
+
+.report-shell .recommend-poster-button {
+  background: var(--sys-color-surface-container);
+  border: 1px solid var(--comp-card-border);
+  border-radius: var(--shape-corner-sm);
+  min-height: 0;
+  padding: 4px;
+  color: var(--sys-color-on-surface);
+}
+.report-shell .recommend-poster-button:hover:not(:disabled) {
+  background: var(--sys-color-surface-container);
+}
+
+.report-shell .recommend-mode-tab {
+  border: 1px solid var(--comp-button-outlined-border);
+  background: var(--comp-button-outlined-bg);
+  color: var(--comp-button-outlined-label);
+}
+.report-shell .recommend-mode-tab:hover:not(:disabled) {
+  background: var(--comp-button-ghost-bg-hover);
+}
+.report-shell .recommend-mode-tab.is-active {
+  border-color: var(--sys-color-primary);
+  background: color-mix(in srgb, var(--sys-color-primary) 18%, transparent);
+  color: var(--sys-color-on-surface);
+}
+
+.report-shell .recommend-query-tools-btn {
+  border: 1px solid var(--comp-button-outlined-border);
+  background: var(--comp-button-outlined-bg);
+  color: var(--comp-button-outlined-label);
+  min-height: 36px;
+}
+.report-shell .recommend-query-tools-btn:hover:not(:disabled) {
+  background: var(--comp-button-ghost-bg-hover);
+}
+
+.report-shell .recommend-suggest-item {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--comp-card-border);
+  border-radius: 0;
+  min-height: 44px;
+  padding: var(--space-10, 10px) var(--space-12);
+  color: var(--sys-color-on-surface);
+}
+.report-shell .recommend-suggest-item:hover:not(:disabled),
+.report-shell .recommend-suggest-item.is-active {
+  background: var(--comp-card-hover-overlay);
+}
+
 .app-layout {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  min-height: 100vh;
-  overflow-x: hidden;
+  /* 레이아웃은 fixed 자식들의 컨테이너 역할만 */
 }
 
 /* ── 사이드바 ─────────────────────────────────────────────── */
 .app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
   background: #171a21;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
   padding: var(--space-24);
-  height: 100vh;
-  position: sticky;
-  top: 0;
-  overflow-y: auto;
+  overflow: hidden;
+  z-index: 100;
 }
 
 .app-sidebar__logo {
@@ -53,6 +281,8 @@
 
 .app-sidebar__nav {
   flex: 1;
+  overflow-y: auto;
+  padding-bottom: 120px;
 }
 
 .app-sidebar__nav ul {
@@ -101,9 +331,13 @@
 
 /* ── 사이드바 하단 배지 ───────────────────────────────────── */
 .app-sidebar__footer {
-  margin-top: auto;
+  position: fixed;
+  bottom: var(--space-24);
+  left: var(--space-24);
+  width: calc(240px - var(--space-24) * 2);
   padding-top: var(--space-24);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 101;
 }
 
 .app-sidebar__badge {
@@ -128,16 +362,21 @@
 
 /* ── 콘텐츠 영역 ──────────────────────────────────────────── */
 .app-content {
-  min-width: 0;
+  position: fixed;
+  top: 0;
+  left: 240px;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
 }
 
 /* ── 반응형: 1024px 미만 사이드바 숨김 ───────────────────── */
 @media (max-width: 1023px) {
-  .app-layout {
-    grid-template-columns: 1fr;
-  }
-
   .app-sidebar {
     display: none;
+  }
+
+  .app-content {
+    left: 0;
   }
 }

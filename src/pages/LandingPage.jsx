@@ -19,7 +19,7 @@ export default function LandingPage() {
   const videoId = "ltMKzJ-L158";
 
   return (
-      <main className="h-screen overflow-y-auto hide-scrollbar text-[#C7D5E0] bg-steam-dark font-outfit">
+      <main className="hide-scrollbar text-[#C7D5E0] bg-steam-dark font-outfit">
         {/* 상단 Hero 영역 (배경 영상 적용) */}
         <div className="relative w-full overflow-hidden">
           <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
