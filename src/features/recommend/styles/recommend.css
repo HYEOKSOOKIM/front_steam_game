@@ -3,7 +3,8 @@
   margin: 0 auto;
   padding: var(--space-32) 0 var(--space-48);
   display: grid;
-  gap: var(--space-16);
+  gap: var(--space-6);
+  font-size: 17px;
 }
 
 .recommend-topbar {
@@ -26,16 +27,16 @@
 .brand {
   margin: 0;
   color: var(--sys-color-primary);
-  font-size: var(--type-label-lg-size);
-  line-height: var(--type-label-lg-line);
+  font-size: 1.15rem;
+  line-height: 1.35;
   font-weight: var(--font-weight-bold);
 }
 
 .brand-subtitle {
   margin: 0;
   color: var(--sys-color-on-surface-variant);
-  font-size: var(--type-label-md-size);
-  line-height: var(--type-label-md-line);
+  font-size: 1rem;
+  line-height: 1.45;
 }
 
 .topbar-actions {
@@ -85,8 +86,8 @@
 .section-card h2 {
   margin: 0;
   color: var(--sys-color-on-surface);
-  font-size: var(--type-heading-md-size);
-  line-height: var(--type-heading-md-line);
+  font-size: 1.38rem;
+  line-height: 1.35;
   font-weight: var(--font-weight-bold);
   display: inline-flex;
   align-items: center;
@@ -238,6 +239,30 @@
 
 .recommend-search-home-wide {
   width: min(920px, 100%);
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.recommend-shell .report-search-kicker {
+  font-size: 1.05rem;
+}
+
+.recommend-shell .report-search-title {
+  font-size: clamp(2rem, 3.3vw, 2.6rem);
+  line-height: 1.25;
+}
+
+.recommend-shell .report-search-subtitle {
+  font-size: 1.12rem;
+  line-height: 1.6;
+}
+
+.recommend-shell .report-search-input {
+  font-size: 1.06rem;
+}
+
+.recommend-shell .report-search-submit {
+  font-size: 1.04rem;
 }
 
 .recommend-option-check input {
@@ -370,12 +395,20 @@
 
 .recommend-card-name {
   margin: 0 0 var(--space-12);
+  font-size: 1.6rem;
+  line-height: 1.3;
 }
 
 .recommend-card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-8);
+}
+
+.recommend-card-tags-separated {
+  margin-top: var(--space-16);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--comp-card-border);
 }
 
 .recommend-metrics + .recommend-card-tags {
@@ -399,8 +432,12 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--space-10, 10px);
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+.recommend-card-name + .recommend-poster-list {
+  margin-top: var(--space-8);
 }
 
 .recommend-poster-item {
@@ -414,10 +451,10 @@
   border-radius: var(--shape-corner-sm);
   background: var(--sys-color-surface-container);
   color: var(--sys-color-on-surface);
-  padding: var(--space-8);
+  padding: 4px;
   text-align: left;
   display: grid;
-  gap: var(--space-8);
+  gap: 4px;
   cursor: pointer;
 }
 
@@ -435,9 +472,9 @@
   border: 1px solid var(--comp-chip-neutral-border);
   background: var(--comp-chip-neutral-bg);
   color: var(--comp-chip-neutral-label);
-  padding: 2px 8px;
+  padding: 0 5px;
   font-size: var(--comp-chip-font-size-sm);
-  line-height: var(--comp-chip-line-sm);
+  line-height: 1.1;
   font-weight: var(--font-weight-medium);
 }
 
@@ -446,19 +483,20 @@
   border-radius: var(--shape-corner-sm);
   border: 1px solid var(--comp-card-border);
   background: var(--sys-color-surface-container-high);
-  min-height: 180px;
-  max-height: 260px;
+  aspect-ratio: 21 / 9;
+  min-height: 0;
+  max-height: none;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-6, 6px);
+  padding: 0;
 }
 
 .recommend-poster-image {
   width: 100%;
-  height: auto;
-  max-height: 248px;
+  height: 100%;
+  max-height: none;
   object-fit: contain;
   display: block;
 }
@@ -472,17 +510,38 @@
 .recommend-poster-name {
   margin: 0;
   color: var(--sys-color-on-surface);
-  font-size: var(--type-body-sm-size);
-  line-height: var(--type-body-sm-line);
-  min-height: 2.4em;
+  font-size: 0.74rem;
+  line-height: 1.2;
+  min-height: 1.7em;
 }
 
 .recommend-card-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-12);
   margin-bottom: var(--space-10, 10px);
+}
+
+.recommend-card-head .recommend-card-name {
+  margin: 0;
+}
+
+.recommend-result-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 22%) minmax(0, 78%);
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.recommend-result-list-pane,
+.recommend-result-detail-pane {
+  min-width: 0;
+}
+
+.recommend-result-list-pane {
+  border-right: 1px solid var(--comp-card-border);
+  padding-right: var(--space-8);
 }
 
 .recommend-confidence {
@@ -522,8 +581,8 @@
 
 .metric-box .label {
   color: var(--sys-color-on-surface-muted);
-  font-size: var(--type-label-sm-size);
-  line-height: var(--type-label-sm-line);
+  font-size: 0.9rem;
+  line-height: 1.4;
   font-weight: var(--type-label-sm-weight);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -531,8 +590,8 @@
 
 .metric-box strong {
   color: var(--sys-color-on-surface);
-  font-size: var(--type-label-lg-size);
-  line-height: var(--type-label-lg-line);
+  font-size: 1.08rem;
+  line-height: 1.45;
   font-weight: var(--font-weight-bold);
 }
 
@@ -549,9 +608,25 @@
   border-radius: var(--shape-corner-sm);
   background: var(--comp-card-bg-strong);
   padding: var(--space-12);
-  color: var(--sys-color-on-surface-variant);
-  font-size: var(--type-body-md-size);
-  line-height: var(--type-body-md-line);
+  color: var(--sys-color-on-surface);
+  font-size: 1.16rem;
+  line-height: 1.75;
+}
+
+.recommend-summary-question .recommend-card-name {
+  font-size: 1.22rem;
+  margin-bottom: var(--space-8);
+}
+
+.recommend-summary-question.section-card {
+  padding: 13px 15px !important;
+}
+
+.recommend-summary-question .recommend-card-reason {
+  margin-top: 4px;
+  padding: 8px 10px;
+  font-size: 0.98rem;
+  line-height: 1.5;
 }
 
 .recommend-card-oneliner {
@@ -567,7 +642,7 @@
 
 .recommend-evidence-title {
   margin: 0 0 var(--space-8);
-  color: var(--sys-color-on-surface-muted);
+  color: var(--sys-color-primary);
   font-size: var(--type-label-sm-size);
   line-height: var(--type-label-sm-line);
   font-weight: var(--font-weight-medium);
@@ -578,7 +653,7 @@
   padding-left: var(--space-24);
   display: grid;
   gap: var(--space-6, 6px);
-  color: var(--sys-color-on-surface);
+  color: color-mix(in srgb, var(--sys-color-primary) 58%, white);
 }
 
 .recommend-link {
@@ -593,13 +668,20 @@
   color: var(--comp-button-outlined-label);
   padding: var(--space-10, 10px) var(--space-18, 18px);
   text-decoration: none;
-  font-size: var(--type-label-lg-size);
-  line-height: var(--type-label-lg-line);
+  font-size: 1rem;
+  line-height: 1.45;
   font-weight: var(--font-weight-bold);
 }
 
 .recommend-link:hover {
   background: var(--comp-button-ghost-bg-hover);
+}
+
+.recommend-link-inline {
+  margin-top: 0;
+  min-height: 38px;
+  padding: 6px 14px;
+  white-space: nowrap;
 }
 
 .recommend-restart-wrap {
@@ -631,6 +713,25 @@
 .recommend-under-result-form {
   display: grid;
   gap: 0;
+}
+
+/* Tighten spacing only between key blocks:
+   Steam Recommender input block -> question block -> result block */
+.recommend-shell > .recommend-summary-question {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.recommend-shell > .recommend-result-layout {
+  margin-top: 0 !important;
+}
+
+.recommend-shell > .report-search-home.recommend-search-home-wide + .recommend-summary-question {
+  margin-top: -10px !important;
+}
+
+.recommend-shell > .recommend-summary-question + .recommend-result-layout {
+  margin-top: -10px !important;
 }
 
 .recommend-pref-grid {
@@ -800,8 +901,16 @@
 }
 
 @media (max-width: 1100px) {
-  .recommend-poster-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .recommend-result-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-14);
+  }
+
+  .recommend-result-list-pane {
+    border-right: 0;
+    border-bottom: 1px solid var(--comp-card-border);
+    padding-right: 0;
+    padding-bottom: var(--space-12);
   }
 }
 
@@ -819,9 +928,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .recommend-poster-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 560px) {
@@ -875,7 +981,7 @@
     grid-template-columns: 1fr;
   }
 
-  .recommend-poster-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .recommend-poster-thumb {
+    aspect-ratio: 16 / 9;
   }
 }
