@@ -36,6 +36,51 @@ function toScore(value) {
   return `${score.toFixed(1)}점`;
 }
 
+function toBool(value) {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value > 0;
+  if (typeof value === "string") {
+    const v = value.trim().toLowerCase();
+    return v === "true" || v === "1" || v === "yes" || v === "y";
+  }
+  return false;
+}
+
+function getKoreanSupport(item) {
+  const support = item?.korean_support || item?.language_support || item?.languages || {};
+
+  let interfaceSupported =
+    toBool(item?.korean_interface) ||
+    toBool(item?.supports_korean_interface) ||
+    toBool(support?.interface) ||
+    toBool(support?.korean_interface);
+
+  let subtitleSupported =
+    toBool(item?.korean_subtitles) ||
+    toBool(item?.korean_subtitle) ||
+    toBool(item?.supports_korean_subtitles) ||
+    toBool(support?.subtitles) ||
+    toBool(support?.korean_subtitles);
+
+  let audioSupported =
+    toBool(item?.korean_audio) ||
+    toBool(item?.supports_korean_audio) ||
+    toBool(support?.audio) ||
+    toBool(support?.korean_audio);
+
+  const supportedLanguagesText = String(item?.supported_languages || "").toLowerCase();
+  if (!interfaceSupported && !subtitleSupported && !audioSupported && supportedLanguagesText.includes("korean")) {
+    interfaceSupported = true;
+  }
+
+  return {
+    interfaceSupported,
+    subtitleSupported,
+    audioSupported,
+    anySupported: interfaceSupported || subtitleSupported || audioSupported,
+  };
+}
+
 function getImageUrl(item) {
   const candidates = [
     item?.image_url,
@@ -79,6 +124,7 @@ export default function RecommendPage() {
   const [result, setResult] = useState(null);
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [includeFreeGames, setIncludeFreeGames] = useState(true);
+  const [koreanSupportedOnly, setKoreanSupportedOnly] = useState(false);
   const [showPreferenceInputs, setShowPreferenceInputs] = useState(false);
   const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("");
@@ -86,9 +132,12 @@ export default function RecommendPage() {
 
   const rows = useMemo(() => {
     const raw = Array.isArray(result?.results) ? result.results : [];
-    if (includeFreeGames) return raw;
-    return raw.filter((item) => item?.is_free !== true);
-  }, [result, includeFreeGames]);
+    return raw.filter((item) => {
+      if (!includeFreeGames && item?.is_free === true) return false;
+      if (koreanSupportedOnly && !getKoreanSupport(item).anySupported) return false;
+      return true;
+    });
+  }, [result, includeFreeGames, koreanSupportedOnly]);
 
   const sortedRows = useMemo(() => rows, [rows]);
 
@@ -306,6 +355,7 @@ export default function RecommendPage() {
     setShowPreferenceInputs(false);
     setIsControlsCollapsed(false);
     setSelectedKey("");
+    setKoreanSupportedOnly(false);
   }
 
   function handleExpandSearchPanel() {
@@ -352,15 +402,26 @@ export default function RecommendPage() {
                 {loading ? "검색 중..." : "추천 받기"}
               </button>
             </div>
-            <label className="recommend-option-check">
-              <input
-                type="checkbox"
-                checked={includeFreeGames}
-                onChange={(e) => setIncludeFreeGames(e.target.checked)}
-                disabled={loading}
-              />
-              무료 게임 포함
-            </label>
+            <div className="recommend-option-row">
+              <label className="recommend-option-check">
+                <input
+                  type="checkbox"
+                  checked={includeFreeGames}
+                  onChange={(e) => setIncludeFreeGames(e.target.checked)}
+                  disabled={loading}
+                />
+                무료 게임 포함
+              </label>
+              <label className="recommend-option-check">
+                <input
+                  type="checkbox"
+                  checked={koreanSupportedOnly}
+                  onChange={(e) => setKoreanSupportedOnly(e.target.checked)}
+                  disabled={loading}
+                />
+                한국어 지원 게임만
+              </label>
+            </div>
             <button
               type="button"
               className="recommend-pref-toggle-btn"
@@ -556,7 +617,7 @@ export default function RecommendPage() {
                 <strong>{toScore(selectedItem.similarity)}</strong>
               </div>
               <div className="metric-box">
-                <span className="label">최근 리뷰 수</span>
+                <span className="label">반영된 리뷰 수</span>
                 <strong>{selectedItem.recent_review_count ?? "-"}개</strong>
               </div>
               <div className="metric-box">
@@ -567,6 +628,14 @@ export default function RecommendPage() {
                 <span className="label">평균 플레이 시간</span>
                 <strong>{selectedItem.median_playtime_1y ?? "-"}분</strong>
               </div>
+            </div>
+
+            <div className="metric-box recommend-korean-support-box">
+              <span className="label">한국어 지원</span>
+              <strong>
+                인터페이스 {getKoreanSupport(selectedItem).interfaceSupported ? "지원" : "미지원"} / 자막{" "}
+                {getKoreanSupport(selectedItem).subtitleSupported ? "지원" : "미지원"}
+              </strong>
             </div>
 
             <p className="recommend-card-reason">
@@ -615,15 +684,26 @@ export default function RecommendPage() {
                 {loading ? "검색 중..." : "추천 받기"}
               </button>
             </div>
-            <label className="recommend-option-check">
-              <input
-                type="checkbox"
-                checked={includeFreeGames}
-                onChange={(e) => setIncludeFreeGames(e.target.checked)}
-                disabled={loading}
-              />
-              무료 게임 포함
-            </label>
+            <div className="recommend-option-row">
+              <label className="recommend-option-check">
+                <input
+                  type="checkbox"
+                  checked={includeFreeGames}
+                  onChange={(e) => setIncludeFreeGames(e.target.checked)}
+                  disabled={loading}
+                />
+                무료 게임 포함
+              </label>
+              <label className="recommend-option-check">
+                <input
+                  type="checkbox"
+                  checked={koreanSupportedOnly}
+                  onChange={(e) => setKoreanSupportedOnly(e.target.checked)}
+                  disabled={loading}
+                />
+                한국어 지원 게임만
+              </label>
+            </div>
             <button
               type="button"
               className="recommend-pref-toggle-btn"
