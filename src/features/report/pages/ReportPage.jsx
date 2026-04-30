@@ -52,6 +52,13 @@ function gameLabel(game) {
   return `${game.name} (${game.appid})`;
 }
 
+function gameSearchTexts(game) {
+  const aliases = Array.isArray(game?.aliases) ? game.aliases : [];
+  return [game?.name, ...aliases]
+    .map((item) => normalizeSearchText(item))
+    .filter(Boolean);
+}
+
 function findGameByQuery(games, query) {
   const normalized = normalizeSearchText(query);
   if (!normalized) {
@@ -64,7 +71,7 @@ function findGameByQuery(games, query) {
   }
 
   const exactName = games.find(
-    (game) => normalizeSearchText(game.name) === normalized,
+    (game) => gameSearchTexts(game).some((text) => text === normalized),
   );
   if (exactName) {
     return exactName;
@@ -72,9 +79,12 @@ function findGameByQuery(games, query) {
 
   return (
     games.find((game) => {
-      const name = normalizeSearchText(game.name);
+      const searchableTexts = gameSearchTexts(game);
       const appid = String(game.appid);
-      return name.includes(normalized) || appid.includes(normalized);
+      return (
+        searchableTexts.some((text) => text.includes(normalized)) ||
+        appid.includes(normalized)
+      );
     }) || null
   );
 }
@@ -87,9 +97,12 @@ function filterGames(games, query) {
 
   return games
     .filter((game) => {
-      const name = normalizeSearchText(game.name);
+      const searchableTexts = gameSearchTexts(game);
       const appid = String(game.appid);
-      return name.includes(normalized) || appid.includes(normalized);
+      return (
+        searchableTexts.some((text) => text.includes(normalized)) ||
+        appid.includes(normalized)
+      );
     })
     .slice(0, SUGGESTION_LIMIT);
 }
@@ -205,6 +218,7 @@ export default function ReportPage() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [report, setReport] = useState(null);
+  const [isFooterSearchOpen, setIsFooterSearchOpen] = useState(false);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [statusLine, setStatusLine] = useState(
@@ -215,7 +229,8 @@ export default function ReportPage() {
     () => filterGames(games, searchQuery),
     [games, searchQuery],
   );
-  const showSuggestions = isSearchFocused && suggestions.length > 0 && !report;
+  const showSuggestions =
+    isSearchFocused && suggestions.length > 0 && (!report || isFooterSearchOpen);
 
   useEffect(() => {
     if (!isLoadingReport) return undefined;
@@ -258,6 +273,7 @@ export default function ReportPage() {
     try {
       const payload = await fetchReport(numericAppid);
       setReport(payload);
+      setIsFooterSearchOpen(false);
       setStatusLine("");
     } catch (error) {
       setReport(null);
@@ -406,6 +422,7 @@ export default function ReportPage() {
 
   function handleResetSearch() {
     setReport(null);
+    setIsFooterSearchOpen(false);
     setSearchQuery("");
     setActiveSuggestionIndex(-1);
     setStatusLine("");
@@ -414,6 +431,13 @@ export default function ReportPage() {
   function handleResetSearchWithScroll() {
     handleResetSearch();
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function handleOpenFooterSearch() {
+    setIsFooterSearchOpen(true);
+    setSearchQuery("");
+    setActiveSuggestionIndex(-1);
+    setStatusLine("");
   }
 
   function handleNavigateHome() {
@@ -527,13 +551,32 @@ export default function ReportPage() {
             </div>
           )}
 
-          <section className="report-cta">
+          <section className={`report-cta ${isFooterSearchOpen ? "report-cta--search" : ""}`}>
+            {isFooterSearchOpen ? (
+              <SearchLanding
+                games={games}
+                query={searchQuery}
+                onQueryChange={handleQueryChange}
+                onSubmit={handleSearchSubmit}
+                onInputKeyDown={handleInputKeyDown}
+                onSelectGame={handleSelectGame}
+                suggestions={suggestions}
+                activeSuggestionIndex={activeSuggestionIndex}
+                showSuggestions={showSuggestions}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => {
+                  setTimeout(() => setIsSearchFocused(false), 120);
+                }}
+                loading={isLoadingReport}
+                statusLine={statusLine}
+              />
+            ) : (
             <div className="report-cta__inner">
               <h2 className="report-cta__title">다른 게임도 궁금하세요?</h2>
               <div className="report-cta__buttons">
                 <button
                   className="report-cta__btn report-cta__btn--filled"
-                  onClick={handleResetSearchWithScroll}
+                  onClick={handleOpenFooterSearch}
                 >
                   다른 게임 검색
                 </button>
@@ -545,6 +588,7 @@ export default function ReportPage() {
                 </button>
               </div>
             </div>
+            )}
           </section>
 
           <StatusFooter />

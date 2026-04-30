@@ -2657,6 +2657,45 @@ select:hover:not(:disabled) {
   gap: var(--space-16);
 }
 
+.report-cta--search {
+  padding: var(--space-32) var(--space-24);
+}
+
+.report-cta--search::before,
+.report-cta--search::after {
+  display: none;
+}
+
+.report-cta--search .report-search-home {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  min-height: 0;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.report-cta--search .report-search-home::before {
+  display: none;
+}
+
+.report-cta--search .report-search-kicker,
+.report-cta--search .report-search-subtitle,
+.report-cta--search .report-search-helper {
+  display: none;
+}
+
+.report-cta--search .report-search-title {
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+}
+
+.report-cta--search .report-search-form {
+  margin-top: var(--space-16);
+}
+
 .report-cta__title {
   margin: 0;
   font-size: clamp(1.65rem, 3vw, 2.1rem);
