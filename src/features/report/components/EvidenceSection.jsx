@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { formatSnippetForDisplay } from "../utils/reportMappers";
 
-const COLLAPSED_SNIPPET_COUNT = 2;
+const COLLAPSED_SNIPPET_COUNT = 1;
 
 const TEXT = {
   positiveEvidence: "\uac15\uc810 \uadfc\uac70",
   negativeEvidence: "\ub9ac\uc2a4\ud06c \uadfc\uac70",
   reviewLabel: "\uc2e4\uc81c \ub9ac\ubdf0",
   evidenceReview: "\uadfc\uac70 \ub9ac\ubdf0",
-  collapse: "\uadfc\uac70 \uc811\uae30",
-  expandMore: "\uadfc\uac70 \ub354 \ubcf4\uae30",
+  collapse: "\ub9ac\ubdf0 \uc811\uae30",
+  expandMore: "\uc2e4\uc81c \ub9ac\ubdf0 \ub354 \ubcf4\uae30",
   expandOriginal: "\uc6d0\ubb38 \ud3bc\uce58\uae30",
   sectionTitle: "\ub9ac\ubdf0\uc5d0\uc11c \uc774\ub807\uac8c \ub9d0\ud574\uc694",
   positiveTitle: "\uc88b\uc558\ub2e4\ub294 \ub9ac\ubdf0",
@@ -23,7 +23,6 @@ function snippetLabel(tone, index) {
 }
 
 function EvidenceColumn({ title, tone, blocks, emptyMessage, activeKey, onToggleEvidence }) {
-  const label = tone === "positive" ? TEXT.positiveEvidence : TEXT.negativeEvidence;
   const classes = [
     "evidence-section",
     `evidence-section-${tone}`,
@@ -37,7 +36,6 @@ function EvidenceColumn({ title, tone, blocks, emptyMessage, activeKey, onToggle
   return (
     <article className={classes}>
       <div className="evidence-section-head">
-        <div className="mock-report-card__label">{label}</div>
         <h3 className="evidence-section-title">{title}</h3>
       </div>
       <div className="evidence-grid">
