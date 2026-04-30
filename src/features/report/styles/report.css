@@ -66,7 +66,7 @@ select {
   font: inherit;
 }
 
-button {
+.report-shell button {
   min-height: 40px;
   border: 0;
   border-radius: var(--shape-corner-sm);
@@ -82,23 +82,23 @@ button {
     opacity var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
-button:hover:not(:disabled) {
+.report-shell button:hover:not(:disabled) {
   background: var(--comp-button-filled-bg-hover);
 }
 
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
+.report-shell button:focus-visible,
+.report-shell input:focus-visible,
+.report-shell select:focus-visible {
   outline: var(--comp-focus-ring-width) solid var(--comp-focus-ring-color);
   outline-offset: var(--comp-focus-ring-offset);
 }
 
-button:disabled {
+.report-shell button:disabled {
   opacity: var(--state-disabled-opacity);
   cursor: wait;
 }
 
-select {
+.report-shell select {
   min-width: 250px;
   min-height: 40px;
   border: 1px solid var(--comp-input-border);
@@ -108,7 +108,7 @@ select {
   padding: var(--space-8) var(--space-12);
 }
 
-select:hover:not(:disabled) {
+.report-shell select:hover:not(:disabled) {
   border-color: var(--comp-input-border-hover);
 }
 
