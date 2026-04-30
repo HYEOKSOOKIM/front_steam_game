@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const Hero = ({ navigate }) => {
+const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="mb-16 py-12 relative overflow-hidden">
       <div className="absolute top-0 -right-20 w-96 h-96 bg-highlight/10 blur-[120px] rounded-full pointer-events-none"></div>

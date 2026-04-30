@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "../landing/components/Sidebar";
 import Hero from "../landing/components/Hero";
 import CategoryFilter from "../landing/components/CategoryFilter";
@@ -11,7 +10,6 @@ import { gamesData } from "../landing/data";
 import "../landing/tailwind.css";
 
 export default function LandingPage() {
-  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("전체");
 
   const filteredGames =
@@ -23,10 +21,10 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-steam-dark text-primary grid grid-cols-7 overflow-hidden font-outfit">
-      <Sidebar navigate={navigate} activePath="/" />
+      <Sidebar />
 
       <main className="col-span-6 h-screen overflow-y-auto hide-scrollbar text-[#C7D5E0] bg-steam-dark">
-        {/* Hero — 유튜브 배경 영상 */}
+        {/* 상단 Hero 영역 (배경 영상 적용) */}
         <div className="relative w-full overflow-hidden">
           <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
             <iframe
@@ -39,21 +37,22 @@ export default function LandingPage() {
           </div>
           <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#171A21]/30 via-[#171A21]/50 to-steam-dark backdrop-blur-sm pointer-events-none" />
           <div className="max-w-[1400px] mx-auto px-12 pt-16 pb-8 relative z-10">
-            <Hero navigate={navigate} />
+            <Hero />
           </div>
         </div>
 
-        {/* 하단 콘텐츠 */}
+        {/* 하단 리스트 영역 */}
         <div className="max-w-[1400px] mx-auto px-12 py-10 relative z-10">
           <CategoryFilter
             activeCategory={activeCategory}
             onSelect={setActiveCategory}
           />
+
           <GameList
             title={activeCategory === "전체" ? "지금 뜨는 인기 게임" : `${activeCategory} 게임 추천`}
             games={filteredGames.slice(0, 10)}
-            navigate={navigate}
           />
+
           <Features />
           <TechStack />
           <Visualization />

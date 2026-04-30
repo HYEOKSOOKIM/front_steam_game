@@ -36,7 +36,8 @@
       "Bash(sed -n '137,145p' H:/2026/steam_frontend/src/pages/landing.css)",
       "Bash(sed -n '402,410p' H:/2026/steam_frontend/src/pages/landing.css)",
       "Bash(sed -n '682,695p' H:/2026/steam_frontend/src/pages/landing.css)",
-      "Bash(sed -n '209,214p' H:/2026/steam_frontend/src/pages/landing.css)"
+      "Bash(sed -n '209,214p' H:/2026/steam_frontend/src/pages/landing.css)",
+      "Bash(npx vite *)"
     ]
   }
 }

@@ -1,7 +1,11 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Sparkles, Compass, Gamepad2 } from 'lucide-react';
 
-const Sidebar = ({ navigate, activePath = '/' }) => {
+const Sidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const menuItems = [
     { icon: <Home size={20} />, label: '홈', path: '/' },
     { icon: <Sparkles size={20} />, label: '맞춤 게임 추천', path: '/recommend' },
@@ -20,18 +24,18 @@ const Sidebar = ({ navigate, activePath = '/' }) => {
       <nav className="flex-1">
         <ul className="space-y-4">
           {menuItems.map((item, index) => {
-            const isActive = activePath === item.path;
+            const active = location.pathname === item.path;
             return (
               <li key={index}>
                 <button
                   onClick={() => navigate(item.path)}
                   className={`w-full flex items-center gap-4 py-2 px-3 rounded-md transition-all duration-200 group ${
-                    isActive
+                    active
                       ? 'bg-white/5 text-highlight'
                       : 'text-secondary hover:text-highlight hover:bg-white/5'
                   }`}
                 >
-                  <span className={`${isActive ? 'text-highlight' : 'text-secondary group-hover:text-highlight'}`}>
+                  <span className={`${active ? 'text-highlight' : 'text-secondary group-hover:text-highlight'}`}>
                     {item.icon}
                   </span>
                   <span className="font-medium">{item.label}</span>
