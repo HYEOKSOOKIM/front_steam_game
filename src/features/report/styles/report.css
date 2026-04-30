@@ -254,6 +254,11 @@ select {
   outline: 0;
 }
 
+.report-shell .report-search-input:focus-visible {
+  outline: 0;
+  outline-offset: 0;
+}
+
 .report-search-input::placeholder {
   color: var(--sys-color-on-surface-variant);
 }
