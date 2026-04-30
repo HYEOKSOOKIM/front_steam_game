@@ -513,6 +513,50 @@ select:hover:not(:disabled) {
   background: transparent;
 }
 
+.game-intro-media-preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(232, 238, 245, 0.18);
+  opacity: 0;
+  transition: opacity var(--motion-duration-fast) var(--motion-ease-standard);
+  pointer-events: none;
+}
+
+.game-intro-media-preview:hover:not(:disabled)::after,
+.game-intro-media-preview:focus-visible:not(:disabled)::after {
+  opacity: 1;
+}
+
+.game-intro-media-zoom-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -44%);
+  padding: 0.58rem 0.86rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(18, 23, 31, 0.82);
+  color: #f4f9ff;
+  font-size: var(--type-label-lg-size);
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  transition:
+    opacity var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard);
+  pointer-events: none;
+}
+
+.game-intro-media-preview:hover:not(:disabled) .game-intro-media-zoom-hint,
+.game-intro-media-preview:focus-visible:not(:disabled) .game-intro-media-zoom-hint {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
 .game-intro-media-preview:hover:not(:disabled) .game-intro-image,
 .game-intro-media-preview:hover:not(:disabled) .game-intro-video {
   transform: scale(1.025);
@@ -564,11 +608,47 @@ select:hover:not(:disabled) {
 
 .game-intro-media-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
   gap: var(--space-8);
   padding: var(--space-8);
   border-top: 1px solid var(--comp-card-border);
   background: color-mix(in srgb, var(--sys-color-surface-container) 82%, var(--comp-card-bg-strong) 18%);
+}
+
+.game-intro-media-strip-items {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.game-intro-media-strip-nav {
+  width: 34px;
+  min-width: 34px;
+  height: 48px;
+  min-height: 48px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--comp-card-border) 78%, transparent);
+  border-radius: var(--shape-corner-sm);
+  background: color-mix(in srgb, var(--comp-card-bg-strong) 88%, var(--sys-color-primary) 12%);
+  color: var(--sys-color-on-surface);
+  font-size: 1.8rem;
+  line-height: 1;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+}
+
+.game-intro-media-strip-nav:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--sys-color-primary) 72%, transparent);
+  background: color-mix(in srgb, var(--sys-color-primary) 88%, white 12%);
+  color: #08131f;
+  transform: translateY(-1px);
+}
+
+.game-intro-media-strip-nav:disabled {
+  opacity: 0.38;
+  cursor: default;
+  box-shadow: none;
 }
 
 .game-intro-media-thumb {
@@ -662,6 +742,8 @@ select:hover:not(:disabled) {
   position: absolute;
   top: 50%;
   z-index: 1;
+  display: grid;
+  place-items: center;
   width: 52px;
   height: 68px;
   min-height: 68px;
@@ -671,9 +753,15 @@ select:hover:not(:disabled) {
   border-radius: 999px;
   background: rgba(18, 23, 31, 0.74);
   color: #f4f9ff;
-  font-size: 3rem;
-  line-height: 1;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.34);
+}
+
+.game-intro-media-modal-nav > span {
+  width: 18px;
+  height: 18px;
+  display: block;
+  border-top: 3px solid currentColor;
+  border-left: 3px solid currentColor;
 }
 
 .game-intro-media-modal-nav:hover {
@@ -686,8 +774,16 @@ select:hover:not(:disabled) {
   left: var(--space-12);
 }
 
+.game-intro-media-modal-prev > span {
+  transform: translateX(3px) rotate(-45deg);
+}
+
 .game-intro-media-modal-next {
   right: var(--space-12);
+}
+
+.game-intro-media-modal-next > span {
+  transform: translateX(-3px) rotate(135deg);
 }
 
 .game-intro-media-modal-counter {
@@ -2871,6 +2967,23 @@ select:hover:not(:disabled) {
     width: 100%;
   }
 
+  .game-intro-media-strip {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+  }
+
+  .game-intro-media-strip-items {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .game-intro-media-strip-nav {
+    width: 32px;
+    min-width: 32px;
+    height: 42px;
+    min-height: 42px;
+    font-size: 1.55rem;
+  }
+
   .game-intro-media-modal-close {
     width: auto;
   }
@@ -2879,7 +2992,6 @@ select:hover:not(:disabled) {
     width: 44px;
     height: 58px;
     min-height: 58px;
-    font-size: 2.5rem;
   }
 
   .game-intro-media-modal-prev {

@@ -1,5 +1,8 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 
+import Hls from "hls.js";
+import { useRef } from "react";
+
 function formatNumber(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) {
@@ -17,6 +20,71 @@ function formatPriceValue(value, currency = "KRW") {
     return `₩${formatted}`;
   }
   return `${formatted} ${currency || ""}`.trim();
+}
+
+function isHlsSource(src) {
+  return String(src || "").toLowerCase().includes(".m3u8");
+}
+
+function HlsVideo({
+  src,
+  className,
+  poster,
+  controls = false,
+  autoPlay = false,
+  muted = false,
+  playsInline = false,
+  preload = "metadata",
+}) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !src) {
+      return undefined;
+    }
+
+    if (!isHlsSource(src)) {
+      video.src = src;
+      return () => {
+        video.removeAttribute("src");
+        video.load();
+      };
+    }
+
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = src;
+      return () => {
+        video.removeAttribute("src");
+        video.load();
+      };
+    }
+
+    if (!Hls.isSupported()) {
+      return undefined;
+    }
+
+    const hls = new Hls();
+    hls.loadSource(src);
+    hls.attachMedia(video);
+
+    return () => {
+      hls.destroy();
+    };
+  }, [src]);
+
+  return (
+    <video
+      ref={videoRef}
+      className={className}
+      poster={poster || undefined}
+      controls={controls}
+      autoPlay={autoPlay}
+      muted={muted}
+      playsInline={playsInline}
+      preload={preload}
+    />
+  );
 }
 
 function priceSummary(game) {
@@ -177,25 +245,8 @@ function normalizeMediaItems(game, imageUrl) {
     });
   }
 
-  const screenshots = Array.isArray(game?.screenshots) ? game.screenshots : [];
-  screenshots.slice(0, 5).forEach((screenshot, index) => {
-    const src = screenshot?.full || screenshot?.path_full || screenshot?.thumbnail;
-    const thumbnail =
-      screenshot?.thumbnail || screenshot?.path_thumbnail || screenshot?.full || src;
-    if (!src && !thumbnail) {
-      return;
-    }
-    items.push({
-      id: `screenshot-${screenshot?.id || index}`,
-      type: "image",
-      label: `스크린샷 ${index + 1}`,
-      thumbnail: thumbnail || src,
-      src: src || thumbnail,
-    });
-  });
-
   const movies = Array.isArray(game?.movies) ? game.movies : [];
-  movies.slice(0, 3).forEach((movie, index) => {
+  movies.forEach((movie, index) => {
     const src =
       movie?.url ||
       movie?.mp4 ||
@@ -214,8 +265,27 @@ function normalizeMediaItems(game, imageUrl) {
     });
   });
 
+  const screenshots = Array.isArray(game?.screenshots) ? game.screenshots : [];
+  screenshots.forEach((screenshot, index) => {
+    const src = screenshot?.full || screenshot?.path_full || screenshot?.thumbnail;
+    const thumbnail =
+      screenshot?.thumbnail || screenshot?.path_thumbnail || screenshot?.full || src;
+    if (!src && !thumbnail) {
+      return;
+    }
+    items.push({
+      id: `screenshot-${screenshot?.id || index}`,
+      type: "image",
+      label: `스크린샷 ${index + 1}`,
+      thumbnail: thumbnail || src,
+      src: src || thumbnail,
+    });
+  });
+
   return items;
 }
+
+const MEDIA_THUMBNAIL_WINDOW_SIZE = 5;
 
 export default function GameIntroSection({
   appid,
@@ -250,6 +320,20 @@ export default function GameIntroSection({
   );
   const selectedMedia = mediaItems[selectedMediaIndex] || mediaItems[0];
   const canNavigateMedia = mediaItems.length > 1;
+  const thumbnailWindowSize = Math.min(MEDIA_THUMBNAIL_WINDOW_SIZE, mediaItems.length);
+  const maxThumbnailStart = Math.max(0, mediaItems.length - thumbnailWindowSize);
+  const thumbnailStart = Math.min(
+    Math.max(
+      selectedMediaIndex - Math.floor(thumbnailWindowSize / 2),
+      0,
+    ),
+    maxThumbnailStart,
+  );
+  const visibleMediaItems = mediaItems.slice(
+    thumbnailStart,
+    thumbnailStart + thumbnailWindowSize,
+  );
+  const canMoveThumbnailWindow = mediaItems.length > thumbnailWindowSize;
 
   useEffect(() => {
     setSelectedMediaIndex(0);
@@ -312,6 +396,28 @@ export default function GameIntroSection({
     );
   };
 
+  const showPreviousThumbnailSet = () => {
+    if (!canMoveThumbnailWindow) {
+      return;
+    }
+
+    setImageFailed(false);
+    setSelectedMediaIndex((currentIndex) =>
+      Math.max(0, currentIndex - thumbnailWindowSize),
+    );
+  };
+
+  const showNextThumbnailSet = () => {
+    if (!canMoveThumbnailWindow) {
+      return;
+    }
+
+    setImageFailed(false);
+    setSelectedMediaIndex((currentIndex) =>
+      Math.min(mediaItems.length - 1, currentIndex + thumbnailWindowSize),
+    );
+  };
+
   return (
     <>
       <section className="game-intro-card">
@@ -344,7 +450,7 @@ export default function GameIntroSection({
                     onError={() => setImageFailed(true)}
                   />
                 ) : (
-                  <video
+                  <HlsVideo
                     className="game-intro-video"
                     src={selectedMedia.src}
                     muted
@@ -369,34 +475,64 @@ export default function GameIntroSection({
                 Steam Review Report
               </span>
             )}
+            <span className="game-intro-media-zoom-hint" aria-hidden="true">
+              클릭 시 확대
+            </span>
           </button>
           {mediaItems.length > 1 ? (
             <div className="game-intro-media-strip" aria-label="게임 미디어 목록">
-              {mediaItems.map((item, index) => (
+              {canMoveThumbnailWindow ? (
                 <button
-                  className={`game-intro-media-thumb ${
-                    index === selectedMediaIndex ? "is-active" : ""
-                  }`}
+                  className="game-intro-media-strip-nav"
                   type="button"
-                  key={item.id}
-                  onClick={() => {
-                    setSelectedMediaIndex(index);
-                    setImageFailed(false);
-                  }}
-                  aria-label={`${item.label} 보기`}
+                  onClick={showPreviousThumbnailSet}
+                  disabled={thumbnailStart === 0}
+                  aria-label="이전 미디어 목록 보기"
                 >
-                  {item.thumbnail ? (
-                    <img src={item.thumbnail} alt="" loading="lazy" />
-                  ) : (
-                    <span>{item.type === "video" ? "영상" : "이미지"}</span>
-                  )}
-                  {item.type === "video" ? (
-                    <span className="game-intro-thumb-play" aria-hidden="true">
-                      ▶
-                    </span>
-                  ) : null}
+                  ‹
                 </button>
-              ))}
+              ) : null}
+              <div className="game-intro-media-strip-items">
+                {visibleMediaItems.map((item, visibleIndex) => {
+                  const index = thumbnailStart + visibleIndex;
+                  return (
+                    <button
+                      className={`game-intro-media-thumb ${
+                        index === selectedMediaIndex ? "is-active" : ""
+                      }`}
+                      type="button"
+                      key={item.id}
+                      onClick={() => {
+                        setSelectedMediaIndex(index);
+                        setImageFailed(false);
+                      }}
+                      aria-label={`${item.label} 보기`}
+                    >
+                      {item.thumbnail ? (
+                        <img src={item.thumbnail} alt="" loading="lazy" />
+                      ) : (
+                        <span>{item.type === "video" ? "영상" : "이미지"}</span>
+                      )}
+                      {item.type === "video" ? (
+                        <span className="game-intro-thumb-play" aria-hidden="true">
+                          ▶
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+              {canMoveThumbnailWindow ? (
+                <button
+                  className="game-intro-media-strip-nav"
+                  type="button"
+                  onClick={showNextThumbnailSet}
+                  disabled={thumbnailStart >= maxThumbnailStart}
+                  aria-label="다음 미디어 목록 보기"
+                >
+                  ›
+                </button>
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -523,7 +659,7 @@ export default function GameIntroSection({
                   onClick={showPreviousMedia}
                   aria-label="이전 미디어 보기"
                 >
-                  ‹
+                  <span aria-hidden="true" />
                 </button>
                 <button
                   className="game-intro-media-modal-nav game-intro-media-modal-next"
@@ -531,7 +667,7 @@ export default function GameIntroSection({
                   onClick={showNextMedia}
                   aria-label="다음 미디어 보기"
                 >
-                  ›
+                  <span aria-hidden="true" />
                 </button>
                 <div className="game-intro-media-modal-counter">
                   {selectedMediaIndex + 1} / {mediaItems.length}
@@ -539,7 +675,7 @@ export default function GameIntroSection({
               </>
             ) : null}
             {selectedMedia.type === "video" ? (
-              <video
+              <HlsVideo
                 className="game-intro-media-modal-video"
                 src={selectedMedia.src}
                 poster={selectedMedia.thumbnail || undefined}
