@@ -4,9 +4,17 @@ import {
   fetchRecommendations,
   fetchRecommendSuggestions,
 } from "./api/recommendApi";
+import Topbar from "../report/components/Topbar";
+import "../report/styles/report.css";
 import "./styles/recommend.css";
 
 const FIXED_TOP_K = 5;
+const LOADING_MESSAGES = [
+  "리뷰 바다에서 취향 단서를 낚는 중...",
+  "재밌는 후보 게임들 줄 세우는 중...",
+  "공포는 멀리 보내고 취향은 가까이 모으는 중...",
+  "당신의 다음 인생게임을 찾는 중...",
+];
 
 function toPercent(value) {
   const n = Number(value);
@@ -82,8 +90,10 @@ export default function RecommendPage() {
   const [result, setResult] = useState(null);
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [includeFreeGames, setIncludeFreeGames] = useState(true);
+  const [showPreferenceInputs, setShowPreferenceInputs] = useState(false);
   const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("");
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
 
   const rows = useMemo(() => {
     const raw = Array.isArray(result?.results) ? result.results : [];
@@ -102,27 +112,6 @@ export default function RecommendPage() {
       .map((x) => x.row);
   }, [rows]);
 
-  const commonGenres = useMemo(() => {
-    if (sortedRows.length === 0) return [];
-
-    const counts = new Map();
-    sortedRows.forEach((row) => {
-      const genres = row?.genres_ko || row?.genres || [];
-      genres.forEach((genre) => {
-        const key = String(genre || "").trim();
-        if (!key) return;
-        counts.set(key, (counts.get(key) || 0) + 1);
-      });
-    });
-
-    const minCount = sortedRows.length === 1 ? 1 : 2;
-    return [...counts.entries()]
-      .filter(([, count]) => count >= minCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 6)
-      .map(([genre]) => genre);
-  }, [sortedRows]);
-
   const selectedItem = useMemo(() => {
     if (sortedRows.length === 0) return null;
     const found = sortedRows.find((item, idx) => getItemKey(item, idx) === selectedKey);
@@ -140,6 +129,14 @@ export default function RecommendPage() {
       setSelectedKey(getItemKey(sortedRows[0], 0));
     }
   }, [sortedRows, selectedKey]);
+
+  useEffect(() => {
+    if (!loading) return undefined;
+    const timer = setInterval(() => {
+      setLoadingMessageIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+    }, 1300);
+    return () => clearInterval(timer);
+  }, [loading]);
 
   useEffect(() => {
     const keyword = likedInput.trim();
@@ -314,56 +311,67 @@ export default function RecommendPage() {
     }
   }
 
-  return (
-    <main className="recommend-shell">
-      <header className="recommend-topbar">
-        <div className="brand-block">
-          <p className="brand">Steam Recommender</p>
-          <p className="brand-subtitle">자연어 질의와 취향 기반으로 추천을 제공합니다</p>
-        </div>
-        <div className="topbar-actions">
-          <button className="report-back-btn" onClick={() => navigate("/")}>메인으로</button>
-        </div>
-      </header>
+  function handleResetSearch() {
+    setResult(null);
+    setQuery("");
+    setSubmittedQuery("");
+    setStatusLine("");
+    setErrorMsg("");
+    setLikedGames([]);
+    setDislikedGames([]);
+    setLikedInput("");
+    setDislikedInput("");
+    setLikedSuggestions([]);
+    setDislikedSuggestions([]);
+    setShowPreferenceInputs(false);
+    setIsControlsCollapsed(false);
+    setSelectedKey("");
+  }
 
-      <section className="section-card recommend-mode-card">
-        <div className="section-title-row">
-          <h2>추천 입력</h2>
-          {result && (
-            <div className="recommend-inline-toggle-wrap">
-              {isControlsCollapsed && (
-                <span className="recommend-inline-toggle-hint">
-                  검색창이 숨겨져 있어요
-                </span>
-              )}
-              <button
-                type="button"
-                className={`recommend-query-tools-btn recommend-inline-toggle-btn ${
-                  isControlsCollapsed ? "is-emphasis" : ""
-                }`}
-                onClick={() => setIsControlsCollapsed((prev) => !prev)}
-              >
-                {isControlsCollapsed ? "검색 패널 펼치기" : "검색 패널 접기"}
+  function handleExpandSearchPanel() {
+    setIsControlsCollapsed(false);
+  }
+
+  return (
+    <main className={result ? "report-shell" : "report-shell report-shell-search"}>
+      <Topbar
+        onBackHome={() => navigate("/")}
+        onResetSearch={handleResetSearch}
+        showResetSearch={Boolean(result)}
+        brand="Steam Recommender"
+        subtitle="질문과 취향 기반으로 게임을 추천해드려요"
+        resetLabel="추천 입력 초기화"
+        homeLabel="메인으로"
+      />
+
+      {loading && (
+        <section className="recommend-loading-screen" aria-live="polite">
+          <div className="recommend-loading-orb" />
+          <p className="recommend-loading-title">결과를 가져오는 중...</p>
+          <p className="recommend-loading-message">{LOADING_MESSAGES[loadingMessageIndex]}</p>
+        </section>
+      )}
+
+      {!result && !loading && !isControlsCollapsed && (
+        <section className="report-search-home recommend-search-home-wide">
+          <p className="report-search-kicker">Steam Recommender</p>
+          <h1 className="report-search-title">원하는 게임을 추천받아 보세요</h1>
+          <p className="report-search-subtitle">원하는 분위기나 조건을 편하게 질문하면, 그에 맞는 게임을 추천해드려요.</p>
+          <form className="report-search-form" onSubmit={handleSubmit}>
+            <div className="report-search-box">
+              <input
+                className="report-search-input"
+                type="text"
+                aria-label="게임 추천 요청 입력"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="예: 스토리가 좋은 싱글 RPG 게임 추천해줘 근데 공포는 싫어 / 스타듀밸리같은 게임 추천해줘"
+                disabled={loading}
+              />
+              <button className="report-search-submit" type="submit" disabled={loading}>
+                {loading ? "검색 중..." : "추천 받기"}
               </button>
             </div>
-          )}
-        </div>
-      </section>
-
-      {!isControlsCollapsed && (
-        <form className="section-card recommend-form is-preference" onSubmit={handleSubmit}>
-          <>
-          <div className="recommend-search-box">
-            <input
-              className="recommend-search-input"
-              type="text"
-              aria-label="게임 추천 요청 입력"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="예: 힐링되는 싱글 RPG 추천해줘. 공포는 제외"
-              disabled={loading}
-            />
-          </div>
             <label className="recommend-option-check">
               <input
                 type="checkbox"
@@ -373,6 +381,15 @@ export default function RecommendPage() {
               />
               무료 게임 포함
             </label>
+            <button
+              type="button"
+              className="recommend-pref-toggle-btn"
+              onClick={() => setShowPreferenceInputs((prev) => !prev)}
+              disabled={loading}
+            >
+              {showPreferenceInputs ? "취향 게임 입력 닫기" : "좋아하는/비선호 게임 입력 열기"}
+            </button>
+            {showPreferenceInputs && (
             <div className="recommend-pref-grid">
               <div
                 className="recommend-chip-field"
@@ -481,16 +498,13 @@ export default function RecommendPage() {
                 )}
               </div>
             </div>
-            <button className="recommend-btn" type="submit" disabled={loading}>
-              {loading ? "검색 중..." : "추천 받기"}
-            </button>
-          </>
-        </form>
+            )}
+            <p className="report-search-helper">질문만 입력해도 추천 가능하며, 취향 게임 입력 시 정확도가 올라갑니다.</p>
+          </form>
+        </section>
       )}
-
-      {(statusLine || errorMsg) && (
+      {errorMsg && (
         <section className="recommend-summary">
-          {statusLine && <p className="recommend-status">{statusLine}</p>}
           {errorMsg && <p className="recommend-empty">{errorMsg}</p>}
         </section>
       )}
@@ -499,17 +513,6 @@ export default function RecommendPage() {
         <section className="section-card">
           <h2 className="recommend-card-name">입력한 질문</h2>
           <p className="recommend-card-reason">{submittedQuery}</p>
-        </section>
-      )}
-
-      {result && commonGenres.length > 0 && (
-        <section className="section-card">
-          <h2 className="recommend-card-name">공통 장르</h2>
-          <div className="recommend-card-tags">
-            {commonGenres.map((genre) => (
-              <span key={`common-genre-${genre}`} className="recommend-tag">{genre}</span>
-            ))}
-          </div>
         </section>
       )}
 
@@ -621,6 +624,162 @@ export default function RecommendPage() {
               스팀 상점에서 보기
             </a>
           )}
+        </section>
+      )}
+
+      {result && !loading && !isControlsCollapsed && (
+        <section className="section-card recommend-under-result-input">
+          <form className="recommend-under-result-form" onSubmit={handleSubmit}>
+            <div className="report-search-box">
+              <input
+                className="report-search-input"
+                type="text"
+                aria-label="게임 추천 요청 입력"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="예: 스토리가 좋은 싱글 RPG 게임 추천해줘 근데 공포는 싫어 / 스타듀밸리같은 게임 추천해줘"
+                disabled={loading}
+              />
+              <button className="report-search-submit" type="submit" disabled={loading}>
+                {loading ? "검색 중..." : "추천 받기"}
+              </button>
+            </div>
+            <label className="recommend-option-check">
+              <input
+                type="checkbox"
+                checked={includeFreeGames}
+                onChange={(e) => setIncludeFreeGames(e.target.checked)}
+                disabled={loading}
+              />
+              무료 게임 포함
+            </label>
+            <button
+              type="button"
+              className="recommend-pref-toggle-btn"
+              onClick={() => setShowPreferenceInputs((prev) => !prev)}
+              disabled={loading}
+            >
+              {showPreferenceInputs ? "취향 게임 입력 닫기" : "좋아하는/비선호 게임 입력 열기"}
+            </button>
+            {showPreferenceInputs && (
+              <div className="recommend-pref-grid">
+                <div
+                  className="recommend-chip-field"
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                      setLikedSuggestOpen(false);
+                    }
+                  }}
+                >
+                  <p className="recommend-chip-help">한국어 검색이 안 되면 영어 제목으로 입력해 주세요.</p>
+                  <label className="recommend-chip-label">좋아하는 게임</label>
+                  <div className="recommend-chip-box">
+                    {likedGames.map((item) => (
+                      <span key={`liked-${item.appId}`} className="recommend-chip">
+                        {item.label}
+                        <button type="button" onClick={() => removeChip("liked", item.appId)} aria-label={`${item.label} 제거`}>×</button>
+                      </span>
+                    ))}
+                    <input
+                      className="recommend-chip-input"
+                      type="text"
+                      value={likedInput}
+                      onChange={(e) => setLikedInput(e.target.value)}
+                      onKeyDown={(e) => onChipInputKeyDown(e, "liked")}
+                      onFocus={() => setLikedSuggestOpen(true)}
+                      placeholder="게임명 입력 후 선택"
+                      disabled={loading}
+                    />
+                  </div>
+                  {likedSuggestOpen && (
+                    <div className="recommend-suggest-dropdown">
+                      {likedSuggestLoading && <p className="recommend-suggest-status">불러오는 중...</p>}
+                      {!likedSuggestLoading && likedInput.trim().length >= 1 && likedSuggestions.length === 0 && (
+                        <p className="recommend-suggest-status">일치하는 게임 없음</p>
+                      )}
+                      {!likedSuggestLoading && likedSuggestions.length > 0 && (
+                        <ul className="recommend-suggest-list">
+                          {likedSuggestions.map((item) => (
+                            <li key={`liked-suggest-${item.app_id}`}>
+                              <button
+                                type="button"
+                                className="recommend-suggest-item"
+                                onClick={() => addGameChip("liked", item)}
+                              >
+                                <span>{getSuggestLabel(item)}</span>
+                                <small>#{item.app_id}</small>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  className="recommend-chip-field"
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                      setDislikedSuggestOpen(false);
+                    }
+                  }}
+                >
+                  <label className="recommend-chip-label">비선호 게임(선택)</label>
+                  <div className="recommend-chip-box">
+                    {dislikedGames.map((item) => (
+                      <span key={`disliked-${item.appId}`} className="recommend-chip is-disliked">
+                        {item.label}
+                        <button type="button" onClick={() => removeChip("disliked", item.appId)} aria-label={`${item.label} 제거`}>×</button>
+                      </span>
+                    ))}
+                    <input
+                      className="recommend-chip-input"
+                      type="text"
+                      value={dislikedInput}
+                      onChange={(e) => setDislikedInput(e.target.value)}
+                      onKeyDown={(e) => onChipInputKeyDown(e, "disliked")}
+                      onFocus={() => setDislikedSuggestOpen(true)}
+                      placeholder="게임명 입력 후 선택"
+                      disabled={loading}
+                    />
+                  </div>
+                  {dislikedSuggestOpen && (
+                    <div className="recommend-suggest-dropdown">
+                      {dislikedSuggestLoading && <p className="recommend-suggest-status">불러오는 중...</p>}
+                      {!dislikedSuggestLoading && dislikedInput.trim().length >= 1 && dislikedSuggestions.length === 0 && (
+                        <p className="recommend-suggest-status">일치하는 게임 없음</p>
+                      )}
+                      {!dislikedSuggestLoading && dislikedSuggestions.length > 0 && (
+                        <ul className="recommend-suggest-list">
+                          {dislikedSuggestions.map((item) => (
+                            <li key={`disliked-suggest-${item.app_id}`}>
+                              <button
+                                type="button"
+                                className="recommend-suggest-item"
+                                onClick={() => addGameChip("disliked", item)}
+                              >
+                                <span>{getSuggestLabel(item)}</span>
+                                <small>#{item.app_id}</small>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </form>
+        </section>
+      )}
+
+      {result && isControlsCollapsed && (
+        <section className="recommend-restart-wrap">
+          <button type="button" className="recommend-restart-btn" onClick={handleExpandSearchPanel}>
+            다시 검색하기
+          </button>
         </section>
       )}
     </main>
