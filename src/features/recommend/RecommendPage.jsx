@@ -129,6 +129,7 @@ export default function RecommendPage() {
   const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState("");
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const [brokenImageKeys, setBrokenImageKeys] = useState(() => new Set());
 
   const rows = useMemo(() => {
     const raw = Array.isArray(result?.results) ? result.results : [];
@@ -332,6 +333,7 @@ export default function RecommendPage() {
       setSubmittedQuery(trimmed);
       setStatusLine("");
       setIsControlsCollapsed(true);
+      setBrokenImageKeys(new Set());
     } catch (err) {
       setErrorMsg(err?.message || "추천 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.");
       setStatusLine("");
@@ -579,18 +581,22 @@ export default function RecommendPage() {
                     >
                       <span className="recommend-poster-rank">#{idx + 1}</span>
                       <div className="recommend-poster-thumb">
-                        {imageUrl ? (
+                        {imageUrl && !brokenImageKeys.has(key) ? (
                           <img
                             className="recommend-poster-image"
                             src={imageUrl}
                             alt={`${item.display_name || item.name || "추천 게임"} 포스터`}
                             loading="lazy"
                             onError={(e) => {
-                              e.currentTarget.style.display = "none";
+                              setBrokenImageKeys((prev) => {
+                                const next = new Set(prev);
+                                next.add(key);
+                                return next;
+                              });
                             }}
                           />
                         ) : (
-                          <span className="recommend-poster-fallback">NO IMAGE</span>
+                          <span className="recommend-poster-fallback">사진 없음</span>
                         )}
                       </div>
                       <p className="recommend-poster-name">{item.display_name || item.name}</p>
