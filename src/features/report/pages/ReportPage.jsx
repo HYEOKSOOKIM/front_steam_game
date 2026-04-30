@@ -481,7 +481,12 @@ export default function ReportPage() {
                       </div>
                     }
                   >
-                    <ReviewTrendChart trend={report?.review_trend} />
+                    <ReviewTrendChart
+                      trend={report?.review_trend}
+                      recentStateLabel={recentStateLabel(recentState.status)}
+                      recentStateSummary={recentState.summary}
+                      recentStateTone={recentStateTone(recentState.status)}
+                    />
                   </Suspense>
                 </section>
 
@@ -505,9 +510,6 @@ export default function ReportPage() {
                   buyTimingSummary={display.buy_timing_summary}
                   recommendationBadgeClass={badgeClass}
                   recommendationLabel={recommendationLabel(recommendation)}
-                  recentStateSummary={recentState.summary}
-                  recentStateLabel={recentStateLabel(recentState.status)}
-                  recentStateTone={recentStateTone(recentState.status)}
                 />
 
                 <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />
