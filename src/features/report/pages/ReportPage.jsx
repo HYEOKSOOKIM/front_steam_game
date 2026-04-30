@@ -32,6 +32,13 @@ const DEFAULT_MIN_REPORT_REVIEW_COUNT = 100;
 const REPORT_NOT_FOUND_MESSAGE =
   "리포트를 찾지 못했어요\n입력한 게임 이름을 다시 확인하거나, 다른 게임으로 검색해보세요.";
 
+const REPORT_LOADING_MESSAGES = [
+  "스팀 리뷰를 모아 분석 준비를 하고 있어요...",
+  "긍정과 부정 신호를 나눠 읽는 중이에요...",
+  "최근 리뷰 흐름과 핵심 근거를 정리하고 있어요...",
+  "구매 판단에 필요한 요약을 다듬는 중이에요...",
+];
+
 function normalizeSearchText(value) {
   return String(value || "")
     .trim()
@@ -199,6 +206,7 @@ export default function ReportPage() {
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [report, setReport] = useState(null);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [statusLine, setStatusLine] = useState(
     "게임 목록을 준비하는 중입니다...",
   );
@@ -208,6 +216,18 @@ export default function ReportPage() {
     [games, searchQuery],
   );
   const showSuggestions = isSearchFocused && suggestions.length > 0 && !report;
+
+  useEffect(() => {
+    if (!isLoadingReport) return undefined;
+
+    const timer = setInterval(() => {
+      setLoadingMessageIndex(
+        (prev) => (prev + 1) % REPORT_LOADING_MESSAGES.length,
+      );
+    }, 1300);
+
+    return () => clearInterval(timer);
+  }, [isLoadingReport]);
 
   useEffect(() => {
     if (!showSuggestions) {
@@ -411,7 +431,15 @@ export default function ReportPage() {
         showResetSearch={Boolean(report)}
       />
 
-      {!report ? (
+      {isLoadingReport ? (
+        <section className="report-loading-screen" aria-live="polite">
+          <div className="report-loading-orb" />
+          <p className="report-loading-title">리포트를 가져오는 중...</p>
+          <p className="report-loading-message">
+            {REPORT_LOADING_MESSAGES[loadingMessageIndex]}
+          </p>
+        </section>
+      ) : !report ? (
         <SearchLanding
           games={games}
           query={searchQuery}
@@ -444,6 +472,24 @@ export default function ReportPage() {
           ) : (
             <div className="report-content-flow">
               <div className="report-core-stack">
+                <section className="section-card review-trend-card">
+                  <h2>월별 한국어 리뷰 흐름</h2>
+                  <Suspense
+                    fallback={
+                      <div className="review-trend-loading">
+                        차트를 불러오는 중이에요...
+                      </div>
+                    }
+                  >
+                    <ReviewTrendChart
+                      trend={report?.review_trend}
+                      recentStateLabel={recentStateLabel(recentState.status)}
+                      recentStateSummary={recentState.summary}
+                      recentStateTone={recentStateTone(recentState.status)}
+                    />
+                  </Suspense>
+                </section>
+
                 <section className="hero-card">
                   <div className="hero-meta">
                     <p
@@ -457,19 +503,6 @@ export default function ReportPage() {
                       "많은 리뷰의 공통된 흐름을 바탕으로 구매 판단만 빠르게 정리했어요."}
                   </h1>
                 </section>
-
-                <section className="section-card review-trend-card">
-                  <h2>월별 한국어 리뷰 흐름</h2>
-                  <Suspense
-                    fallback={
-                      <div className="review-trend-loading">
-                        차트를 불러오는 중이에요...
-                      </div>
-                    }
-                  >
-                    <ReviewTrendChart trend={report?.review_trend} />
-                  </Suspense>
-                </section>
               </div>
 
               <div className="report-support-stack">
@@ -477,9 +510,6 @@ export default function ReportPage() {
                   buyTimingSummary={display.buy_timing_summary}
                   recommendationBadgeClass={badgeClass}
                   recommendationLabel={recommendationLabel(recommendation)}
-                  recentStateSummary={recentState.summary}
-                  recentStateLabel={recentStateLabel(recentState.status)}
-                  recentStateTone={recentStateTone(recentState.status)}
                 />
 
                 <FitGrid goodFor={goodFor} notGoodFor={notGoodFor} />

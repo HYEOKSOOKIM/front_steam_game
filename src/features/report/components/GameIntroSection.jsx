@@ -35,7 +35,8 @@ function priceSummary(game) {
   const discount = Number(game?.price_discount_percent);
 
   if (current) {
-    const hasDiscount = Number.isFinite(discount) && discount > 0 && original && original !== current;
+    const hasDiscount =
+      Number.isFinite(discount) && discount > 0 && original && original !== current;
     return {
       primary: `현재 ${current}`,
       secondary: hasDiscount ? `정가 ${original} · -${discount}%` : "",
@@ -122,16 +123,29 @@ function reviewToneClass(label) {
 function buildSteamReviewSummary(game) {
   const totalReviews = Number(game?.steam_total_reviews);
   const totalPositive = Number(game?.steam_total_positive);
+  const totalNegativeRaw = Number(game?.steam_total_negative);
 
-  if (!Number.isFinite(totalReviews) || totalReviews <= 0 || !Number.isFinite(totalPositive)) {
+  if (
+    !Number.isFinite(totalReviews) ||
+    totalReviews <= 0 ||
+    !Number.isFinite(totalPositive)
+  ) {
     return null;
   }
 
+  const totalNegative = Number.isFinite(totalNegativeRaw)
+    ? totalNegativeRaw
+    : Math.max(totalReviews - totalPositive, 0);
   const positivePercent = Math.round((totalPositive / totalReviews) * 100);
   const scoreLabel = steamReviewScoreLabel(game?.steam_review_score_desc);
 
   return {
     scoreLabel,
+    totalReviews,
+    totalPositive,
+    totalNegative,
+    positivePercent,
+    negativePercent: Math.max(100 - positivePercent, 0),
     description: `사용자 평가 ${formatNumber(totalReviews)}개 중 ${positivePercent}%가 긍정적이에요`,
   };
 }
@@ -148,7 +162,7 @@ function buildFallbackSummary(game, sourceReviewCount, minReviewCount) {
     return game.short_description;
   }
 
-  return "수집된 리뷰에서 자주 언급된 장점과 아쉬운 점을 정리했어요.";
+  return "수집된 리뷰에서 자주 언급된 장점과 주의할 점을 정리했어요.";
 }
 
 export default function GameIntroSection({
@@ -158,18 +172,38 @@ export default function GameIntroSection({
   minReviewCount,
 }) {
   const [imageFailed, setImageFailed] = useState(false);
-  const genres = Array.isArray(game?.genres) ? game.genres.filter(Boolean).slice(0, 4) : [];
+  const genres = Array.isArray(game?.genres)
+    ? game.genres.filter(Boolean).slice(0, 4)
+    : [];
   const imageUrl =
-    game?.header_image || (appid ? `https://cdn.akamai.steamstatic.com/steam/apps/${appid}/header.jpg` : "");
+    game?.header_image ||
+    (appid
+      ? `https://cdn.akamai.steamstatic.com/steam/apps/${appid}/header.jpg`
+      : "");
   const sourceCount = formatNumber(sourceReviewCount);
-  const steamStoreUrl = game?.steam_store_url || (appid ? `https://store.steampowered.com/app/${appid}` : "");
+  const steamStoreUrl =
+    game?.steam_store_url || (appid ? `https://store.steampowered.com/app/${appid}` : "");
   const steamReviewSummary = buildSteamReviewSummary(game);
-  const fallbackSummary = buildFallbackSummary(game, sourceReviewCount, minReviewCount);
+  const fallbackSummary = buildFallbackSummary(
+    game,
+    sourceReviewCount,
+    minReviewCount,
+  );
   const price = priceSummary(game);
 
   return (
     <section className="game-intro-card">
       <div className="game-intro-media">
+        {steamStoreUrl ? (
+          <a
+            className="game-intro-store-link"
+            href={steamStoreUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Steam에서 보기
+          </a>
+        ) : null}
         {imageUrl && !imageFailed ? (
           <img
             className="game-intro-image"
@@ -189,68 +223,92 @@ export default function GameIntroSection({
         <p className="game-intro-kicker">선택한 게임</p>
         <div className="game-intro-title-row">
           <h2 className="game-intro-title">{game?.name || `appid ${appid}`}</h2>
-          {steamStoreUrl ? (
-            <a className="game-intro-store-link" href={steamStoreUrl} target="_blank" rel="noreferrer">
-              Steam에서 보기
-            </a>
+          {genres.length > 0 ? (
+            <div className="game-intro-title-tags" aria-label="대표 장르">
+              {genres.map((genre) => (
+                <span className="game-intro-tag" key={genre}>
+                  {genre}
+                </span>
+              ))}
+            </div>
           ) : null}
         </div>
 
         <div className="game-intro-overview">
+          <dl className="game-intro-meta">
+            <div>
+              <dt>가격</dt>
+              <dd className="game-intro-price">
+                <span className="game-intro-price-current">{price.primary}</span>
+                {price.secondary ? (
+                  <span className="game-intro-price-original">{price.secondary}</span>
+                ) : null}
+              </dd>
+            </div>
+            <div>
+              <dt>상태</dt>
+              <dd>{releaseLabel(game)}</dd>
+            </div>
+            {game?.release_date_text ? (
+              <div>
+                <dt>출시일</dt>
+                <dd>{game.release_date_text}</dd>
+              </div>
+            ) : null}
+            {sourceCount ? (
+              <div>
+                <dt>수집 리뷰</dt>
+                <dd>{sourceCount}개</dd>
+              </div>
+            ) : null}
+          </dl>
+
           {steamReviewSummary ? (
-            <p className="game-intro-summary game-intro-review-summary">
-              {steamReviewSummary.scoreLabel ? (
-                <span className={`status-chip ${reviewToneClass(steamReviewSummary.scoreLabel)}`}>
-                  {steamReviewSummary.scoreLabel}
-                </span>
-              ) : null}
-              <span>{steamReviewSummary.description}</span>
-            </p>
+            <div className="game-intro-review-summary">
+              <div className="game-intro-review-copy">
+                <p className="game-intro-summary">
+                  {steamReviewSummary.scoreLabel ? (
+                    <span
+                      className={`status-chip ${reviewToneClass(
+                        steamReviewSummary.scoreLabel,
+                      )}`}
+                    >
+                      {steamReviewSummary.scoreLabel}
+                    </span>
+                  ) : null}
+                  <span>{steamReviewSummary.description}</span>
+                </p>
+
+                <div className="game-intro-review-legend" aria-hidden="true">
+                  <span className="game-intro-review-legend-item is-positive">
+                    긍정 {steamReviewSummary.positivePercent}% ·{" "}
+                    {formatNumber(steamReviewSummary.totalPositive)}개
+                  </span>
+                  <span className="game-intro-review-legend-item is-negative">
+                    부정 {steamReviewSummary.negativePercent}% ·{" "}
+                    {formatNumber(steamReviewSummary.totalNegative)}개
+                  </span>
+                </div>
+              </div>
+
+              <div className="game-intro-review-visual" aria-label="전체 사용자 평가 비율">
+                <div
+                  className="game-intro-review-donut"
+                  style={{
+                    "--positive-angle": `${steamReviewSummary.positivePercent}%`,
+                  }}
+                >
+                  <div className="game-intro-review-donut-center">
+                    <strong>{steamReviewSummary.positivePercent}%</strong>
+                    <span>긍정</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           ) : (
             <p className="game-intro-summary">{fallbackSummary}</p>
           )}
-
-          {genres.length > 0 ? (
-            <div className="game-intro-tags-block">
-              <p className="game-intro-tags-label">대표 장르</p>
-              <div className="game-intro-tags" aria-label="장르">
-                {genres.map((genre) => (
-                  <span className="game-intro-tag" key={genre}>
-                    {genre}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ) : null}
         </div>
-
-        <dl className="game-intro-meta">
-          <div>
-            <dt>가격</dt>
-            <dd className="game-intro-price">
-              <span className="game-intro-price-current">{price.primary}</span>
-              {price.secondary ? (
-                <span className="game-intro-price-original">{price.secondary}</span>
-              ) : null}
-            </dd>
-          </div>
-          <div>
-            <dt>상태</dt>
-            <dd>{releaseLabel(game)}</dd>
-          </div>
-          {game?.release_date_text ? (
-            <div>
-              <dt>출시일</dt>
-              <dd>{game.release_date_text}</dd>
-            </div>
-          ) : null}
-          {sourceCount ? (
-            <div>
-              <dt>수집 리뷰</dt>
-              <dd>{sourceCount}개</dd>
-            </div>
-          ) : null}
-        </dl>
       </div>
     </section>
   );
