@@ -26,7 +26,17 @@
       "Bash(curl -s --connect-timeout 5 -X POST \"http://43.200.60.222:8000/api/recommend\" -H \"Content-Type: application/json\" -d '{\"query\":\"액션 게임\",\"top_k\":5}')",
       "Bash(curl -sv --connect-timeout 5 -X POST \"http://43.200.60.222:8000/api/recommend\" -H \"Content-Type: application/json\" -d '{\"query\":\"액션 게임\",\"top_k\":5}')",
       "Bash(curl -sv --connect-timeout 5 -X POST \"http://43.200.60.222:8000/api/recommend\" -H \"Content-Type: application/json\" -d \"{\\\\\"query\\\\\":\\\\\"action game\\\\\",\\\\\"top_k\\\\\":5}\")",
-      "Bash(curl -s -I -X OPTIONS \"http://43.200.60.222:8000/api/recommend\" -H \"Origin: http://localhost:5173\" -H \"Access-Control-Request-Method: POST\")"
+      "Bash(curl -s -I -X OPTIONS \"http://43.200.60.222:8000/api/recommend\" -H \"Origin: http://localhost:5173\" -H \"Access-Control-Request-Method: POST\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "WebFetch(domain:43.200.60.222)",
+      "Bash(curl *)",
+      "Bash(claude skill *)",
+      "Bash(sed -n '137,145p' H:/2026/steam_frontend/src/pages/landing.css)",
+      "Bash(sed -n '402,410p' H:/2026/steam_frontend/src/pages/landing.css)",
+      "Bash(sed -n '682,695p' H:/2026/steam_frontend/src/pages/landing.css)",
+      "Bash(sed -n '209,214p' H:/2026/steam_frontend/src/pages/landing.css)"
     ]
   }
 }
