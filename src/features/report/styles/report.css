@@ -33,6 +33,10 @@
 body {
   margin: 0;
   min-height: 100vh;
+  position: relative;
+}
+
+body.rp-page {
   background:
     radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--sys-color-primary) 10%, transparent) 0%, transparent 60%),
     linear-gradient(180deg, #171a21 0%, #1b2838 100%);
@@ -40,10 +44,9 @@ body {
   color: var(--sys-color-on-surface);
   font-family: var(--font-family-base);
   font-size: 16px;
-  position: relative;
 }
 
-body::before {
+body.rp-page::before {
   content: "";
   position: fixed;
   inset: 0;
