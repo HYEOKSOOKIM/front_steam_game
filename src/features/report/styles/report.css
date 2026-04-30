@@ -636,6 +636,14 @@ select:hover:not(:disabled) {
   min-width: 0;
 }
 
+.game-intro-review-label {
+  margin: 0;
+  color: var(--sys-color-primary);
+  font-size: 0.875rem;
+  line-height: 1.35;
+  font-weight: var(--font-weight-bold);
+}
+
 .game-intro-review-copy .game-intro-summary {
   display: flex;
   flex-wrap: wrap;
@@ -747,15 +755,21 @@ select:hover:not(:disabled) {
 }
 
 .game-intro-tag {
-  border: 1px solid var(--comp-chip-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--sys-color-primary) 42%, transparent);
   border-radius: var(--comp-chip-radius);
-  background: var(--comp-chip-neutral-bg);
-  color: var(--comp-chip-neutral-label);
-  min-height: var(--comp-chip-height-sm);
-  padding: var(--space-4) var(--comp-chip-padding-x-md);
-  font-size: var(--comp-chip-font-size-md);
+  background: color-mix(in srgb, var(--sys-color-primary) 16%, transparent);
+  color: var(--report-text-strong);
+  min-height: calc(var(--comp-chip-height-sm) + 2px);
+  padding: var(--space-4) calc(var(--comp-chip-padding-x-md) + 2px);
+  font-size: 0.875rem;
   line-height: var(--comp-chip-line-md);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-bold);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--sys-color-primary) 8%, transparent),
+    0 4px 12px rgba(102, 192, 244, 0.08);
 }
 
 .game-intro-meta {
@@ -1368,9 +1382,10 @@ select:hover:not(:disabled) {
   border-radius: var(--shape-corner-sm);
   background:
     linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--sys-color-primary) 14%, transparent) 0%,
-      color-mix(in srgb, var(--sys-color-surface-container) 88%, var(--comp-card-bg-strong) 12%) 58%
+      180deg,
+      color-mix(in srgb, var(--sys-color-primary) 18%, var(--sys-color-surface-container)) 0%,
+      color-mix(in srgb, var(--sys-color-primary) 9%, var(--sys-color-surface-container)) 46%,
+      color-mix(in srgb, var(--sys-color-surface-container) 86%, var(--comp-card-bg-strong) 14%) 100%
     );
   min-height: 100%;
   padding: var(--space-16) var(--space-20, 20px);

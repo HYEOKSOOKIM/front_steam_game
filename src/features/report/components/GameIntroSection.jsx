@@ -266,6 +266,7 @@ export default function GameIntroSection({
           {steamReviewSummary ? (
             <div className="game-intro-review-summary">
               <div className="game-intro-review-copy">
+                <p className="game-intro-review-label">한국어 리뷰 반응</p>
                 <p className="game-intro-summary">
                   {steamReviewSummary.scoreLabel ? (
                     <span
