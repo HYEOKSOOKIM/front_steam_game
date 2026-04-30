@@ -1,0 +1,143 @@
+/* ============================================================
+   공통 레이아웃 — 사이드바 + 콘텐츠 영역
+   tokens.css 변수 활용, Tailwind 의존 없음
+   ============================================================ */
+
+.app-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── 사이드바 ─────────────────────────────────────────────── */
+.app-sidebar {
+  background: #171a21;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-24);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+}
+
+.app-sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  margin-bottom: 48px;
+}
+
+.app-sidebar__logo-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--sys-color-primary);
+  border-radius: var(--shape-corner-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(102, 192, 244, 0.4);
+  flex-shrink: 0;
+  color: #171a21;
+}
+
+.app-sidebar__title {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.05em;
+  color: #fff;
+  margin: 0;
+}
+
+.app-sidebar__nav {
+  flex: 1;
+}
+
+.app-sidebar__nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.app-sidebar__nav-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--shape-corner-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition:
+    background var(--motion-duration-fast) var(--motion-ease-standard),
+    color var(--motion-duration-fast) var(--motion-ease-standard);
+  color: var(--sys-color-on-surface-muted);
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-medium);
+  text-align: left;
+}
+
+.app-sidebar__nav-btn:hover {
+  color: var(--sys-color-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.app-sidebar__nav-btn.active {
+  color: var(--sys-color-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.app-sidebar__nav-icon {
+  display: flex;
+  align-items: center;
+  color: inherit;
+}
+
+/* ── 사이드바 하단 배지 ───────────────────────────────────── */
+.app-sidebar__footer {
+  margin-top: auto;
+  padding-top: var(--space-24);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.app-sidebar__badge {
+  padding: var(--space-16);
+  border-radius: var(--shape-corner-md);
+  background: linear-gradient(to bottom right, rgba(102, 192, 244, 0.1), transparent);
+  border: 1px solid rgba(102, 192, 244, 0.2);
+}
+
+.app-sidebar__badge-label {
+  font-size: var(--type-body-sm-size);
+  color: var(--sys-color-on-surface-muted);
+  margin: 0 0 var(--space-8) 0;
+}
+
+.app-sidebar__badge-value {
+  font-size: var(--type-body-md-size);
+  font-weight: var(--font-weight-bold);
+  color: var(--sys-color-primary);
+  margin: 0;
+}
+
+/* ── 콘텐츠 영역 ──────────────────────────────────────────── */
+.app-content {
+  min-width: 0;
+}
+
+/* ── 반응형: 1024px 미만 사이드바 숨김 ───────────────────── */
+@media (max-width: 1023px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .app-sidebar {
+    display: none;
+  }
+}

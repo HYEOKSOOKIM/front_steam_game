@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Sidebar from "../landing/components/Sidebar";
 import Hero from "../landing/components/Hero";
 import CategoryFilter from "../landing/components/CategoryFilter";
 import GameList from "../landing/components/GameList";
@@ -20,10 +19,7 @@ export default function LandingPage() {
   const videoId = "ltMKzJ-L158";
 
   return (
-    <div className="min-h-screen bg-steam-dark text-primary grid grid-cols-7 overflow-hidden font-outfit">
-      <Sidebar />
-
-      <main className="col-span-6 h-screen overflow-y-auto hide-scrollbar text-[#C7D5E0] bg-steam-dark">
+      <main className="h-screen overflow-y-auto hide-scrollbar text-[#C7D5E0] bg-steam-dark font-outfit">
         {/* 상단 Hero 영역 (배경 영상 적용) */}
         <div className="relative w-full overflow-hidden">
           <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
@@ -67,6 +63,5 @@ export default function LandingPage() {
           </footer>
         </div>
       </main>
-    </div>
   );
 }
