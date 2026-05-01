@@ -132,6 +132,14 @@ function releaseLabel(game) {
   return labels[String(game?.release_stage || "unknown")] || "출시 정보 없음";
 }
 
+function displayTagLabel(value) {
+  const label = String(value || "").trim();
+  const aliases = {
+    "앞서 해보기": "얼리 액세스",
+  };
+  return aliases[label] || label;
+}
+
 function steamReviewScoreLabel(value) {
   const labels = {
     "Overwhelmingly Positive": "압도적으로 긍정적",
@@ -545,7 +553,7 @@ export default function GameIntroSection({
               <div className="game-intro-title-tags" aria-label="대표 장르">
                 {genres.map((genre) => (
                   <span className="game-intro-tag" key={genre}>
-                    {genre}
+                    {displayTagLabel(genre)}
                   </span>
                 ))}
               </div>
@@ -649,7 +657,7 @@ export default function GameIntroSection({
               onClick={() => setIsMediaModalOpen(false)}
               aria-label="닫기"
             >
-              닫기
+              <span aria-hidden="true">×</span>
             </button>
             {canNavigateMedia ? (
               <>

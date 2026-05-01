@@ -39,6 +39,37 @@ const REPORT_LOADING_MESSAGES = [
   "구매 판단에 필요한 요약을 다듬는 중이에요...",
 ];
 
+function normalizeUiErrorMessage(error, { fallback = REPORT_NOT_FOUND_MESSAGE } = {}) {
+  const raw = String(error?.message || "").trim();
+  if (!raw) {
+    return fallback;
+  }
+
+  if (raw.includes("Failed to fetch")) {
+    return "서버에 연결하지 못했어요. 잠시 후 다시 시도해주세요.";
+  }
+  if (raw.includes("Failed to load game list")) {
+    return "게임 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요.";
+  }
+  if (raw.includes("Failed to load report")) {
+    return "리포트를 불러오지 못했어요. 잠시 후 다시 시도해주세요.";
+  }
+  if (raw.includes("enabled for demo serving")) {
+    return REPORT_NOT_FOUND_MESSAGE;
+  }
+  if (raw.includes("is not ready")) {
+    return "리포트가 아직 준비되지 않았어요. 잠시 후 다시 시도해주세요.";
+  }
+  if (raw.includes("was not found")) {
+    return "요청한 데이터를 찾지 못했어요.";
+  }
+  if (raw.includes("network error")) {
+    return "네트워크 오류가 발생했어요. 연결 상태를 확인해주세요.";
+  }
+
+  return raw;
+}
+
 function normalizeSearchText(value) {
   return String(value || "")
     .trim()
@@ -147,7 +178,7 @@ function SearchLanding({
             onKeyDown={onInputKeyDown}
             onFocus={onFocus}
             onBlur={onBlur}
-            placeholder="리뷰 분석을 보고 싶은 게임명을 입력해 주세요. 예: EldenRing, 붉은사막"
+            placeholder="리뷰 분석을 보고 싶은 게임명을 입력해 주세요. 예: Elden Ring, 붉은사막"
             autoComplete="off"
             disabled={loading || games.length === 0}
             role="combobox"
@@ -221,9 +252,7 @@ export default function ReportPage() {
   const [isFooterSearchOpen, setIsFooterSearchOpen] = useState(false);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
-  const [statusLine, setStatusLine] = useState(
-    "게임 목록을 준비하는 중입니다...",
-  );
+  const [statusLine, setStatusLine] = useState("");
 
   const suggestions = useMemo(
     () => filterGames(games, searchQuery),
@@ -277,11 +306,7 @@ export default function ReportPage() {
       setStatusLine("");
     } catch (error) {
       setReport(null);
-      if (String(error?.message || "").includes("enabled for demo serving")) {
-        setStatusLine(REPORT_NOT_FOUND_MESSAGE);
-      } else {
-        setStatusLine(error?.message || REPORT_NOT_FOUND_MESSAGE);
-      }
+      setStatusLine(normalizeUiErrorMessage(error));
     } finally {
       setIsLoadingReport(false);
     }
@@ -291,7 +316,6 @@ export default function ReportPage() {
     let isCancelled = false;
 
     async function bootstrap() {
-      setStatusLine("게임 목록을 준비하는 중입니다...");
       try {
         const loadedGames = await fetchDemoGames();
         if (isCancelled) {
@@ -304,7 +328,11 @@ export default function ReportPage() {
         );
       } catch (error) {
         if (!isCancelled) {
-          setStatusLine(error?.message || "초기화에 실패했어요.");
+          setStatusLine(
+            normalizeUiErrorMessage(error, {
+              fallback: "초기화에 실패했어요.",
+            }),
+          );
         }
       }
     }
