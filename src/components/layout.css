@@ -178,6 +178,30 @@ select:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--sys-color-primary) 72%, transparent);
 }
 
+/* ── 분석 페이지 section-card 제목 점 — tone-panel 없는 카드에도 점 표시 ── */
+/* tone-panel 카드(FitGrid, StrengthRisk)는 report.css에서 이미 색상 지정됨  */
+
+/* ::before 방식 대신 border-left 방식으로 컬러 바 구현
+   — report.css ::before 숨기고 border-left 로 대체
+   — (0,2,1) > report.css (0,1,1) 특이도 승리 보장              */
+
+.report-shell .section-card h2 {
+  border-left: 4px solid var(--sys-color-primary);
+  padding-left: 10px;
+}
+
+.report-shell .section-card h2::before {
+  content: none;
+}
+
+.report-shell .tone-panel-positive h2 {
+  border-left-color: var(--tone-pos-heading);
+}
+
+.report-shell .tone-panel-negative h2 {
+  border-left-color: var(--tone-neg-heading);
+}
+
 /* ── 추천 페이지 버튼 — .report-shell button (0,1,1) 특이도 충돌 복원 ────── */
 /* RecommendPage의 <main>이 report-shell 클래스를 공유해 같은 충돌 발생      */
 
@@ -304,6 +328,7 @@ select:hover:not(:disabled) {
   background: transparent;
   border: none;
   cursor: pointer;
+  text-decoration: none;
   transition:
     background var(--motion-duration-fast) var(--motion-ease-standard),
     color var(--motion-duration-fast) var(--motion-ease-standard);
@@ -314,13 +339,15 @@ select:hover:not(:disabled) {
 }
 
 .app-sidebar__nav-btn:hover {
-  color: var(--sys-color-primary);
-  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  background: rgba(102, 192, 244, 0.15);
+  text-shadow: 0 0 8px rgba(102, 192, 244, 0.6);
 }
 
 .app-sidebar__nav-btn.active {
-  color: var(--sys-color-primary);
-  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  background: rgba(102, 192, 244, 0.2);
+  text-shadow: 0 0 8px rgba(102, 192, 244, 0.6);
 }
 
 .app-sidebar__nav-icon {

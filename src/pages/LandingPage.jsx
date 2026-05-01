@@ -16,7 +16,7 @@ export default function LandingPage() {
       ? gamesData
       : gamesData.filter((game) => game.tags.includes(activeCategory));
 
-  const videoId = "ltMKzJ-L158";
+  const videoId = "DRuLE-9TkgA";
 
   return (
       <main className="hide-scrollbar text-[#C7D5E0] bg-steam-dark font-outfit">

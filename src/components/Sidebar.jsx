@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Compass, Gamepad2, Home, Sparkles } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -8,9 +8,6 @@ const MENU_ITEMS = [
 ];
 
 export default function Sidebar() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
   return (
     <aside className="app-sidebar">
       <div className="app-sidebar__logo">
@@ -24,13 +21,16 @@ export default function Sidebar() {
         <ul>
           {MENU_ITEMS.map((item) => (
             <li key={item.path}>
-              <button
-                onClick={() => navigate(item.path)}
-                className={`app-sidebar__nav-btn${location.pathname === item.path ? ' active' : ''}`}
+              <NavLink
+                to={item.path}
+                end={item.path === '/'}
+                className={({ isActive }) =>
+                  `app-sidebar__nav-btn${isActive ? ' active' : ''}`
+                }
               >
                 <span className="app-sidebar__nav-icon">{item.icon}</span>
                 <span>{item.label}</span>
-              </button>
+              </NavLink>
             </li>
           ))}
         </ul>
