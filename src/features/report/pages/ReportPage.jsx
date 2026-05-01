@@ -252,9 +252,7 @@ export default function ReportPage() {
   const [isFooterSearchOpen, setIsFooterSearchOpen] = useState(false);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
-  const [statusLine, setStatusLine] = useState(
-    "게임 목록을 준비하는 중입니다...",
-  );
+  const [statusLine, setStatusLine] = useState("");
 
   const suggestions = useMemo(
     () => filterGames(games, searchQuery),
@@ -318,7 +316,6 @@ export default function ReportPage() {
     let isCancelled = false;
 
     async function bootstrap() {
-      setStatusLine("게임 목록을 준비하는 중입니다...");
       try {
         const loadedGames = await fetchDemoGames();
         if (isCancelled) {
