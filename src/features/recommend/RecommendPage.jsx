@@ -101,6 +101,10 @@ function getSuggestLabel(item) {
   return item?.name_ko || item?.name_en || item?.name || String(item?.app_id || "");
 }
 
+function getDisplayTitle(item) {
+  return item?.name_ko || item?.display_name_ko || item?.display_name || item?.name_en || item?.name || "제목 없음";
+}
+
 function includesAppId(items, appId) {
   return items.some((item) => item.appId === appId);
 }
@@ -599,7 +603,7 @@ export default function RecommendPage() {
                           <span className="recommend-poster-fallback">사진 없음</span>
                         )}
                       </div>
-                      <p className="recommend-poster-name">{item.display_name || item.name}</p>
+                      <p className="recommend-poster-name">{getDisplayTitle(item)}</p>
                     </button>
                   </li>
                 );
@@ -609,7 +613,7 @@ export default function RecommendPage() {
 
           <article className="recommend-result-detail-pane">
             <div className="recommend-card-head">
-              <h2 className="recommend-card-name">{selectedItem.display_name || selectedItem.name}</h2>
+              <h2 className="recommend-card-name">{getDisplayTitle(selectedItem)}</h2>
               {selectedItem.steam_url && (
                 <a className="recommend-link recommend-link-inline" href={selectedItem.steam_url} target="_blank" rel="noopener noreferrer">
                   스팀에서 보기
@@ -644,15 +648,14 @@ export default function RecommendPage() {
               </strong>
             </div>
 
+            <p className="recommend-evidence-title recommend-subsection-title recommend-reason-title">추천 이유</p>
             <p className="recommend-card-reason">
-              <strong>추천 이유</strong>
-              <br />
               {selectedItem.reason_ko || "추천 이유가 아직 생성되지 않았습니다."}
             </p>
 
             {selectedItem.evidence_ko?.length > 0 && (
               <div className="recommend-evidence">
-                <p className="recommend-evidence-title">리뷰 근거</p>
+                <p className="recommend-evidence-title recommend-subsection-title">리뷰 근거</p>
                 <ol className="recommend-evidence-list">
                   {selectedItem.evidence_ko.map((ev, i) => (
                     <li key={`ev-${i}`}>{ev}</li>
@@ -662,7 +665,7 @@ export default function RecommendPage() {
             )}
 
             <div className="recommend-card-tags-separated">
-              <p className="recommend-evidence-title">장르 태그</p>
+              <p className="recommend-evidence-title recommend-subsection-title">장르 태그</p>
               <div className="recommend-card-tags">
                 {(selectedItem.genres_ko || selectedItem.genres || []).map((g) => (
                   <span key={g} className="recommend-tag">{g}</span>
