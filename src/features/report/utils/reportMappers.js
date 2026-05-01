@@ -19,7 +19,7 @@ export function recentStateLabel(value) {
   const labels = {
     improving: "\uc88b\uc544\uc9c0\ub294 \uc911",
     stable: "\uae0d\uc815\uc801",
-    declining: "\ub098\uc05c\uc9c0\ub294 \uc911",
+    declining: "\ub098\ube60\uc9c0\ub294 \uc911",
     mixed: "\uae0d/\ubd80\uc815 \ud63c\uc7ac",
     insufficient_data: "\ud310\ub2e8 \ubcf4\ub958",
   };

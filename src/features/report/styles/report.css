@@ -2667,6 +2667,10 @@ select {
 
 .report-cta--search {
   padding: var(--space-32) var(--space-24);
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .report-cta--search::before,
@@ -2702,6 +2706,13 @@ select {
 
 .report-cta--search .report-search-form {
   margin-top: var(--space-16);
+  overflow: visible;
+}
+
+.report-cta--search .report-suggestions {
+  position: static;
+  margin-top: var(--space-4);
+  box-shadow: none;
 }
 
 .report-cta__title {
